@@ -42,7 +42,7 @@ class CodeGeneratorUtil {
     public static void main(String[] args) {
 
         // 项目包路径
-        String parent = "com.shiroTest";
+        String parent = "com.shiroTest.function";
         // 数据库连接地址
         String url = "jdbc:mysql://127.0.0.1:3306/shiroTest?useSSL=false&createDatabaseIfNotExist=true";
         // 数据库驱动
@@ -226,9 +226,9 @@ class CodeGeneratorUtil {
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
         strategy.setRestControllerStyle(true);
-        strategy.setSuperEntityClass("com.shiroTest.base.BaseEntity");
+        strategy.setSuperEntityClass("com.shiroTest.function.base.BaseEntity");
 //         公共父类
-        strategy.setSuperControllerClass("com.shiroTest.base.BaseController");
+        strategy.setSuperControllerClass("com.shiroTest.function.base.BaseController");
         // 写于父类中的公共字段
 //        strategy.setSuperEntityColumns("id");
         strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
