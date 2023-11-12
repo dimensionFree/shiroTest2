@@ -1,3 +1,5 @@
+#jwt:
+#  secret: 2fa959d2db491f91659a3473ffaaded9
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver

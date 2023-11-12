@@ -11,6 +11,10 @@ public class BaseController<T extends BaseEntity,S extends IService<T>  > {
     @Autowired
     S service;
 
+    public S getService() {
+        return service;
+    }
+
     private String getUrl() {
         return "";
     }

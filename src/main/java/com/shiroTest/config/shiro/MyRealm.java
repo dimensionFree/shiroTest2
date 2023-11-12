@@ -6,7 +6,7 @@ package com.shiroTest.config.shiro;
  * @date: 下午10:33 2022/3/17
  */
 
-import com.shiroTest.function.user.User;
+import com.shiroTest.function.user.model.User;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.apache.shiro.authc.*;

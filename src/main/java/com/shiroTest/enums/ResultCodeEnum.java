@@ -23,6 +23,7 @@ public enum ResultCodeEnum {
     USER_INVALID("2002", "用户无效"),
     USER_EXPIRED("2003", "用户过期"),
     USER_BLOCKED("2004", "用户封禁"),
+    USER_DUPLICATE("2005", "用户已存在"),
     USER_PASSWORD_ERROR("2005", "密码错误"),
 
     PARAM_ERROR("3000", "参数错误"),

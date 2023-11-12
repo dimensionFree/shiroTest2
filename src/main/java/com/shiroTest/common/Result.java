@@ -32,6 +32,13 @@ public class Result<T> implements Serializable {
         result.setMessage(message);
         return  result;
     }
+    public static Result fail(MyException me){
+        Result result = new Result();
+        result.setCode(me.getErrorEnum().getCode());
+        result.setData(null);
+        result.setMessage(me.getMessage());
+        return  result;
+    }
 
 
 
