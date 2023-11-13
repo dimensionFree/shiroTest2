@@ -24,8 +24,8 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         // 给filter设置安全管理器
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
-        // 默认认证界面路径---当认证不通过时跳转
-        shiroFilterFactoryBean.setLoginUrl("/login.jsp");
+//        // 默认认证界面路径---当认证不通过时跳转
+//        shiroFilterFactoryBean.setLoginUrl("/login.jsp");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<>();
@@ -34,10 +34,11 @@ public class ShiroConfig {
 
         // 配置系统受限资源
         Map<String, String> map = new HashMap<String, String>();
-        map.put("/index.jsp", "authc");
+//        map.put("/index.jsp", "authc");
+//        map.put("/login.jsp","anon");
+
         map.put("/user/login","anon");
         map.put("/user/register","anon");
-        map.put("/login.jsp","anon");
         map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
 

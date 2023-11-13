@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyRealm extends AuthorizingRealm {
 
+    public static final String USER_KEY_PREFIX = "token_";
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
@@ -53,7 +54,7 @@ public class MyRealm extends AuthorizingRealm {
             throw new AuthenticationException("token已失效，请重新登录");
         }
         // 用户信息
-        User user = (User) redisUtil.get("token_" + token);
+        User user = (User) redisUtil.get(USER_KEY_PREFIX + token);
         if (null == user) {
             throw new UnknownAccountException("用户不存在");
         }
