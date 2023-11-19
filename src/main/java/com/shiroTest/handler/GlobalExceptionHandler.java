@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
 /**
  * @Desc: 全局异常处理器
  * @Author: 知否技术
@@ -33,8 +35,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MyException.class)
-    public Result handler(MyException e){
-        log.info("运行时my异常：",e.getMessage());
+    public Result handler(MyException e) throws IOException {
+        log.info("运行时my异常："+e.getMessage(),e);
         return Result.fail(e);
     }
 
