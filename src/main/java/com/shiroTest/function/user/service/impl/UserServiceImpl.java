@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     public User getByUsername(String username){
-        return getBaseMapper().selectOne(new QueryWrapper<User>().eq("username",username));
+//        getBaseMapper().selectOne(new QueryWrapper<User>().eq("username",username))
+        return getBaseMapper().getByUsername(username);
     }
 }

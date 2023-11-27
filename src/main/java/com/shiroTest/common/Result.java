@@ -1,9 +1,6 @@
 package com.shiroTest.common;
 
 import com.shiroTest.enums.ResultCodeEnum;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -31,7 +28,7 @@ public class Result<T> extends ResponseEntity<T> implements Serializable {
         ResultData resultData=new ResultData();
         resultData.setCode("200");
         resultData.setMessage("操作成功");
-        resultData.setData(object);
+        resultData.setDataContent(object);
         Result result = new Result(resultData,HttpStatus.OK);
 
         return  result;
@@ -42,7 +39,7 @@ public class Result<T> extends ResponseEntity<T> implements Serializable {
 
         resultData.setCode(ResultCodeEnum.PARAM_ERROR.getCode());
         resultData.setMessage(message);
-        Result result = new Result(ResultCodeEnum.PARAM_ERROR.getStatus());
+        Result result = new Result(resultData,ResultCodeEnum.PARAM_ERROR.getStatus());
 
         return  result;
     }

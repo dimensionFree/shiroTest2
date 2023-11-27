@@ -1,24 +1,23 @@
 package com.shiroTest.function.user.controller;
 
 
-import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.model.UserInfo;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotBlank;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,6 +30,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
 
     @Autowired
@@ -53,17 +53,24 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
     @PostMapping("/login")
     public Result login(@NotBlank @RequestParam String username, @NotBlank  String password) throws MyException {
-        User byUsername = getService().getByUsername(username);
-        if (Objects.isNull(byUsername)){
+        User existingUser = getService().getByUsername(username);
+        if (Objects.isNull(existingUser)){
             throw new MyException(ResultCodeEnum.USER_NOT_EXISTS,"用户不存在，无法登录");
         }
-        boolean match = BcryptUtil.match(password, byUsername.getPassword());
+        boolean match = BcryptUtil.match(password, existingUser.getPassword());
         if (!match){
             throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
         }
-        String jwtToken = jwtUtil.createJwtToken(byUsername.getId(), 60 * 5);
-        redisUtil.set(MyRealm.USER_KEY_PREFIX+jwtToken,byUsername);
-        return Result.success(jwtToken);
+        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
+        try {
+            redisUtil.set(MyRealm.USER_KEY_PREFIX+jwtToken,existingUser);
+        } catch (Exception e) {
+            log.warn("redis error!",e);
+        }
+        return Result.success(UserInfo.builder()
+                .user(existingUser)
+                .token(jwtToken)
+                .build());
     }
 
 }
