@@ -47,8 +47,8 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         }
         User user = new User(username, BcryptUtil.encode(password));
         boolean save = getService().save(user);
-        String jwtToken = jwtUtil.createJwtToken(user.getId().toString(), 60*5);
-        return Result.success(jwtToken);
+        String jwtToken = createTokenAndCache(user);
+        return getUserTokenResult(user,jwtToken);
     }
 
     @PostMapping("/login")
@@ -61,12 +61,21 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         if (!match){
             throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
         }
+        String jwtToken = createTokenAndCache(existingUser);
+        return getUserTokenResult(existingUser, jwtToken);
+    }
+
+    private String createTokenAndCache(User existingUser) {
         String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
         try {
-            redisUtil.set(MyRealm.USER_KEY_PREFIX+jwtToken,existingUser);
+            redisUtil.set(MyRealm.USER_KEY_PREFIX+jwtToken, existingUser);
         } catch (Exception e) {
             log.warn("redis error!",e);
         }
+        return jwtToken;
+    }
+
+    private Result getUserTokenResult(User existingUser, String jwtToken) {
         return Result.success(UserInfo.builder()
                 .user(existingUser)
                 .token(jwtToken)
