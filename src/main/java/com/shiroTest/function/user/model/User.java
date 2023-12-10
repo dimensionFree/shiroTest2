@@ -1,5 +1,6 @@
 package com.shiroTest.function.user.model;
 
+import com.shiroTest.function.base.BaseAuditableEntity;
 import com.shiroTest.function.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -29,7 +30,7 @@ import javax.validation.constraints.Pattern;
 @Accessors(chain = true)
 @Table
 @Entity
-public class User extends BaseEntity {
+public class User extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 

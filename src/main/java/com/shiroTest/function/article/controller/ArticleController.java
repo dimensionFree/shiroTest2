@@ -3,6 +3,7 @@ package com.shiroTest.function.article.controller;
 
 import com.shiroTest.function.article.model.Article;
 import com.shiroTest.function.article.service.impl.ArticleServiceImpl;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -20,5 +21,10 @@ import com.shiroTest.function.base.BaseController;
 @RequestMapping("/article")
 public class ArticleController extends BaseController<Article, ArticleServiceImpl> {
 
+
+    @GetMapping("/latest/preface")
+    public Article getLatestArticle(){
+        return getService().getLatestArticle();
+    }
 }
 

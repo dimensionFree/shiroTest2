@@ -17,4 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements IArticleService {
 
+    public Article getLatestArticle() {
+        return null;
+    }
 }
