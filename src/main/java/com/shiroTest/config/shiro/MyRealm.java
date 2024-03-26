@@ -1,10 +1,6 @@
 package com.shiroTest.config.shiro;
 
-/**
- * @Desc:
- * @Author: 知否技术
- * @date: 下午10:33 2022/3/17
- */
+
 
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.utils.JwtUtil;

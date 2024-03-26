@@ -8,11 +8,6 @@ import org.springframework.lang.Nullable;
 import java.io.IOException;
 import java.io.Serializable;
 
-/**
- * @Desc: 处理统一返回结果格式
- * @Author: 知否技术
- * @date: 下午9:44 2022/10/24
- */
 
 public class Result<T> extends ResponseEntity<T> implements Serializable {
 
@@ -39,6 +34,15 @@ public class Result<T> extends ResponseEntity<T> implements Serializable {
 
         resultData.setCode(ResultCodeEnum.PARAM_ERROR.getCode());
         resultData.setMessage(message);
+        Result result = new Result(resultData,ResultCodeEnum.PARAM_ERROR.getStatus());
+
+        return  result;
+    }
+    public static Result fail(Exception e){
+        ResultData resultData=new ResultData();
+
+        resultData.setCode(ResultCodeEnum.PARAM_ERROR.getCode());
+        resultData.setMessage(e.getMessage());
         Result result = new Result(resultData,ResultCodeEnum.PARAM_ERROR.getStatus());
 
         return  result;

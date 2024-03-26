@@ -3,7 +3,7 @@ jwt:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/shiroTest?useSSL=false&createDatabaseIfNotExist=true
+    url: jdbc:mysql://127.0.0.1:3306/shiroTest?useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
     username: root
     password: root
     # Druid datasource 数据库连接池 默认hikari
@@ -54,6 +54,7 @@ spring:
     host: localhost
     port: 6379
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
     show-sql: true

@@ -39,7 +39,6 @@ public class User extends BaseAuditableEntity {
     private String id;
 
     @NotNull
-    @Length(min = 4,max = 10,message = "pwd length error")
     private String password;
 
     private String role;

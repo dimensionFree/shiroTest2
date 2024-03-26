@@ -1,5 +1,7 @@
 package com.shiroTest.function.base;
 
 
-public class BaseEntity {
+import java.io.Serializable;
+
+public class BaseEntity implements Serializable {
 }

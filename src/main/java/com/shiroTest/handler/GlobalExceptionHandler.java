@@ -5,6 +5,7 @@ import com.shiroTest.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +38,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MyException.class)
     public Result handler(MyException e) throws IOException {
         log.info("运行时my异常："+e.getMessage(),e);
+        return Result.fail(e);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result handler(MethodArgumentNotValidException e) throws IOException {
+        log.info("运行时validate exception："+e.getMessage(),e);
         return Result.fail(e);
     }
 
