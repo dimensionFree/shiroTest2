@@ -7,21 +7,18 @@ import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
-import com.shiroTest.function.user.model.UserInfo;
+import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
@@ -60,7 +57,9 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     }
 
     @PostMapping("/login")
-    public Result login(@NotBlank @RequestParam String username, @NotBlank  String password) throws MyException {
+    public Result login(@RequestBody UserPwdDto userPwdDto) throws MyException {
+        String username = userPwdDto.getUsername();
+        String password = userPwdDto.getPassword();
         User existingUser = getService().getByUsername(username);
         if (Objects.isNull(existingUser)){
             throw new MyException(ResultCodeEnum.USER_NOT_EXISTS,"用户不存在，无法登录");
@@ -85,7 +84,7 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     }
 
     private Result getUserTokenResult(User existingUser, String jwtToken) {
-        return Result.success(UserInfo.builder()
+        return Result.success(UserLoginInfo.builder()
                 .user4Display(User4Display.User4Display(existingUser))
                 .token(jwtToken)
                 .build());

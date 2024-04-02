@@ -16,8 +16,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class UserInfo extends BaseEntity {
+public class UserLoginInfo extends BaseEntity {
     User4Display user4Display=null;
+
 
     String token="";
 }
