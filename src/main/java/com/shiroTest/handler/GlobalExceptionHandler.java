@@ -12,11 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
 
-/**
- * @Desc: 全局异常处理器
- * @Author: 知否技术
- * @date: 下午10:37 2022/10/24
- */
 
 @Slf4j
 @RestControllerAdvice

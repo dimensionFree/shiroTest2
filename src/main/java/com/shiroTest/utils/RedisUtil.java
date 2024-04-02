@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @Desc: Redis 工具类
- * @Author: 知否技术
- * @date: 下午11:26 2022/3/18
- */
+
 @Slf4j
 @Component
 public class RedisUtil {

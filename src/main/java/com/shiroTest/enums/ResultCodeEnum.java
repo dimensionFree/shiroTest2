@@ -2,11 +2,7 @@ package com.shiroTest.enums;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * @Desc:
- * @Author: 知否技术
- * @date: 下午10:35 2022/3/10
- */
+
 public enum ResultCodeEnum {
     SUCCESS("0000", "操作成功", HttpStatus.OK),
     SUCCESS_QUERY("0001", "查询成功", HttpStatus.OK),

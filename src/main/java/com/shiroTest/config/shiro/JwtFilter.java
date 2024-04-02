@@ -16,11 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
-/**
- * @Desc:
- * @Author: 知否技术
- * @date: 下午10:56 2022/3/17
- */
 @Component
 @Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
