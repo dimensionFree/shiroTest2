@@ -1,8 +1,6 @@
 package com.shiroTest.function.book.controller;
 
 
-import com.shiroTest.function.book.model.Book;
-import com.shiroTest.function.book.service.impl.BookServiceImpl;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -14,11 +12,11 @@ import com.shiroTest.function.base.BaseController;
  * </p>
  *
  * @author freedom
- * @since 2023-09-04
+ * @since 2024-04-17
  */
 @RestController
 @RequestMapping("/book")
-public class BookController extends BaseController<Book, BookServiceImpl> {
+public class BookController extends BaseController {
 
 }
 

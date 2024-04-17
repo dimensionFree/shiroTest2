@@ -1,21 +1,19 @@
 package com.shiroTest.function.user.model;
 
 import com.shiroTest.function.base.BaseAuditableEntity;
-import com.shiroTest.function.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.shiroTest.function.quickMenu.MenuItem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 /**
  * <p>
@@ -44,6 +42,7 @@ public class User extends BaseAuditableEntity {
     private String role;
 
     private String state;
+
     @NotBlank
     @Length(min = 4,max = 10,message = "username length error")
     private String username;
@@ -51,6 +50,9 @@ public class User extends BaseAuditableEntity {
     @Email
     private String email;
 
+    @ElementCollection
+    @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
+    private Set<MenuItem> quickMenuItems=Set.of(MenuItem.PART_A,MenuItem.PART_B,MenuItem.PART_C);
 
     public User() {
     }

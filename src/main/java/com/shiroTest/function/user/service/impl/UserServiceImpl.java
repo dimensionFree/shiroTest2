@@ -1,8 +1,11 @@
 package com.shiroTest.function.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.shiroTest.common.Result;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.dao.UserMapper;
+import com.shiroTest.function.user.model.User4Display;
+import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -20,5 +23,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User getByUsername(String username){
 //        getBaseMapper().selectOne(new QueryWrapper<User>().eq("username",username))
         return getBaseMapper().getByUsername(username);
+    }
+
+    public static Result getUserTokenResult(User existingUser, String jwtToken) {
+        return Result.success(UserLoginInfo.builder()
+                .user4Display(User4Display.User4Display(existingUser))
+                .token(jwtToken)
+                .build());
+    }
+    public static Result getUser4DisplayResult(User existingUser) {
+        return Result.success(User4Display.User4Display(existingUser));
     }
 }

@@ -53,7 +53,7 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         User user = new User(username, BcryptUtil.encode(password));
         boolean save = getService().save(user);
         String jwtToken = createTokenAndCache(user);
-        return getUserTokenResult(user,jwtToken);
+        return getService().getUserTokenResult(user,jwtToken);
     }
 
     @PostMapping("/login")
@@ -69,8 +69,10 @@ public class UserController extends BaseController<User, UserServiceImpl> {
             throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
         }
         String jwtToken = createTokenAndCache(existingUser);
-        return getUserTokenResult(existingUser, jwtToken);
+        return getService().getUserTokenResult(existingUser, jwtToken);
     }
+
+
 
     private String createTokenAndCache(User existingUser) {
         String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
@@ -83,12 +85,9 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         return jwtToken;
     }
 
-    private Result getUserTokenResult(User existingUser, String jwtToken) {
-        return Result.success(UserLoginInfo.builder()
-                .user4Display(User4Display.User4Display(existingUser))
-                .token(jwtToken)
-                .build());
-    }
+
+
+
 
 }
 

@@ -2,6 +2,7 @@ package com.shiroTest.function.base;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shiroTest.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,9 @@ public class BaseController<T extends BaseEntity,S extends IService<T>  > {
     }
 
 
-
+//    @PatchMapping("/{id}")
+//    public Result patchUser(){
+//    }
 
 
 

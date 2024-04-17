@@ -3,7 +3,7 @@ package com.shiroTest.function.book.service.impl;
 import com.shiroTest.function.book.model.Book;
 import com.shiroTest.function.book.dao.BookMapper;
 import com.shiroTest.function.book.service.IBookService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiroTest.function.base.BaseService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author freedom
- * @since 2023-09-04
+ * @since 2024-04-17
  */
 @Service
-public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IBookService {
+public class BookServiceImpl extends BaseService<BookMapper, Book> implements IBookService {
 
 }
