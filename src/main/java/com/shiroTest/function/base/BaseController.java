@@ -1,6 +1,7 @@
 package com.shiroTest.function.base;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiroTest.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;

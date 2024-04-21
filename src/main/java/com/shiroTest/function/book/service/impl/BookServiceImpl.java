@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author freedom
- * @since 2024-04-17
+ * @since 2024-04-22
  */
 @Service
 public class BookServiceImpl extends BaseService<BookMapper, Book> implements IBookService {

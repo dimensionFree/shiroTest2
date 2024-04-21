@@ -19,6 +19,5 @@ import lombok.Data;
 public class UserLoginInfo extends BaseEntity {
     User4Display user4Display=null;
 
-
     String token="";
 }
