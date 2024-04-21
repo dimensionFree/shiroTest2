@@ -1,14 +1,12 @@
 package com.shiroTest.function.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.Result;
-import com.shiroTest.function.base.BaseService;
-import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.dao.UserMapper;
+import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.IUserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Service;
  * @since 2023-11-12
  */
 @Service
-public class UserServiceImpl extends BaseService<UserMapper, User> implements IUserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     public User getByUsername(String username){
 //        getBaseMapper().selectOne(new QueryWrapper<User>().eq("username",username))
         return getBaseMapper().getByUsername(username);

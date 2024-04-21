@@ -1,6 +1,7 @@
 package com.shiroTest.function.base;
 
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiroTest.common.Result;
@@ -8,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
-public class BaseController<T extends BaseEntity,S extends IService<T>  > {
+public class BaseController<T extends BaseEntity, S extends IService<T>> {
     @Autowired
     S service;
 
@@ -28,20 +30,27 @@ public class BaseController<T extends BaseEntity,S extends IService<T>  > {
     }
 
     @GetMapping("/{id}")
-    public T getById(@PathVariable("id") String id){
-        return service.getById(id);
+    public Result getById(@PathVariable("id") String id){
+        return Result.success(service.getById(id));
     }
 
 
     @PostMapping
-    public boolean create(@RequestBody T data){
-        return service.save(data);
+    public Result create(@RequestBody T data){
+        return Result.success(service.save(data));
     }
 
 
-//    @PatchMapping("/{id}")
-//    public Result patchUser(){
-//    }
+    @PatchMapping("/{id}")
+    public Result patchUserById(@PathVariable("id") String id,@RequestBody Map<String,Object> patchMap){
+        UpdateWrapper<T> wrapper=new UpdateWrapper<>();
+        wrapper.eq("id",id);
+        for (Map.Entry<String, Object> entry : patchMap.entrySet()) {
+            wrapper.set(entry.getKey(),entry.getValue());
+        }
+        boolean update = service.update(wrapper);
+        return Result.success(update);
+    }
 
 
 

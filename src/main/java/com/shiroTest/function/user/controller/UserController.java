@@ -5,6 +5,7 @@ import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
+import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
