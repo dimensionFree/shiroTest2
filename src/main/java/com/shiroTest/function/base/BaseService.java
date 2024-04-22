@@ -1,15 +1,30 @@
 //package com.shiroTest.function.base;
 //
-//import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-//import com.baomidou.mybatisplus.extension.service.IService;
-//import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-//import com.shiroTest.common.Result;
-//import com.shiroTest.function.user.dao.UserMapper;
-//import com.shiroTest.function.user.model.User;
-//import org.springframework.stereotype.Service;
+//import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.data.jpa.repository.JpaRepository;
 //
-//import java.io.Serializable;
-//@Service
-//public class BaseService<M extends BaseMapper<T>,T extends BaseEntity> extends ServiceImpl<M,T> {
+//import java.util.List;
+//import java.util.Optional;
 //
+//public class BaseService<M extends JpaRepository<T,String>,T extends BaseEntity>{
+//    @Autowired
+//    M mapper;
+//
+//    public List<T> list(){
+//        return mapper.findAll();
+//    }
+//
+//
+//    public Optional<T> getById(String id) {
+//        return mapper.findById(id);
+//    }
+//
+//    public T save(T data) {
+//        return mapper.save(data);
+//    }
+//
+//    public <T extends BaseEntity> boolean update(UpdateWrapper<T> wrapper) {
+//        mapper.
+//    }
 //}

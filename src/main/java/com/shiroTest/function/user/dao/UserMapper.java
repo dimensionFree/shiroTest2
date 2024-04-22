@@ -2,6 +2,7 @@ package com.shiroTest.function.user.dao;
 
 import com.shiroTest.function.user.model.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -26,4 +27,8 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("select * from User where username=#{username}")
     public User getByUsername(String username);
+
+    @Override
+    @Insert("insert into User(id,password,role,state,username,email) values(#{id},#{password},#{role},#{state},#{username},#{email})")
+    int insert(User entity);
 }

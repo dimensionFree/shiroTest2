@@ -227,7 +227,7 @@ class CodeGeneratorUtil {
         strategy.setEntityLombokModel(true);
         strategy.setRestControllerStyle(true);
         strategy.setSuperEntityClass("com.shiroTest.function.base.BaseEntity");
-        strategy.setSuperServiceImplClass("com.shiroTest.function.base.BaseService");
+//        strategy.setSuperServiceImplClass("com.shiroTest.function.base.BaseService");
 //         公共父类
         strategy.setSuperControllerClass("com.shiroTest.function.base.BaseController");
         // 写于父类中的公共字段

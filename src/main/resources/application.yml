@@ -78,3 +78,5 @@ mybatis:
   mapper-locations: classpath:mappers/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  #type handler 注册包 https://qiita.com/suke_masa/items/8c879c9b20a07d7489a8
+#  type-handlers-package: com.shiroTest.handler.typeHandler

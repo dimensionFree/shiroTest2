@@ -33,4 +33,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public static Result getUser4DisplayResult(User existingUser) {
         return Result.success(User4Display.User4Display(existingUser));
     }
+
+    @Override
+    public boolean save(User entity) {
+//        getBaseMapper().insert(entity);
+        //add cascade save
+        return super.save(entity);
+    }
 }
