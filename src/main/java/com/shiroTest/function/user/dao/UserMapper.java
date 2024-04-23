@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.io.Serializable;
+
 /**
  * <p>
  *  Mapper 接口
@@ -31,4 +33,9 @@ public interface UserMapper extends BaseMapper<User> {
     @Override
     @Insert("insert into User(id,password,role,state,username,email) values(#{id},#{password},#{role},#{state},#{username},#{email})")
     int insert(User entity);
+
+//    @Insert("insert into user_quick_menu_items ")
+    int cascadeInsert(User entity);
+
+    void readCascade(Serializable id);
 }

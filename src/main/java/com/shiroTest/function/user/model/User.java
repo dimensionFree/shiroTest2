@@ -53,7 +53,7 @@ public class User extends BaseAuditableEntity {
     @ElementCollection(targetClass = MenuItem.class)
     @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
     @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name="quick_menu_items")
+    @Column(name="quick_menu_item_ordinal")
     private Set<MenuItem> quickMenuItems=Set.of(MenuItem.PART_A,MenuItem.PART_B,MenuItem.PART_C);
 
     public User() {

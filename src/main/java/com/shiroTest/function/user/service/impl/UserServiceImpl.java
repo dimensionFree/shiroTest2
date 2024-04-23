@@ -2,12 +2,17 @@ package com.shiroTest.function.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.Result;
+import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.IUserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.Serializable;
+
 
 /**
  * <p>
@@ -35,9 +40,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    @Transactional()
     public boolean save(User entity) {
-//        getBaseMapper().insert(entity);
-        //add cascade save
-        return super.save(entity);
+        boolean saveSuccess = this.retBool(getBaseMapper().insert(entity));
+        if (saveSuccess){
+             return retBool(getBaseMapper().cascadeInsert(entity));
+        }else {
+            return false;
+        }
+    }
+
+    @Override
+    public User getById(Serializable id) {
+        User byId = super.getById(id);
+        getBaseMapper().readCascade(id);
+        return byId;
     }
 }
