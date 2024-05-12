@@ -37,5 +37,6 @@ public interface UserMapper extends BaseMapper<User> {
 //    @Insert("insert into user_quick_menu_items ")
     int cascadeInsert(User entity);
 
-    void readCascade(Serializable id);
+    @Override
+    User selectById(Serializable id);
 }

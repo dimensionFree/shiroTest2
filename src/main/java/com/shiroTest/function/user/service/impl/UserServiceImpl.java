@@ -40,7 +40,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    @Transactional()
+    @Transactional
     public boolean save(User entity) {
         boolean saveSuccess = this.retBool(getBaseMapper().insert(entity));
         if (saveSuccess){
@@ -53,8 +53,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User getById(Serializable id) {
         User byId = super.getById(id);
-        //todo add cascade read
-        getBaseMapper().readCascade(id);
         return byId;
     }
 }

@@ -5,8 +5,27 @@
         INSERT INTO user_quick_menu_items (user_id, quick_menu_item_ordinal)
         VALUES
         <foreach collection="quickMenuItems" item="item" separator=",">
-            (#{id}, #{item.index})
+            (#{id}, #{item.code})
         </foreach>
     </insert>
+    
+    <resultMap id="user" type="com.shiroTest.function.user.model.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="role" property="role"/>
+        <result column="email" property="email"/>
+        <result column="state" property="state"/>
+        <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
+        <collection property="quickMenuItems"  ofType="com.shiroTest.function.quickMenu.MenuItem" column="id">
+            <result column="quick_menu_item_ordinal" property="index" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler"/>
+        </collection>
+<!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler">-->
+<!--            <result column="quick_menu_item_ordinal"/>-->
+<!--        </collection>-->
+    </resultMap>
+
+    <select id="selectById" resultMap="user">
+        SELECT * from `user` JOIN user_quick_menu_items ON user.id=user_quick_menu_items.user_id where user.id=#{id}
+    </select>
 
 </mapper>
