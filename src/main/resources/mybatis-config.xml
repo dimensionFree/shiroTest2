@@ -17,26 +17,14 @@
 <!--        <typeHandler handler="com.example.typeHandler.CodeEnumTypeHandler" javaType="com.example.entity.enums.ComputerState"/>-->
     </typeHandlers>
 
-<!--    &lt;!&ndash; 设置数据源 &ndash;&gt;-->
-<!--    <environments default="development">-->
-<!--        <environment id="development">-->
-<!--            <transactionManager type="JDBC"/>-->
-<!--            <dataSource type="POOLED">-->
-<!--                <property name="driver" value="com.mysql.jdbc.Driver"/>-->
-<!--                <property name="url" value="jdbc:mysql://127.0.0.1:3306/shiroTest?useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8"/>-->
-<!--                <property name="username" value="root"/>-->
-<!--                <property name="password" value="root"/>-->
-<!--            </dataSource>-->
-<!--        </environment>-->
-<!--    </environments>-->
-
     <!-- 映射器配置 -->
     <mappers>
         <!-- 指定 Mapper 接口所在的包 -->
 <!--        <mapper class="com.example.mapper.UserMapper"/>-->
         <!-- 或者直接指定 Mapper 映射文件的路径 -->
         <!-- <mapper resource="com/example/mapper/UserMapper.xml"/> -->
-        <mapper resource="classpath:mapper/*.xml"/>
+        <package name="mapper"/>
+<!--        <mapper resource="classpath:mapper/*.xml"/>-->
     </mappers>
 
 

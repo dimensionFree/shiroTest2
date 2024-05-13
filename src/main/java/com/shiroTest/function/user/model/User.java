@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -54,7 +55,7 @@ public class User extends BaseAuditableEntity {
     @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
     @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name="quick_menu_item_ordinal")
-    private Set<MenuItem> quickMenuItems=Set.of(MenuItem.PART_A,MenuItem.PART_B,MenuItem.PART_C);
+    private Set<MenuItem> quickMenuItems= new HashSet<>();
 
     public User() {
     }

@@ -71,3 +71,5 @@ server:
 #  level:
 #    com.itheima: debug
 #    org.springframework: info
+mybatis-plus:
+  config-location: classpath:mybatis-config.xml
