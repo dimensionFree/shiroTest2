@@ -5,12 +5,16 @@ import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.utils.CodeEnumUtil;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
+import org.apache.ibatis.type.MappedTypes;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@MappedTypes({MenuItem.class})
+@MappedJdbcTypes(JdbcType.TINYINT)
 public class MenuItemTypeHandler<E extends BaseCodeEnum> extends BaseTypeHandler<E> {
 
     private Class<E> type;

@@ -17,7 +17,7 @@
         <result column="state" property="state"/>
         <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
         <collection property="quickMenuItems"  ofType="com.shiroTest.function.quickMenu.MenuItem" column="id">
-            <result column="quick_menu_item_ordinal" property="index" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler"/>
+            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler"/>
         </collection>
 <!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler">-->
 <!--            <result column="quick_menu_item_ordinal"/>-->

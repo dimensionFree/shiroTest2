@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- 其他配置 -->
+    <settings>
+        <!-- 日志实现 -->
+        <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+        <!-- 其他配置项 -->
+    </settings>
+    <!-- TypeHandler 配置 -->
+    <typeHandlers>
+        <!-- 注册自定义的 TypeHandler -->
+        <typeHandler handler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler" javaType="com.shiroTest.function.quickMenu.MenuItem"/>
+<!--        <typeHandler handler="com.example.typeHandler.CodeEnumTypeHandler" javaType="com.example.entity.enums.ComputerState"/>-->
+    </typeHandlers>
+
+<!--    &lt;!&ndash; 设置数据源 &ndash;&gt;-->
+<!--    <environments default="development">-->
+<!--        <environment id="development">-->
+<!--            <transactionManager type="JDBC"/>-->
+<!--            <dataSource type="POOLED">-->
+<!--                <property name="driver" value="com.mysql.jdbc.Driver"/>-->
+<!--                <property name="url" value="jdbc:mysql://127.0.0.1:3306/shiroTest?useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8"/>-->
+<!--                <property name="username" value="root"/>-->
+<!--                <property name="password" value="root"/>-->
+<!--            </dataSource>-->
+<!--        </environment>-->
+<!--    </environments>-->
+
+    <!-- 映射器配置 -->
+    <mappers>
+        <!-- 指定 Mapper 接口所在的包 -->
+<!--        <mapper class="com.example.mapper.UserMapper"/>-->
+        <!-- 或者直接指定 Mapper 映射文件的路径 -->
+        <!-- <mapper resource="com/example/mapper/UserMapper.xml"/> -->
+        <mapper resource="classpath:mapper/*.xml"/>
+    </mappers>
+
+
+</configuration>
