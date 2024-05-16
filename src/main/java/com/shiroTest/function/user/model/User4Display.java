@@ -1,17 +1,11 @@
 package com.shiroTest.function.user.model;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.druid.support.json.JSONUtils;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.shiroTest.function.base.BaseEntity;
+import com.shiroTest.function.quickMenu.MenuItem;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Id;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User4Display{
@@ -26,6 +20,8 @@ public class User4Display{
     private String username;
 
     private String email;
+
+    private Set<MenuItem> quickMenuItems= new HashSet<>();
 
 
     public static User4Display User4Display(User user) {

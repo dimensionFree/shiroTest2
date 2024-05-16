@@ -27,8 +27,8 @@ public interface UserMapper extends BaseMapper<User> {
      * @param username
      * @return
      */
-    @Select("select * from User where username=#{username}")
-    public User getByUsername(String username);
+//    @Select("select * from User where username=#{username}")
+    public User selectByUsername(String username);
 
     @Override
     @Insert("insert into User(id,password,role,state,username,email) values(#{id},#{password},#{role},#{state},#{username},#{email})")

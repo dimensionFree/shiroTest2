@@ -43,7 +43,6 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     RedisUtil redisUtil;
 
     @PostMapping("/register")
-
     public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
         String password = userPwdDto.getPassword();

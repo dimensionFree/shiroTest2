@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @MappedTypes({MenuItem.class})
-@MappedJdbcTypes(JdbcType.TINYINT)
+@MappedJdbcTypes(JdbcType.INTEGER)
 public class MenuItemTypeHandler<E extends BaseCodeEnum> extends BaseTypeHandler<E> {
 
     private Class<E> type;

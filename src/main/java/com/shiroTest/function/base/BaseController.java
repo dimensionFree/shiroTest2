@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiroTest.common.Result;
+import com.shiroTest.function.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,22 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
         boolean update = service.update(wrapper);
         return Result.success(update);
     }
+
+
+    @PutMapping("/{id}")
+    public Result putUserById(@PathVariable("id") String id,@RequestBody T data){
+        UpdateWrapper<T> wrapper=new UpdateWrapper<>();
+        wrapper.eq("id",id);
+        boolean update = service.update(data, wrapper);
+        return Result.success(update);
+    }
+    @DeleteMapping("/{id}")
+    public Result deleteById(@PathVariable("id") String id){
+        boolean delete = service.removeById(id);
+        return Result.success(delete);
+    }
+
+
 
 
 
