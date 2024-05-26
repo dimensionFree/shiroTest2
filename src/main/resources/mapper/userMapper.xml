@@ -45,7 +45,7 @@
     </select>
 
     <select id="selectByUsername" resultMap="userLogin">
-        SELECT * from `user` JOIN user_quick_menu_items ON user.id=user_quick_menu_items.user_id where user.username=#{username}
+        SELECT * from `user` left JOIN user_quick_menu_items ON user.id=user_quick_menu_items.user_id where user.username=#{username}
     </select>
 
 </mapper>

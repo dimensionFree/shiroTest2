@@ -46,6 +46,8 @@ public class User extends BaseAuditableEntity {
 
     @NotBlank
     @Length(min = 4,max = 10,message = "username length error")
+    //todo add unique constraint(done);          maybe add flyway?
+    @Column(unique = true)
     private String username;
 
     @Email

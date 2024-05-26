@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.shiroTest.BackendApplication;
 import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +37,13 @@ public class UserControllerTest extends TestCase {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    public UserServiceImpl service;
+
     @Test
     public void testRegister() throws Exception {
-        User obj = new User("username", "password");
-        obj.addMenuItem(MenuItem.PART_A);
-
-        String s = JSONUtil.toJsonStr(obj);
+        User user = new User("username", "password");
+        String s = JSONUtil.toJsonStr(user);
 
         // 构建一个POST请求
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -55,6 +57,7 @@ public class UserControllerTest extends TestCase {
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
                     .andExpect(content().string(notNullValue()));
+
 
         } finally {
 

@@ -32,6 +32,11 @@ import java.util.Objects;
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
 
+    @Autowired
+    private RedisUtil redisUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/register")
     public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
@@ -65,10 +70,10 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
 
     private String createTokenAndCache(User existingUser) {
-        String jwtToken = JwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
+        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
         try {
             String key = MyRealm.USER_KEY_PREFIX + jwtToken;
-            RedisUtil.set(key, existingUser);
+            redisUtil.set(key, existingUser);
         } catch (Exception e) {
             log.warn("redis error!",e);
         }
