@@ -1,12 +1,15 @@
 package com.shiroTest.function.user.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.druid.support.json.JSONUtils;
 import com.shiroTest.BackendApplication;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import junit.framework.TestCase;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,12 +20,12 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-//@RunWith(SpringRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = BackendApplication.class)
 public class UserControllerTest extends TestCase {
 
@@ -36,8 +39,10 @@ public class UserControllerTest extends TestCase {
     }
 
 
+    @Test
     public void testRegister() throws Exception {
         String s = JSONUtil.toJsonStr(new User("username", "password"));
+
         // 构建一个POST请求
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("http://localhost/user/register")
