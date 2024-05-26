@@ -64,4 +64,13 @@ public class User extends BaseAuditableEntity {
         this.password = password;
         this.username = username;
     }
+
+
+    public void addMenuItem(MenuItem menuItem){
+        this.quickMenuItems.add(menuItem);
+    }
+
+
+
+
 }

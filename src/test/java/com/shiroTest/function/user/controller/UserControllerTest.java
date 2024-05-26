@@ -2,6 +2,7 @@ package com.shiroTest.function.user.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.shiroTest.BackendApplication;
+import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.function.user.model.User;
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -35,23 +36,16 @@ public class UserControllerTest extends TestCase {
     @Autowired
     private MockMvc mockMvc;
 
-
-
-//    // 在测试类中添加@Before注解的方法
-//    @Before
-//    public void setUp() {
-//        mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
-//    }
-
-
     @Test
     public void testRegister() throws Exception {
-        String s = JSONUtil.toJsonStr(new User("username", "password"));
+        User obj = new User("username", "password");
+        obj.addMenuItem(MenuItem.PART_A);
+
+        String s = JSONUtil.toJsonStr(obj);
 
         // 构建一个POST请求
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("http://localhost/user/register")
-//                .header("","")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(s);
 

@@ -42,11 +42,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public boolean save(User entity) {
         boolean saveSuccess = this.retBool(getBaseMapper().insert(entity));
-        if (saveSuccess){
+        if (saveSuccess&&needCascade(entity)){
              return retBool(getBaseMapper().cascadeInsert(entity));
         }else {
             return false;
         }
+    }
+
+    private boolean needCascade(User entity) {
+
+        return !entity.getQuickMenuItems().isEmpty();
     }
 
     @Override
