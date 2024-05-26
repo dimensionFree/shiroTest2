@@ -3,40 +3,45 @@ package com.shiroTest.function.user.controller;
 import cn.hutool.json.JSONUtil;
 import com.shiroTest.BackendApplication;
 import com.shiroTest.function.user.model.User;
-import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = BackendApplication.class)
+@AutoConfigureMockMvc(addFilters = false)
+@EnableWebMvc
+//@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {BackendApplication.class})
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+//@WebMvcTest(UserController.class)
 public class UserControllerTest extends TestCase {
 
     @Autowired
     private MockMvc mockMvc;
 
-    // 在测试类中添加@Before注解的方法
-    @Before
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
-    }
+
+
+//    // 在测试类中添加@Before注解的方法
+//    @Before
+//    public void setUp() {
+//        mockMvc = MockMvcBuilders.standaloneSetup(new UserController()).build();
+//    }
 
 
     @Test
@@ -46,6 +51,7 @@ public class UserControllerTest extends TestCase {
         // 构建一个POST请求
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("http://localhost/user/register")
+//                .header("","")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(s);
 
@@ -61,6 +67,7 @@ public class UserControllerTest extends TestCase {
         }
     }
 
+    @Test
     public void testLogin() {
     }
 }

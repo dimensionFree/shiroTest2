@@ -16,10 +16,6 @@ import org.springframework.stereotype.Component;
 public class MyRealm extends AuthorizingRealm {
 
     public static final String USER_KEY_PREFIX = "token_";
-    @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private JwtUtil jwtUtil;
 
     /**
      * 限定这个realm只能处理JwtToken
@@ -46,11 +42,11 @@ public class MyRealm extends AuthorizingRealm {
         // 获取token信息
         String token = (String) authenticationToken.getCredentials();
         // 校验token：未校验通过或者已过期
-        if (!jwtUtil.verifyToken(token) || jwtUtil.isExpire(token)) {
+        if (!JwtUtil.verifyToken(token) || JwtUtil.isExpire(token)) {
             throw new AuthenticationException("token已失效，请重新登录");
         }
         // 用户信息
-        User user = (User) redisUtil.get(USER_KEY_PREFIX + token);
+        User user = (User) RedisUtil.get(USER_KEY_PREFIX + token);
         if (null == user) {
             throw new UnknownAccountException("用户不存在");
         }

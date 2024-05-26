@@ -5,10 +5,7 @@ import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
-import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
-import com.shiroTest.function.user.model.User4Display;
-import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 /**
@@ -35,12 +31,6 @@ import java.util.Objects;
 @RequestMapping("/user")
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
-
-    @Autowired
-    JwtUtil jwtUtil;
-
-    @Autowired
-    RedisUtil redisUtil;
 
     @PostMapping("/register")
     public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
@@ -75,10 +65,10 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
 
     private String createTokenAndCache(User existingUser) {
-        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
+        String jwtToken = JwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
         try {
             String key = MyRealm.USER_KEY_PREFIX + jwtToken;
-            redisUtil.set(key, existingUser);
+            RedisUtil.set(key, existingUser);
         } catch (Exception e) {
             log.warn("redis error!",e);
         }

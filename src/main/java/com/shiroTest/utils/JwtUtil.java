@@ -21,11 +21,11 @@ import java.util.Map;
 public class JwtUtil {
     // 秘钥
     @Setter
-    private String secret;
+    private static String secret;
     private static final long TIME_UNIT = 1000;
 
     // 生成包含用户id的token
-    public String createJwtToken(String userId, long expireTime) {
+    public static String createJwtToken(String userId, long expireTime) {
         Date date = new Date(System.currentTimeMillis() + expireTime * TIME_UNIT);
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
@@ -36,7 +36,7 @@ public class JwtUtil {
     }
 
     // 生成包含自定义信息的token
-    public String createJwtToken(Map<String, String> map, long expireTime) {
+    public static String createJwtToken(Map<String, String> map, long expireTime) {
         JWTCreator.Builder builder = JWT.create();
         if (MapUtils.isNotEmpty(map)) {
             map.forEach((k, v) -> {
@@ -51,7 +51,7 @@ public class JwtUtil {
     }
 
     // 校验token，其实就是比较token
-    public boolean verifyToken(String token) {
+    public static boolean verifyToken(String token) {
         try {
             JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
             return true;
@@ -61,7 +61,7 @@ public class JwtUtil {
     }
 
     // 从token中获取用户id
-    public String getUserId(String token) {
+    public static String getUserId(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim("userId").asString();
@@ -71,7 +71,7 @@ public class JwtUtil {
     }
 
     // 从token中获取定义的荷载信息
-    public String getTokenClaim(String token, String key) {
+    public static String getTokenClaim(String token, String key) {
         try {
             DecodedJWT jwt = JWT.decode(token);
             return jwt.getClaim(key).asString();
@@ -81,7 +81,7 @@ public class JwtUtil {
     }
 
     // 判断 token 是否过期
-    public boolean isExpire(String token) {
+    public static boolean isExpire(String token) {
         DecodedJWT jwt = JWT.decode(token);
         // 如果token的过期时间小于当前时间，则表示已过期，为true
         return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
