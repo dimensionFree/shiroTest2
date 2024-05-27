@@ -16,8 +16,6 @@ import java.util.Date;
 @Data
 @MappedSuperclass
 public class BaseAuditableEntity extends BaseEntity{
-
-
     // 审计字段
     @TableField(fill = FieldFill.INSERT)
     private String createBy;

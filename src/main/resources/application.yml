@@ -6,7 +6,9 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/shiroTest?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
     username: root
     password: root
-    # Druid datasource 数据库连接池 默认hikari
+#  flyway:
+#    locations: classpath:db/migration
+  # Druid datasource 数据库连接池 默认hikari
 #    hikari性能好；druid有面板，方便监控
 #    type: com.alibaba.druid.pool.DruidDataSource
 #    druid:
@@ -73,3 +75,4 @@ server:
 #    org.springframework: info
 mybatis-plus:
   config-location: classpath:mybatis-config.xml
+

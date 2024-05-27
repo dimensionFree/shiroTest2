@@ -27,7 +27,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@Table
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames= {"username"},name = "usernameUnique")},indexes = {})
 @Entity
 public class User extends BaseAuditableEntity {
 
@@ -40,14 +40,13 @@ public class User extends BaseAuditableEntity {
     @NotNull
     private String password;
 
-    private String role;
+    private String roleId;
 
     private String state;
 
     @NotBlank
     @Length(min = 4,max = 10,message = "username length error")
     //todo add unique constraint(done);          maybe add flyway?
-    @Column(unique = true)
     private String username;
 
     @Email

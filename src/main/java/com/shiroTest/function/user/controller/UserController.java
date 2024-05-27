@@ -32,11 +32,6 @@ import java.util.Objects;
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
 
-    @Autowired
-    private RedisUtil redisUtil;
-    @Autowired
-    private JwtUtil jwtUtil;
-
     @PostMapping("/register")
     public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
@@ -47,7 +42,7 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         }
         User user = new User(username, BcryptUtil.encode(password));
         boolean save = getService().save(user);
-        String jwtToken = createTokenAndCache(user);
+        String jwtToken = getService().createTokenAndCache(user);
         return getService().getUserTokenResult(user,jwtToken);
     }
 
@@ -63,22 +58,13 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         if (!match){
             throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
         }
-        String jwtToken = createTokenAndCache(existingUser);
+        String jwtToken = getService().createTokenAndCache(existingUser);
         return getService().getUserTokenResult(existingUser, jwtToken);
     }
 
 
 
-    private String createTokenAndCache(User existingUser) {
-        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
-        try {
-            String key = MyRealm.USER_KEY_PREFIX + jwtToken;
-            redisUtil.set(key, existingUser);
-        } catch (Exception e) {
-            log.warn("redis error!",e);
-        }
-        return jwtToken;
-    }
+
 
 
 
