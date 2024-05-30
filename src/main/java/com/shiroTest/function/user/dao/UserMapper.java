@@ -31,7 +31,7 @@ public interface UserMapper extends BaseMapper<User> {
     public User selectByUsername(String username);
 
     @Override
-    @Insert("insert into User(id,password,role,state,username,email) values(#{id},#{password},#{role},#{state},#{username},#{email})")
+    @Insert("insert into User(id,password,role_id,state,username,email) values(#{id},#{password},#{roleId},#{state},#{username},#{email})")
     int insert(User entity);
 
 //    @Insert("insert into user_quick_menu_items ")

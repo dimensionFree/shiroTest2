@@ -13,7 +13,7 @@ public class User4Display{
     private String id;
 
 
-    private String role;
+    private String roleId;
 
     private String state;
 

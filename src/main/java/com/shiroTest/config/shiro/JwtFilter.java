@@ -2,9 +2,11 @@ package com.shiroTest.config.shiro;
 
 import cn.hutool.json.JSONUtil;
 import com.shiroTest.common.Result;
+import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,22 +28,11 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Autowired
     RedisUtil redisUtil;
 
-    private Set<Autority> authoritySet;
 
-    private boolean adminOnly=false;
+    @Autowired
+    JwtUtil jwtUtil;
 
-    public JwtFilter(Set<Autority> authoritySet, boolean adminOnly) {
-        this.authoritySet = authoritySet;
-        this.adminOnly = adminOnly;
-    }
 
-    public JwtFilter(boolean adminOnly) {
-        this.adminOnly = adminOnly;
-    }
-
-    public JwtFilter(Set<Autority> authoritySet) {
-        this.authoritySet = authoritySet;
-    }
 
     public JwtFilter() {
     }
@@ -52,20 +43,23 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         // 判断请求头是否带上“Token”
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+//        String token = jwtUtil.getTokenFromRequest((HttpServletRequest) request);
+        //todo:extract getToken to method
+        HttpServletRequest httpServletRequest =(HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
-        String token = StringUtils.isEmpty(authorization)?"":authorization.split(" ")[1];
+        var token= StringUtils.isEmpty(authorization)?"":authorization.split(" ")[1];
 
-        // 游客访问电商平台首页可以不用携带 token
+
+        // 游客访问首页可以不用携带 token
 //        if (StringUtils.isEmpty(token)) {
 //            return true;
 //        }
         try {
+
             // 交给 myRealm
-            checkAdmin();
-            checkAuthority();
             SecurityUtils.getSubject().login(new JwtToken(token));
-            return true;
+
+            return checkPerms((String[]) mappedValue);
         } catch (Exception e) {
             errorMsg = e.getMessage();
             e.printStackTrace();
@@ -73,13 +67,25 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
     }
 
-    private void checkAuthority() {
+    private boolean checkPerms(String[] mappedValue) {
+        String[] needCheckPerms = mappedValue;
+        Subject subject = SecurityUtils.getSubject();
+        boolean isPermitted = true;
+        if (needCheckPerms != null && needCheckPerms.length > 0) {
+            if (needCheckPerms.length == 1) {
+                if (!subject.isPermitted(needCheckPerms[0])) {
+                    isPermitted = false;
+                }
+            } else {
+                if (!subject.isPermittedAll(needCheckPerms)) {
+                    isPermitted = false;
+                }
+            }
+        }
 
+        return isPermitted;
     }
 
-    private void checkAdmin() {
-
-    }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {

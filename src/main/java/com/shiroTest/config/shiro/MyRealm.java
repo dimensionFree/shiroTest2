@@ -5,8 +5,10 @@ package com.shiroTest.config.shiro;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,19 @@ public class MyRealm extends AuthorizingRealm {
     }
 
     /**
-     * 授权(授权部分这里就省略了)
+     * 授权
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         // 获取到用户名，查询用户权限
-        return null;
+        SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
+        User user = (User) principals.getPrimaryPrincipal();
+        //todo :get authority by roleId
+        if ("2234".equals(user.getUsername())){
+            simpleAuthorizationInfo.addStringPermission("user:read");
+        }
+
+        return simpleAuthorizationInfo;
     }
 
     /**

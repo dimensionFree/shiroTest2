@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 
@@ -85,6 +87,12 @@ public class JwtUtil {
         DecodedJWT jwt = JWT.decode(token);
         // 如果token的过期时间小于当前时间，则表示已过期，为true
         return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
+        HttpServletRequest httpServletRequest = request;
+        String authorization = httpServletRequest.getHeader("Authorization");
+        return StringUtils.isEmpty(authorization)?"":authorization.split(" ")[1];
     }
 
 }

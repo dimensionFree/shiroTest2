@@ -12,6 +12,7 @@ import com.shiroTest.utils.BcryptUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,11 +62,6 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         String jwtToken = getService().createTokenAndCache(existingUser);
         return getService().getUserTokenResult(existingUser, jwtToken);
     }
-
-
-
-
-
 
 
 

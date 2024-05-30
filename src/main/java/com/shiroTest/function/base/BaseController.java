@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shiroTest.common.Result;
 import com.shiroTest.function.user.model.User;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,19 +31,19 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
         return service.list();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("find/{id}")
     public Result getById(@PathVariable("id") String id){
         return Result.success(service.getById(id));
     }
 
 
-    @PostMapping
+    @PostMapping("/create")
     public Result create(@RequestBody T data){
         return Result.success(service.save(data));
     }
 
 
-    @PatchMapping("/{id}")
+    @PatchMapping("patch/{id}")
     public Result patchUserById(@PathVariable("id") String id,@RequestBody Map<String,Object> patchMap){
         UpdateWrapper<T> wrapper=new UpdateWrapper<>();
         wrapper.eq("id",id);
@@ -54,14 +55,14 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("put/{id}")
     public Result putUserById(@PathVariable("id") String id,@RequestBody T data){
         UpdateWrapper<T> wrapper=new UpdateWrapper<>();
         wrapper.eq("id",id);
         boolean update = service.update(data, wrapper);
         return Result.success(update);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public Result deleteById(@PathVariable("id") String id){
         boolean delete = service.removeById(id);
         return Result.success(delete);
@@ -69,7 +70,10 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
 
 
 
-
+    @GetMapping("/needUserEdit")
+    public Result test(){
+        return Result.success(true);
+    }
 
 
 
