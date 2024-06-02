@@ -17,9 +17,9 @@
         <result column="state" property="state"/>
         <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
         <collection property="quickMenuItems"  ofType="com.shiroTest.function.quickMenu.MenuItem" column="id">
-            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler"/>
+            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
         </collection>
-<!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler">-->
+<!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler">-->
 <!--            <result column="quick_menu_item_ordinal"/>-->
 <!--        </collection>-->
     </resultMap>
@@ -33,9 +33,9 @@
         <result column="state" property="state"/>
         <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
         <collection property="quickMenuItems"  ofType="com.shiroTest.function.quickMenu.MenuItem" column="id">
-            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler"/>
+            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
         </collection>
-<!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler">-->
+<!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler">-->
 <!--            <result column="quick_menu_item_ordinal"/>-->
 <!--        </collection>-->
     </resultMap>

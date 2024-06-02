@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiroTest.function.role.dao.RoleMapper">
+
+
+    <resultMap id="role" type="com.shiroTest.function.role.model.Role">
+        <id column="id" property="id"/>
+        <result column="roleName" property="roleName"/>
+        <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
+        <collection property="authorities"  ofType="com.shiroTest.function.role.model.Authority">
+            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
+        </collection>
+        <!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler">-->
+        <!--            <result column="quick_menu_item_ordinal"/>-->
+        <!--        </collection>-->
+    </resultMap>
+
+    <select id="selectById" resultMap="role">
+        SELECT * from `role` left JOIN role_autorities ON role.id=role_autorities.role_id where role.id=#{id}
+    </select>
+
+
+</mapper>

@@ -1,5 +1,6 @@
 package com.shiroTest.handler.typeHandler;
 
+import com.shiroTest.function.role.model.Authority;
 import com.shiroTest.function.quickMenu.BaseCodeEnum;
 import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.utils.CodeEnumUtil;
@@ -13,15 +14,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@MappedTypes({MenuItem.class})
+@MappedTypes({MenuItem.class, Authority.class})
 @MappedJdbcTypes(JdbcType.INTEGER)
-public class MenuItemTypeHandler<E extends BaseCodeEnum> extends BaseTypeHandler<E> {
+public class BaseCodeEnumHandler<E extends BaseCodeEnum> extends BaseTypeHandler<E> {
 
     private Class<E> type;
 
-    public MenuItemTypeHandler(Class<MenuItem> type) {
-
-        this.type = (Class<E>) MenuItem.class;
+    public BaseCodeEnumHandler(Class<E> type) {
+        this.type = type;
     }
 
     @Override

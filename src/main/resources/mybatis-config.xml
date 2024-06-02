@@ -13,7 +13,8 @@
     <!-- TypeHandler 配置 -->
     <typeHandlers>
         <!-- 注册自定义的 TypeHandler -->
-        <typeHandler handler="com.shiroTest.handler.typeHandler.MenuItemTypeHandler" javaType="com.shiroTest.function.quickMenu.MenuItem"/>
+        <typeHandler handler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler" javaType="com.shiroTest.function.quickMenu.MenuItem"/>
+        <typeHandler handler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler" javaType="com.shiroTest.function.role.model.Authority"/>
 <!--        <typeHandler handler="com.example.typeHandler.CodeEnumTypeHandler" javaType="com.example.entity.enums.ComputerState"/>-->
     </typeHandlers>
 

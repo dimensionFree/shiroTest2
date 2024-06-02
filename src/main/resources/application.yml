@@ -6,8 +6,36 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/shiroTest?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
     username: root
     password: root
-#  flyway:
-#    locations: classpath:db/migration
+  flyway:
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    enabled: true
+
+  redis:
+    host: localhost
+    port: 6379
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+#ddl-auto：create 每次运行该程序，没有表格会新建表格，表内有数据会清空
+#ddl-auto: create-drop 每次程序结束的时候会清空表
+#ddl-auto: update 每次运行程序，没有表格会新建表格，表内有数据不会清空，只会更新
+#ddl-auto: validate 运行程序会校验数据与数据库的字段类型是否相同，不同会报错
+      ddl-auto: update
+    show-sql: true
+
+#tomcat端口
+server:
+  port: 80
+#日志记录级别
+#logging:
+#  level:
+#    com.itheima: debug
+#    org.springframework: info
+mybatis-plus:
+  config-location: classpath:mybatis-config.xml
+
+
   # Druid datasource 数据库连接池 默认hikari
 #    hikari性能好；druid有面板，方便监控
 #    type: com.alibaba.druid.pool.DruidDataSource
@@ -52,27 +80,4 @@ spring:
 #          slow-sql-millis: 5000
 #          # 合并多个连接池的监控数据，默认false
 #          merge-sql: false
-  redis:
-    host: localhost
-    port: 6379
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-#ddl-auto：create 每次运行该程序，没有表格会新建表格，表内有数据会清空
-#ddl-auto: create-drop 每次程序结束的时候会清空表
-#ddl-auto: update 每次运行程序，没有表格会新建表格，表内有数据不会清空，只会更新
-#ddl-auto: validate 运行程序会校验数据与数据库的字段类型是否相同，不同会报错
-      ddl-auto: update
-    show-sql: true
-
-#tomcat端口
-server:
-  port: 80
-#日志记录级别
-#logging:
-#  level:
-#    com.itheima: debug
-#    org.springframework: info
-mybatis-plus:
-  config-location: classpath:mybatis-config.xml
 
