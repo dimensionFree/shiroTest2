@@ -2,6 +2,7 @@ package com.shiroTest.function.article.service.impl;
 
 import com.shiroTest.BackendApplication;
 import com.shiroTest.function.article.model.Article;
+import com.shiroTest.function.role.dao.RoleMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;

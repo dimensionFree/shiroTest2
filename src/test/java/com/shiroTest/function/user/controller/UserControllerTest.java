@@ -53,7 +53,6 @@ public class UserControllerTest extends TestCase {
 
         try {
             // 发送请求并验证结果
-            //todo:service is null
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
                     .andExpect(content().string(notNullValue()));

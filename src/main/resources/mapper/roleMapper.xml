@@ -8,7 +8,7 @@
         <result column="roleName" property="roleName"/>
         <!-- column 属性对应来自一方（一对多的一）表主键的字段名 -->
         <collection property="authorities"  ofType="com.shiroTest.function.role.model.Authority">
-            <result column="quick_menu_item_ordinal" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
+            <result column="authorities" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
         </collection>
         <!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler">-->
         <!--            <result column="quick_menu_item_ordinal"/>-->
@@ -16,7 +16,7 @@
     </resultMap>
 
     <select id="selectById" resultMap="role">
-        SELECT * from `role` left JOIN role_autorities ON role.id=role_autorities.role_id where role.id=#{id}
+        SELECT * from `role` left JOIN role_authorities ON role.id=role_authorities.role_id where role.id=#{id}
     </select>
 
 
