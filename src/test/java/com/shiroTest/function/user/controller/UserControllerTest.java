@@ -34,6 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@WebMvcTest(UserController.class)
 public class UserControllerTest extends TestCase {
 
+
+    public static final String USER_ID_ADMIN = "user_id_admin";
+    public static final String USER_ID_MEMBER = "user_id_member";
+    public static final String ROLE_ID_ADMIN = "id_admin";
+    public static final String ROLE_ID_MEMBER = "id_member";
     @Autowired
     private MockMvc mockMvc;
 

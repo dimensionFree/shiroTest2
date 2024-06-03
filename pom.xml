@@ -157,4 +157,21 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.0.2</version>
+                <configuration>
+                    <!-- 数据库连接配置 -->
+                    <url>jdbc:mysql://127.0.0.1:3306/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
+                    <user>root</user>
+                    <password>root</password>
+                </configuration>
+
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
