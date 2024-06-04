@@ -1,6 +1,8 @@
 package com.shiroTest.common;
 
 import com.shiroTest.enums.ResultCodeEnum;
+import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.model.User4Display;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -24,9 +26,17 @@ public class Result<T> extends ResponseEntity<T> implements Serializable {
         resultData.setCode("200");
         resultData.setMessage("操作成功");
         resultData.setDataContent(object);
+        formatData(resultData);
         Result result = new Result(resultData,HttpStatus.OK);
 
         return  result;
+    }
+
+    private static void formatData(ResultData resultData) {
+        Object dataContent = resultData.getDataContent();
+        if (dataContent instanceof User ){
+            resultData.setDataContent(User4Display.User4Display((User)dataContent));
+        }
     }
 
     public static Result fail(String message){
