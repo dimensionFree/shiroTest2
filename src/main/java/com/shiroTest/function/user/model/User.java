@@ -55,18 +55,23 @@ public class User extends BaseAuditableEntity {
 
     @ElementCollection(targetClass = MenuItem.class)
     @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
-    @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"),foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name="quick_menu_item_ordinal")
     private Set<MenuItem> quickMenuItems= new HashSet<>();
 
     public User() {
     }
 
-    public User(String username, String password) {
+    public User(String username, String password,String roleId) {
         this.password = password;
         this.username = username;
     }
+    public User(String username, String password) {
+        this.password = password;
+        this.username = username;
+        this.roleId = roleId;
 
+    }
 
     public void addMenuItem(MenuItem menuItem){
         this.quickMenuItems.add(menuItem);

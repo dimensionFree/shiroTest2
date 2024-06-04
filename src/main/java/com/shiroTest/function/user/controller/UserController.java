@@ -5,6 +5,7 @@ import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
+import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
@@ -41,7 +42,8 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         if (Objects.nonNull(byUsername)){
             throw new MyException(ResultCodeEnum.USER_DUPLICATE,"用户已存在，无法注册");
         }
-        User user = new User(username, BcryptUtil.encode(password));
+        User user = new User(username, BcryptUtil.encode(password), RoleServiceImpl.ROLE_ID_MEMBER);
+
         boolean save = getService().save(user);
         String jwtToken = getService().createTokenAndCache(user);
         return getService().getUserTokenResult(user,jwtToken);

@@ -4,10 +4,12 @@ import com.shiroTest.function.quickMenu.BaseCodeEnum;
 
 public enum Authority implements BaseCodeEnum {
     ALL(0),
-    READ_USER(1),
-    WRITE_USER(2),
-    READ_ARTICLE(3),
-    WRITE_ARTICLE(4);
+    USER_READ(1),
+    USER_EDIT(2),
+    ARTICLE_READ(3),
+    ARTICLE_EDIT(4),
+    USER_EDIT_SELF(5),
+    ;
 
     private int index;
 
@@ -19,4 +21,7 @@ public enum Authority implements BaseCodeEnum {
     public int getCode() {
         return index;
     }
+
+
+
 }

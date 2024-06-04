@@ -26,9 +26,9 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
     }
 
 
-    @GetMapping
-    public List<T> getAll(){
-        return service.list();
+    @GetMapping("findAll")
+    public Result getAll(){
+        return Result.success(service.list());
     }
 
     @GetMapping("find/{id}")

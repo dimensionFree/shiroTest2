@@ -64,7 +64,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     private boolean needCascade(User entity) {
-
         return !entity.getQuickMenuItems().isEmpty();
     }
 

@@ -48,42 +48,17 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest =(HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
         var token= StringUtils.isEmpty(authorization)?"":authorization.split(" ")[1];
-
-
-        // 游客访问首页可以不用携带 token
-//        if (StringUtils.isEmpty(token)) {
-//            return true;
-//        }
         try {
 
             // 交给 myRealm
             SecurityUtils.getSubject().login(new JwtToken(token));
 
-            return checkPerms((String[]) mappedValue);
+            return SecurityUtils.getSubject().isPermitted((String[]) mappedValue)[0];
         } catch (Exception e) {
             errorMsg = e.getMessage();
             e.printStackTrace();
             return false;
         }
-    }
-
-    private boolean checkPerms(String[] mappedValue) {
-        String[] needCheckPerms = mappedValue;
-        Subject subject = SecurityUtils.getSubject();
-        boolean isPermitted = true;
-        if (needCheckPerms != null && needCheckPerms.length > 0) {
-            if (needCheckPerms.length == 1) {
-                if (!subject.isPermitted(needCheckPerms[0])) {
-                    isPermitted = false;
-                }
-            } else {
-                if (!subject.isPermittedAll(needCheckPerms)) {
-                    isPermitted = false;
-                }
-            }
-        }
-
-        return isPermitted;
     }
 
 

@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+/**
+ * make sure flyway run after jpa ddl
+ */
 @Configuration
 public class MigrationConfiguration {
 
