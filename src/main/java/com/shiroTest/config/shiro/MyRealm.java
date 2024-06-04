@@ -2,6 +2,7 @@ package com.shiroTest.config.shiro;
 
 
 
+import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
@@ -21,6 +22,9 @@ public class MyRealm extends AuthorizingRealm {
     private RedisUtil redisUtil;
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    RoleServiceImpl roleService;
 
 
 
@@ -42,7 +46,8 @@ public class MyRealm extends AuthorizingRealm {
         // 获取到用户名，查询用户权限
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
         User user = (User) principals.getPrimaryPrincipal();
-        //todo :get authority by roleId
+//        roleService.getById(user.getRoleId());
+
         if ("2234".equals(user.getUsername())){
             simpleAuthorizationInfo.addStringPermission("user:read");
         }
