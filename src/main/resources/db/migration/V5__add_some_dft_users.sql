@@ -1,3 +1,6 @@
+DELETE FROM user WHERE id='user_id_admin';
+DELETE FROM user WHERE id='user_id_member';
+
 -- adminPwd
 INSERT INTO user (id, username,password,role_id) VALUES ('user_id_admin', 'admin','$2a$10$I.ngqOu9EMoEPpuduC8kgO7sdTCFbcyux97fLY1ks5JiQ2Hn2KkZy','id_admin');
 -- memberPwd

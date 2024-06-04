@@ -7,6 +7,8 @@ import com.shiroTest.function.quickMenu.MenuItem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -46,7 +48,6 @@ public class User extends BaseAuditableEntity {
 
     @NotBlank
     @Length(min = 4,max = 10,message = "username length error")
-    //todo add unique constraint(done);          maybe add flyway?
     private String username;
 
     @Email
@@ -54,7 +55,7 @@ public class User extends BaseAuditableEntity {
 
     @ElementCollection(targetClass = MenuItem.class)
     @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
-    @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"),foreignKey =  @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Column(name="quick_menu_item_ordinal")
     private Set<MenuItem> quickMenuItems= new HashSet<>();
 
