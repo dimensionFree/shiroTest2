@@ -2,7 +2,6 @@ package com.shiroTest.config.shiro;
 
 
 
-import com.shiroTest.function.role.model.Role;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.utils.JwtUtil;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MyRealm extends AuthorizingRealm {
@@ -68,11 +66,13 @@ public class MyRealm extends AuthorizingRealm {
         // 获取token信息
         String token = (String) authenticationToken.getCredentials();
         // 校验token：未校验通过或者已过期
+        String tokenKey = redisUtil.buildUserTokenKey(token);
         if (!jwtUtil.verifyToken(token) || jwtUtil.isExpire(token)) {
+            redisUtil.delete(tokenKey);
             throw new AuthenticationException("token已失效，请重新登录");
         }
         // 用户信息
-        User user = (User) redisUtil.get(USER_KEY_PREFIX + token);
+        User user = (User) redisUtil.get(tokenKey);
         if (null == user) {
             throw new UnknownAccountException("用户不存在");
         }

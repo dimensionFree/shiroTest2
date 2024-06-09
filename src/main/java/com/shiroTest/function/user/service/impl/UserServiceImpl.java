@@ -3,7 +3,6 @@ package com.shiroTest.function.user.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
-import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
@@ -76,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public String createTokenAndCache(User existingUser) {
         String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
         try {
-            String key = getUserCacheKey(jwtToken);
+            String key = redisUtil.buildUserTokenKey(jwtToken);
             redisUtil.set(key, existingUser);
         } catch (Exception e) {
             log.warn("redis error!",e);
@@ -84,12 +83,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return jwtToken;
     }
 
-    private String getUserCacheKey(String jwtToken) {
-        return MyRealm.USER_KEY_PREFIX + jwtToken;
-    }
-
     public User getUserByToken(String token) throws MyException {
-        User user = (User) redisUtil.get(getUserCacheKey(token));
+        User user = (User) redisUtil.get(redisUtil.buildUserTokenKey(token));
         if (Objects.isNull(user)){
             String userId = jwtUtil.getUserId(token);
             return getById(userId);

@@ -1,5 +1,6 @@
 package com.shiroTest.utils;
 
+import com.shiroTest.config.shiro.MyRealm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ public class RedisUtil {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     /*------------key相关操作---------------*/
+
 
     /**
      * 删除key
@@ -778,4 +780,7 @@ public class RedisUtil {
         return score;
     }
 
+    public String buildUserTokenKey(String jwtToken) {
+        return MyRealm.USER_KEY_PREFIX + jwtToken;
+    }
 }
