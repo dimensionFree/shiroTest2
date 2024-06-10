@@ -26,14 +26,22 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
     }
 
 
-    @GetMapping("findAll")
+    @GetMapping("/findAll")
     public Result getAll(){
-        return Result.success(service.list());
+        return beforeReturnList(Result.success(service.list()));
     }
 
-    @GetMapping("find/{id}")
+    protected Result beforeReturnList(Result success) {
+        return success;
+    }
+
+    @GetMapping("/find/{id}")
     public Result getById(@PathVariable("id") String id){
-        return Result.success(service.getById(id));
+        return beforeReturn(Result.success(service.getById(id))) ;
+    }
+
+    protected Result beforeReturn(Result success) {
+        return success;
     }
 
 
@@ -74,6 +82,7 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
     public Result test(){
         return Result.success(true);
     }
+
 
 
 

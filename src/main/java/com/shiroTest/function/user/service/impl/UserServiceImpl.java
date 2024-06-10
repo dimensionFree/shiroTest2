@@ -1,9 +1,11 @@
 package com.shiroTest.function.user.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.enums.ResultCodeEnum;
+import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
@@ -22,7 +24,7 @@ import java.util.Objects;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author freedom
@@ -35,29 +37,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private RedisUtil redisUtil;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private RoleServiceImpl roleService;
 
-    public User getByUsername(String username){
+
+    public User4Display buildUser4Display(User user) {
+        User4Display bean = JSONUtil.toBean(JSONUtil.toJsonStr(user), User4Display.class);
+        bean.setRole(roleService.getById(bean.getRoleId()));
+        return bean;
+    }
+
+    public User getByUsername(String username) {
 //        getBaseMapper().selectOne(new QueryWrapper<User>().eq("username",username))
         return getBaseMapper().selectByUsername(username);
     }
 
-    public static Result getUserTokenResult(User existingUser, String jwtToken) {
+    public Result getUserTokenResult(User existingUser, String jwtToken) {
         return Result.success(UserLoginInfo.builder()
-                .user4Display(User4Display.User4Display(existingUser))
+                .user4Display(buildUser4Display(existingUser))
                 .token(jwtToken)
                 .build());
     }
-    public static Result getUser4DisplayResult(User existingUser) {
-        return Result.success(User4Display.User4Display(existingUser));
+
+    public Result getUser4DisplayResult(User existingUser) {
+        return Result.success(buildUser4Display(existingUser));
     }
+
 
     @Override
     @Transactional
     public boolean save(User entity) {
         boolean saveSuccess = this.retBool(getBaseMapper().insert(entity));
-        if (saveSuccess&&needCascade(entity)){
-             return retBool(getBaseMapper().cascadeInsert(entity));
-        }else {
+        if (saveSuccess && needCascade(entity)) {
+            return retBool(getBaseMapper().cascadeInsert(entity));
+        } else {
             return false;
         }
     }
@@ -78,18 +91,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             String key = redisUtil.buildUserTokenKey(jwtToken);
             redisUtil.set(key, existingUser);
         } catch (Exception e) {
-            log.warn("redis error!",e);
+            log.warn("redis error!", e);
         }
         return jwtToken;
     }
 
     public User getUserByToken(String token) throws MyException {
         User user = (User) redisUtil.get(redisUtil.buildUserTokenKey(token));
-        if (Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             String userId = jwtUtil.getUserId(token);
             return getById(userId);
-        }else {
-            throw new MyException(ResultCodeEnum.TOKEN_ERROR,"invalid token");
+        } else {
+            throw new MyException(ResultCodeEnum.TOKEN_ERROR, "invalid token");
         }
     }
 }

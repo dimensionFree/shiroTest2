@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IRoleService {
-    public static final String ROLE_ID_ADMIN = "id_admin";
-    public static final String ROLE_ID_MEMBER = "id_member";
+    public static final String ROLE_ID_ADMIN = "role_id_admin";
+    public static final String ROLE_ID_MEMBER = "role_id_member";
 
 
     public List<String> getRolePermissions(String roleId) {

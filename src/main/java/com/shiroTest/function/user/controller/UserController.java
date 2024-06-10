@@ -3,6 +3,7 @@ package com.shiroTest.function.user.controller;
 
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
+import com.shiroTest.common.ResultData;
 import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -65,8 +68,21 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         return getService().getUserTokenResult(existingUser, jwtToken);
     }
 
+    @Override
+    protected Result beforeReturn(Result success) {
+        ResultData resultData = (ResultData) success.getBody();
+        User dataContent = (User) resultData.getDataContent();
+        resultData.setDataContent(getService().buildUser4Display(dataContent));
+        return success;
+    }
 
 
-
+    @Override
+    protected Result beforeReturnList(Result success) {
+        ResultData resultData = (ResultData) success.getBody();
+        var dataContent = (List<User>) resultData.getDataContent();
+        resultData.setDataContent(dataContent.stream().map(u->getService().buildUser4Display(u)).collect(Collectors.toList()));
+        return success;
+    }
 }
 

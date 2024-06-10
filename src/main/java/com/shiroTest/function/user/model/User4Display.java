@@ -2,6 +2,7 @@ package com.shiroTest.function.user.model;
 
 import cn.hutool.json.JSONUtil;
 import com.shiroTest.function.quickMenu.MenuItem;
+import com.shiroTest.function.role.model.Role;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -15,6 +16,9 @@ public class User4Display{
 
     private String roleId;
 
+    private Role role;
+
+
     private String state;
 
     private String username;
@@ -24,8 +28,4 @@ public class User4Display{
     private Set<MenuItem> quickMenuItems= new HashSet<>();
 
 
-    public static User4Display User4Display(User user) {
-        User4Display bean = JSONUtil.toBean(JSONUtil.toJsonStr(user), User4Display.class);
-        return bean;
-    }
 }
