@@ -10,6 +10,7 @@ public enum Authority implements BaseCodeEnum {
     ARTICLE_EDIT(4),
     USER_EDIT_SELF(5),
     ;
+    //todo: add read/edit self
 
     private int index;
 

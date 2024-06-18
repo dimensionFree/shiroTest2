@@ -20,4 +20,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public Article getLatestArticle() {
         return null;
     }
+
+    @Override
+    public boolean save(Article entity) {
+        return super.save(entity);
+    }
 }
