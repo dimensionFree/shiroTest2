@@ -7,5 +7,5 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 //@RunWith(SpringRunner.class)
-public class BaseServiceTest extends BaseTest {
+public abstract class BaseServiceTest extends BaseTest {
 }

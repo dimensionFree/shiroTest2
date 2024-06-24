@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @AutoConfigureMockMvc(addFilters = false)
 @EnableWebMvc
-//@RunWith(SpringJUnit4ClassRunner.class)(todo:what the diff with SpringRunner.class?)
 @WebAppConfiguration
+//@RunWith(SpringJUnit4ClassRunner.class)(todo:what the diff with SpringRunner.class?)
 //@WebMvcTest(UserController.class)
-public class BaseControllerTest extends BaseTest {
+public abstract class BaseControllerTest extends BaseTest {
 }
