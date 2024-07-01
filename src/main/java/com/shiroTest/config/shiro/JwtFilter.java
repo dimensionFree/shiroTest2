@@ -55,7 +55,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
             return SecurityUtils.getSubject().isPermitted((String[]) mappedValue)[0];
         } catch (Exception e) {
-            errorMsg = e.getMessage();
+            errorMsg = "权限不足："+e.getMessage();
             e.printStackTrace();
             return false;
         }

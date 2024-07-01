@@ -3,9 +3,9 @@ jwt:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/shiroTest?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
-    username: root
-    password: root
+    url: ${DB_URL}/shiroTest?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   flyway:
     locations: classpath:db/migration
     baseline-on-migrate: true
