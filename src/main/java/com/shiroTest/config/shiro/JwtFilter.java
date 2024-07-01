@@ -14,11 +14,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 import java.util.Set;
 
 @Component
@@ -61,6 +64,22 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
     }
 
+    @Override
+    protected void cleanup(ServletRequest request, ServletResponse response, Exception existing) throws ServletException, IOException {
+        if (Objects.nonNull(existing)){
+            Result fail = Result.fail(existing);
+
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setStatus(fail.getStatusCode().value());
+            httpServletResponse.setContentType("application/json;charset=utf-8");
+            PrintWriter out = response.getWriter();
+            out.println(JSONUtil.toJsonStr(fail));
+            out.flush();
+            out.close();
+        }
+
+        super.cleanup(request, response, existing);
+    }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {

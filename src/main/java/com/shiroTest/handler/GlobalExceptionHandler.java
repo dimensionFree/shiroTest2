@@ -52,4 +52,11 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(Exception.class)
+    public Result handler(Exception e){
+        log.info("异常：",e.getMessage());
+        return Result.fail(e.getMessage());
+    }
+
+
 }

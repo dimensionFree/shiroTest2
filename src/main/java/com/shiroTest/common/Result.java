@@ -41,10 +41,13 @@ public class Result<T> extends ResponseEntity<T> implements Serializable {
     }
     public static Result fail(Exception e){
         ResultData resultData=new ResultData();
-
-        resultData.setCode(ResultCodeEnum.PARAM_ERROR.getCode());
+        ResultCodeEnum dftError = ResultCodeEnum.PARAM_ERROR;
+        if (e instanceof RuntimeException){
+            dftError= ResultCodeEnum.SERVER_ERROR;
+        }
+        resultData.setCode(dftError.getCode());
         resultData.setMessage(e.getMessage());
-        Result result = new Result(resultData,ResultCodeEnum.PARAM_ERROR.getStatus());
+        Result result = new Result(resultData,dftError.getStatus());
 
         return  result;
     }
