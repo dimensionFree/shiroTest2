@@ -4,24 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-<!--
-这部分代码是一个 Maven 项目的 pom.xml 文件中的 <parent> 元素，用于指定项目的父级依赖管理。
-在 Spring Boot 项目中，通常会使用 spring-boot-starter-parent 作为父级依赖，以便统一管理各种 Spring Boot 相关的依赖和插件版本。
+    <!--
+    这部分代码是一个 Maven 项目的 pom.xml 文件中的 <parent> 元素，用于指定项目的父级依赖管理。
+    在 Spring Boot 项目中，通常会使用 spring-boot-starter-parent 作为父级依赖，以便统一管理各种 Spring Boot 相关的依赖和插件版本。
 
-具体来说，这个 <parent> 元素的作用包括：
+    具体来说，这个 <parent> 元素的作用包括：
 
-依赖版本管理: 在 <parent> 中指定的 spring-boot-starter-parent 会为你的项目提供一组预定义的版本号，
-这些版本号对于 Spring Boot 的各种依赖（如 Spring Framework、Spring Boot 自身、第三方库等）都是经过测试和兼容的。
-这使得项目中的依赖版本能够保持一致，避免因为版本不兼容而导致的问题。
+    依赖版本管理: 在 <parent> 中指定的 spring-boot-starter-parent 会为你的项目提供一组预定义的版本号，
+    这些版本号对于 Spring Boot 的各种依赖（如 Spring Framework、Spring Boot 自身、第三方库等）都是经过测试和兼容的。
+    这使得项目中的依赖版本能够保持一致，避免因为版本不兼容而导致的问题。
 
-插件配置: spring-boot-starter-parent
-也会配置一些常用的 Maven 插件，以便更轻松地构建和打包 Spring Boot 应用程序。
+    插件配置: spring-boot-starter-parent
+    也会配置一些常用的 Maven 插件，以便更轻松地构建和打包 Spring Boot 应用程序。
 
-默认设置: 该父级依赖还提供了一些默认设置，
-这些设置有助于将你的项目与 Spring Boot 的最佳实践保持一致。
-例如，它会为你的项目指定默认的编码、资源文件路径等。
+    默认设置: 该父级依赖还提供了一些默认设置，
+    这些设置有助于将你的项目与 Spring Boot 的最佳实践保持一致。
+    例如，它会为你的项目指定默认的编码、资源文件路径等。
 
--->
+    -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -79,13 +79,42 @@
             <version>3.20.2</version>
             <scope>test</scope>
         </dependency>
-<!--       -->
-<!--        &lt;!&ndash; 通用mapper &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>tk.mybatis</groupId>-->
-<!--            <artifactId>mapper-spring-boot-starter</artifactId>-->
-<!--            <version>4.2.2</version>-->
-<!--        </dependency>-->
+
+        <!-- Jackson Core -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
+        <!-- Jackson Databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
+        <!-- Jackson Annotations -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
+        <!-- Jackson JSR-310 (Java 8 Date and Time API) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
+        <!--       -->
+        <!--        &lt;!&ndash; 通用mapper &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>tk.mybatis</groupId>-->
+        <!--            <artifactId>mapper-spring-boot-starter</artifactId>-->
+        <!--            <version>4.2.2</version>-->
+        <!--        </dependency>-->
         <!--        test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -96,7 +125,7 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-<!--        flyway-->
+        <!--        flyway-->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -116,11 +145,11 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.2.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.baomidou</groupId>-->
-<!--            <artifactId>mybatis-plus</artifactId>-->
-<!--            <version>3.2.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.baomidou</groupId>-->
+        <!--            <artifactId>mybatis-plus</artifactId>-->
+        <!--            <version>3.2.0</version>-->
+        <!--        </dependency>-->
         <!-- mybatis-plus end -->
 
 

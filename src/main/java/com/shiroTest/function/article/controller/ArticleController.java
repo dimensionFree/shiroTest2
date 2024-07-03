@@ -21,6 +21,9 @@ import com.shiroTest.function.base.BaseController;
 @RequestMapping("/article")
 public class ArticleController extends BaseController<Article, ArticleServiceImpl> {
 
+    public ArticleController() {
+        super(Article.class);
+    }
 
     @GetMapping("/latest/preface")
     public Article getLatestArticle(){

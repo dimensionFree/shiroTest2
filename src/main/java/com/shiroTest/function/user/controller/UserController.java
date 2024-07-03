@@ -37,6 +37,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
 
+    public UserController() {
+        super(User.class);
+    }
+
     @PostMapping("/register")
     public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
