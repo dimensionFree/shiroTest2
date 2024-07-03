@@ -12,11 +12,17 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 @Configuration
 @ComponentScan(value = "com.shiroTest.config.shiro")
 public class ShiroConfig {
+
+    public static final String PERMS_OR = "or";
+    public static final String PERMS_AND = "and";
+
+    public static final Set<String> LOGIC_STR_SET= Set.of(PERMS_OR,PERMS_AND);
 
     // 1.shiroFilter：负责拦截所有请求
     @Bean
@@ -40,8 +46,8 @@ public class ShiroConfig {
 
         map.put("/user/login","anon");
         map.put("/user/register","anon");
-        map.put("/user/find/**","jwt[USER_READ]");
-        map.put("/user/findAll/**","jwt[USER_READ]");
+        map.put("/user/find/**","jwt[USER_READ,"+ PERMS_OR +",USER_READ_SELF]");
+        map.put("/user/findAll/**","jwt[USER_READ] || jwt[USER_READ_SELF]");
         map.put("/user/needUserEdit","jwt");
 //        map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
 

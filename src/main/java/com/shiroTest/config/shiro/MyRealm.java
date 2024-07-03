@@ -4,6 +4,8 @@ package com.shiroTest.config.shiro;
 
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.model.User4Display;
+import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -17,9 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class MyRealm extends AuthorizingRealm {
+
+    @Autowired
+    UserServiceImpl userService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -48,10 +55,10 @@ public class MyRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         // 获取到用户名，查询用户权限
         SimpleAuthorizationInfo simpleAuthorizationInfo=new SimpleAuthorizationInfo();
-        User user = (User) principals.getPrimaryPrincipal();
-        if (StringUtils.isNotEmpty(user.getRoleId()) ){
-            List<String> permissions = roleService.getRolePermissions(user.getRoleId());
-            simpleAuthorizationInfo.addStringPermissions(permissions);
+        User4Display user4Display = (User4Display) principals.getPrimaryPrincipal();
+        if (Objects.nonNull(user4Display)){
+            simpleAuthorizationInfo.addStringPermissions(user4Display.getRole().getAuthorities().stream().map(i -> i.name()).collect(Collectors.toList()));
+
         }
 
         return simpleAuthorizationInfo;
@@ -72,20 +79,21 @@ public class MyRealm extends AuthorizingRealm {
             throw new AuthenticationException("token已失效，请重新登录");
         }
         // 用户信息
-        User user = (User) redisUtil.get(tokenKey);
-        if (null == user) {
-            throw new UnknownAccountException("用户不存在");
+        User4Display user4Display =  (User4Display) redisUtil.get(tokenKey);
+        if (null == user4Display) {
+            throw new UnknownAccountException("用户于缓存不存在，请重新登录");
         }
-        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, token, this.getName());
+        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user4Display, token, this.getName());
         return simpleAuthenticationInfo;
     }
 
     @Override
     protected boolean isPermitted(Permission permission, AuthorizationInfo info) {
         boolean permitted = super.isPermitted(permission, info);
-        if (!permitted){
-            throw new AuthenticationException("no authorization:"+permission.toString());
-        }
-        return true;
+//        if (!permitted){
+//            throw new AuthenticationException("no authorization:"+permission.toString());
+//        }
+        return permitted;
+//        return true;
     }
 }

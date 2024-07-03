@@ -37,7 +37,12 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
 
     @GetMapping("/find/{id}")
     public Result getById(@PathVariable("id") String id){
+        checkAuth(id);
         return beforeReturn(Result.success(service.getById(id))) ;
+    }
+
+    protected void checkAuth(String id) {
+
     }
 
     protected Result beforeReturn(Result success) {

@@ -2,6 +2,7 @@ package com.shiroTest.function.role.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.function.role.model.Authority;
+import com.shiroTest.function.role.model.Feature;
 import com.shiroTest.function.role.model.Role;
 import com.shiroTest.function.role.dao.RoleMapper;
 import com.shiroTest.function.role.service.IRoleService;
@@ -34,5 +35,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
             return Arrays.stream(Authority.values()).map(i->i.name()).collect(Collectors.toList());
         }
         return authorities.stream().map(i -> i.name()).collect(Collectors.toList());
+    }
+
+
+    public List<String> getRoleFeatures(String roleId) {
+        Role role = getById(roleId);
+
+        Set<Feature> features = role.getFeatures();
+        if (features.contains(Feature.ALL)){
+            return Arrays.stream(Feature.values()).map(i->i.name()).collect(Collectors.toList());
+        }
+        return features.stream().map(i -> i.name()).collect(Collectors.toList());
     }
 }

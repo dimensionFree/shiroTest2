@@ -89,7 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
         try {
             String key = redisUtil.buildUserTokenKey(jwtToken);
-            redisUtil.set(key, existingUser);
+            redisUtil.set(key, buildUser4Display(existingUser));
         } catch (Exception e) {
             log.warn("redis error!", e);
         }

@@ -166,9 +166,9 @@
                 <version>8.0.2</version>
                 <configuration>
                     <!-- 数据库连接配置 -->
-                    <url>jdbc:mysql://127.0.0.1:3306/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
-                    <user>root</user>
-                    <password>root</password>
+                    <url>${env.DB_URL}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
+                    <user>${env.DB_USERNAME}</user>
+                    <password>${env.DB_PASSWORD}</password>
                 </configuration>
 
             </plugin>

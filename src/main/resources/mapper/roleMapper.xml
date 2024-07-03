@@ -10,13 +10,16 @@
         <collection property="authorities"  ofType="com.shiroTest.function.role.model.Authority">
             <result column="authorities" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
         </collection>
-        <!--        <collection property="quickMenuItems" ofType="com.shiroTest.function.quickMenu.MenuItem" column="user_id" javaType="java.util.Set" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler">-->
-        <!--            <result column="quick_menu_item_ordinal"/>-->
-        <!--        </collection>-->
+        <collection property="features"  ofType="com.shiroTest.function.role.model.Feature">
+            <result column="features" typeHandler="com.shiroTest.handler.typeHandler.BaseCodeEnumHandler"/>
+        </collection>
     </resultMap>
 
     <select id="selectById" resultMap="role">
-        SELECT * from `role` left JOIN role_authorities ON role.id=role_authorities.role_id where role.id=#{id}
+        SELECT * from `role`
+        left JOIN role_authorities ra ON role.id=ra.role_id
+        LEFT JOIN role_features rf ON role.id = rf.role_id
+        where role.id=#{id}
     </select>
 
 

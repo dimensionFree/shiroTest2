@@ -5,6 +5,7 @@ import com.shiroTest.common.Result;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
@@ -21,8 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -56,7 +56,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             // 交给 myRealm
             SecurityUtils.getSubject().login(new JwtToken(token));
 
-            return SecurityUtils.getSubject().isPermitted((String[]) mappedValue)[0];
+
+            boolean permitted = getPermittedByPermStr((String[]) mappedValue);
+            return permitted;
         } catch (Exception e) {
             errorMsg = "权限不足："+e.getMessage();
             e.printStackTrace();
@@ -64,11 +66,47 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
     }
 
+    private boolean getPermittedByPermStr(String[] mappedValue) {
+        String[] rawStr = mappedValue;
+        var seperatedPerms = getSeperatedPerms(rawStr);
+        List<String> logic = seperatedPerms.getLeft();
+        List<String> perms = seperatedPerms.getRight();
+        return getPermsResultWithLogic(perms,logic);
+    }
+
+    private boolean getPermsResultWithLogic(List<String> perms, List<String> logics) {
+        boolean[] permitted = SecurityUtils.getSubject().isPermitted(perms.toArray(new String[perms.size()]));
+        boolean result=permitted[0];
+        for (int i = 0; i < logics.size(); i++) {
+            String logic = logics.get(i);
+            if (ShiroConfig.PERMS_AND.equals(logic)){
+                result=result&&permitted[i+1];
+            }else if (ShiroConfig.PERMS_OR.equals(logic)){
+                result=result||permitted[i+1];
+            }
+        }
+        return result;
+    }
+
+    private Pair<List<String>,List<String>> getSeperatedPerms(String[] rawStr) {
+        // 初始化两个空列表来分别存储逻辑关键字和权限字符串
+        List<String> logicList = new ArrayList<>();
+        List<String> permissionsList = new ArrayList<>();
+
+        for (String item : rawStr) {
+            if (ShiroConfig.LOGIC_STR_SET.contains(item)) {
+                logicList.add(item);
+            } else {
+                permissionsList.add(item);
+            }
+        }
+        return Pair.of(logicList,permissionsList);
+    }
+
     @Override
     protected void cleanup(ServletRequest request, ServletResponse response, Exception existing) throws ServletException, IOException {
         if (Objects.nonNull(existing)){
             Result fail = Result.fail(existing);
-
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setStatus(fail.getStatusCode().value());
             httpServletResponse.setContentType("application/json;charset=utf-8");
