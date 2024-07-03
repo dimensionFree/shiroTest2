@@ -11,7 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
-import java.util.Date;
+import java.time.LocalDateTime;
+
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @MappedSuperclass
@@ -20,9 +21,9 @@ public class BaseAuditableEntity extends BaseEntity{
     @TableField(fill = FieldFill.INSERT)
     private String createBy;
     @TableField(fill = FieldFill.INSERT)
-    private Date createDate;
+    private LocalDateTime createDate;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateDate;
+    private LocalDateTime updateDate;
 }

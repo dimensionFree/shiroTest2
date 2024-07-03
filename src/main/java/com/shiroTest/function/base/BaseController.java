@@ -52,6 +52,7 @@ public class BaseController<T extends BaseEntity, S extends IService<T>> {
 
     @PostMapping("/create")
     public Result create(@RequestBody T data){
+
         return Result.success(service.save(data));
     }
 

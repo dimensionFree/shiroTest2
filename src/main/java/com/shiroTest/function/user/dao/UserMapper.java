@@ -29,10 +29,10 @@ public interface UserMapper extends BaseMapper<User> {
      */
 //    @Select("select * from User where username=#{username}")
     public User selectByUsername(String username);
-
-    @Override
-    @Insert("insert into user(id,password,role_id,state,username,email) values(#{id},#{password},#{roleId},#{state},#{username},#{email})")
-    int insert(User entity);
+//
+//    @Override
+//    @Insert("insert into user(id,password,role_id,state,username,email) values(#{id},#{password},#{roleId},#{state},#{username},#{email})")
+//    int insert(User entity);
 
 //    @Insert("insert into user_quick_menu_items ")
     int cascadeInsert(User entity);

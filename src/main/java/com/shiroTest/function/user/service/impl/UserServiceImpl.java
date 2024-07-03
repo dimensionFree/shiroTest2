@@ -53,10 +53,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     public Result getUserTokenResult(User existingUser, String jwtToken) {
-        return Result.success(UserLoginInfo.builder()
-                .user4Display(buildUser4Display(existingUser))
-                .token(jwtToken)
-                .build());
+        return Result.success(
+                JSONUtil.toJsonStr(UserLoginInfo.builder()
+                        .user4Display(buildUser4Display(existingUser))
+                        .token(jwtToken)
+                        .build())
+        );
     }
 
     public Result getUser4DisplayResult(User existingUser) {

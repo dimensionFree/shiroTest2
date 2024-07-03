@@ -1,5 +1,6 @@
 package com.shiroTest.function.user.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.shiroTest.function.base.BaseAuditableEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -57,6 +58,7 @@ public class User extends BaseAuditableEntity {
     @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
     @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name="quick_menu_item_ordinal")
+    @TableField(exist = false)
     private Set<MenuItem> quickMenuItems= new HashSet<>();
 
     public User() {

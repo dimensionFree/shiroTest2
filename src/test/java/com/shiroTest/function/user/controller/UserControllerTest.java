@@ -7,8 +7,10 @@ import com.shiroTest.function.base.BaseControllerTest;
 import com.shiroTest.function.role.model.Authority;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,9 +19,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 public class UserControllerTest extends BaseControllerTest {
@@ -67,13 +72,23 @@ public class UserControllerTest extends BaseControllerTest {
         var resultData = JSONUtil.toBean(jsonResponse, ResultData.class);
 
         System.out.println(resultData);
-        UserLoginInfo dataContent = JSONUtil.toBean((JSONObject) resultData.getDataContent(),UserLoginInfo.class);
+
+        UserLoginInfo dataContent = JSONUtil.toBean(resultData.getDataContent().toString(),UserLoginInfo.class);
         // 进行断言验证
         assertNotNull(dataContent);
-        assertEquals(dataContent.getUser4Display().getUsername(),inputUsername);
-        assertEquals(dataContent.getUser4Display().getRoleId(), RoleServiceImpl.ROLE_ID_MEMBER);
-        assertNotNull(dataContent.getUser4Display().getRole());
-        assertEquals(dataContent.getUser4Display().getRole().getAuthorities(), Set.of(Authority.ARTICLE_EDIT,Authority.ARTICLE_READ));
+        User4Display user4Display = dataContent.getUser4Display();
+        assertEquals(user4Display.getUsername(),inputUsername);
+        assertEquals(user4Display.getRoleId(), RoleServiceImpl.ROLE_ID_MEMBER);
+        assertNotNull(user4Display.getRole());
+        assertThat(user4Display.getRole().getAuthorities()).contains(Authority.ARTICLE_EDIT,Authority.ARTICLE_READ,Authority.USER_READ_SELF,Authority.USER_EDIT_SELF);
+        assertThat(user4Display.getCreateBy()).isEqualTo(user4Display.getId());
+        LocalDateTime createDate = user4Display.getCreateDate();
+        LocalDateTime now = LocalDateTime.now();
+        assertThat(Math.abs(createDate.getYear()-now.getYear())).isLessThanOrEqualTo(1);
+        assertThat(Math.abs(createDate.getMonthValue() - now.getMonthValue())).isLessThanOrEqualTo(1);
+        assertThat(Math.abs(createDate.getDayOfMonth() - now.getDayOfMonth())).isLessThanOrEqualTo(1);
+        assertThat(Math.abs(createDate.getHour() - now.getHour())).isLessThanOrEqualTo(1);
+        assertThat(Math.abs(createDate.getMinute() - now.getMinute())).isLessThanOrEqualTo(1);
     }
 
     @Test
