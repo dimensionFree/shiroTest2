@@ -1,6 +1,5 @@
 package com.shiroTest.function.user.model;
 
-import cn.hutool.json.JSONUtil;
 import com.shiroTest.function.base.BaseAuditableEntity;
 import com.shiroTest.function.quickMenu.MenuItem;
 import com.shiroTest.function.role.model.Role;

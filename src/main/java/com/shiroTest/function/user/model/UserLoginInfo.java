@@ -4,6 +4,7 @@ import com.shiroTest.function.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class UserLoginInfo extends BaseEntity {
     User4Display user4Display=null;
 

@@ -1,6 +1,5 @@
 package com.shiroTest.function.user.service.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
@@ -11,6 +10,7 @@ import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.IUserService;
+import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 
     public User4Display buildUser4Display(User user) {
-        User4Display bean = JSONUtil.toBean(JSONUtil.toJsonStr(user), User4Display.class);
+        User4Display bean = JsonUtil.fromJson(JsonUtil.toJson(user), User4Display.class);
         bean.setRole(roleService.getById(bean.getRoleId()));
         return bean;
     }

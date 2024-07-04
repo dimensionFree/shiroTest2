@@ -1,7 +1,7 @@
 package com.shiroTest.config.shiro;
 
-import cn.hutool.json.JSONUtil;
 import com.shiroTest.common.Result;
+import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -111,7 +111,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             httpServletResponse.setStatus(fail.getStatusCode().value());
             httpServletResponse.setContentType("application/json;charset=utf-8");
             PrintWriter out = response.getWriter();
-            out.println(JSONUtil.toJsonStr(fail));
+
+            out.println(JsonUtil.toJson(fail));
             out.flush();
             out.close();
         }
@@ -125,7 +126,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         httpServletResponse.setStatus(400);
         httpServletResponse.setContentType("application/json;charset=utf-8");
         PrintWriter out = httpServletResponse.getWriter();
-        out.println(JSONUtil.toJsonStr(Result.fail(errorMsg)));
+        out.println(JsonUtil.toJson(Result.fail(errorMsg)));
         out.flush();
         out.close();
         return false;

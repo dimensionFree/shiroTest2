@@ -51,6 +51,7 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         }
         User user = new User(username, BcryptUtil.encode(password), RoleServiceImpl.ROLE_ID_MEMBER);
 
+
         boolean save = getService().save(user);
         String jwtToken = getService().createTokenAndCache(user);
         return getService().getUserTokenResult(user,jwtToken);

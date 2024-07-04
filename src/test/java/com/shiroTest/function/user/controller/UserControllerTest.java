@@ -1,7 +1,6 @@
 package com.shiroTest.function.user.controller;
 
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.shiroTest.common.ResultData;
 import com.shiroTest.function.base.BaseControllerTest;
 import com.shiroTest.function.role.model.Authority;
@@ -10,6 +9,7 @@ import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
+import com.shiroTest.utils.JsonUtil;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class UserControllerTest extends BaseControllerTest {
         String inputUsername = "username";
         String inputPwd = "password";
         User user = new User(inputUsername, inputPwd);
-        String s = JSONUtil.toJsonStr(user);
+        String s = JsonUtil.toJson(user);
 
         // 构建一个POST请求
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -69,11 +69,11 @@ public class UserControllerTest extends BaseControllerTest {
         String jsonResponse = result.getResponse().getContentAsString();
 
         // 将响应内容转换为User对象
-        var resultData = JSONUtil.toBean(jsonResponse, ResultData.class);
+        var resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
 
         System.out.println(resultData);
 
-        UserLoginInfo dataContent = JSONUtil.toBean(resultData.getDataContent().toString(),UserLoginInfo.class);
+        UserLoginInfo dataContent = JsonUtil.fromJson(JsonUtil.toJson(resultData.getDataContent()),UserLoginInfo.class);
         // 进行断言验证
         assertNotNull(dataContent);
         User4Display user4Display = dataContent.getUser4Display();
