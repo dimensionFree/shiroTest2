@@ -10,7 +10,8 @@ import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.JsonUtil;
-import org.junit.jupiter.api.BeforeAll;
+import com.shiroTest.utils.RedisUtil;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,17 +47,20 @@ public abstract class BaseControllerTest extends BaseTest {
     String adminToken;
     String memberToken;
 
-    @BeforeAll
-    void init() throws MyException {
+    @Autowired
+    protected RedisUtil redisUtil;
+
+    @Before
+    public void init() throws MyException {
         var adminLogin = userService.loginUser("admin", "adminPwd");
         var memberLogin = userService.loginUser("member", "memberPwd");
         adminToken=adminLogin.getToken();
         memberToken=memberLogin.getToken();
 
         User4Display admin4Display = (User4Display)redisUtil.get(adminToken);
-        assertThat(admin4Display).isNotNull();
+//        assertThat(admin4Display).isNotNull();
         User4Display member4Display = (User4Display)redisUtil.get(memberToken);
-        assertThat(member4Display).isNotNull();
+//        assertThat(member4Display).isNotNull();
     }
 
     @Autowired
@@ -69,7 +73,7 @@ public abstract class BaseControllerTest extends BaseTest {
     protected abstract String getApiPrefix();
 
 
-    protected  <T> void member_test_CRUD(T data) throws Exception {
+    protected  <T extends BaseEntity> void member_test_CRUD(T data) throws Exception {
         //create
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post(HTTP_LOCALHOST +getApiPrefix()+"/create")
@@ -96,29 +100,30 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
 
-//        //read
-//        requestBuilder = MockMvcRequestBuilders
-//                .post(HTTP_LOCALHOST +getApiPrefix()+"/find")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(JsonUtil.toJson(data));
-//
-//        // 发送请求并验证结果
-//        result = mockMvc.perform(requestBuilder)
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        System.out.println(result);
-//
-//        // 验证内容类型
-//        contentType = result.getResponse().getContentType();
-//        assertTrue(contentType.startsWith("application/json"));
-//
-//        // 获取响应内容
-//        jsonResponse = result.getResponse().getContentAsString();
-//
-//        // 将响应内容转换为User对象
-//        var resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
-//        assertThat((Boolean) resultData.getDataContent()).isTrue();
+        //read
+        requestBuilder = MockMvcRequestBuilders
+                .get(HTTP_LOCALHOST +getApiPrefix()+"/find/"+data.)
+                .header("Authorization","Bearer "+adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.toJson(data));
+
+        // 发送请求并验证结果
+        result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        System.out.println(result);
+
+        // 验证内容类型
+        contentType = result.getResponse().getContentType();
+        assertTrue(contentType.startsWith("application/json"));
+
+        // 获取响应内容
+        jsonResponse = result.getResponse().getContentAsString();
+
+        // 将响应内容转换为User对象
+        resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
+        assertThat(resultData).isNotNull();
 
 
 

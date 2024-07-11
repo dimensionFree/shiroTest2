@@ -4,7 +4,6 @@ import com.shiroTest.BackendApplication;
 import com.shiroTest.utils.RedisUtil;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +20,5 @@ public abstract class BaseTest extends TestCase {
 
     @Autowired
     protected MockMvc mockMvc;
-
-    @Autowired
-    RedisUtil redisUtil;
 
 }

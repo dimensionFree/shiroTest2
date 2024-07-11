@@ -10,8 +10,7 @@ import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.JsonUtil;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;import static org.assertj.core.api.Assertions.assertThat;
 
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserControllerTest extends BaseControllerTest {
 
 
