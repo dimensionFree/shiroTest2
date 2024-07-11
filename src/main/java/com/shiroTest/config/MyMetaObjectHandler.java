@@ -51,6 +51,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             log.warn(e.getMessage());
         }
         this.setFieldValByName("updateBy",id , metaObject);
-        this.setFieldValByName("updateDate", new Date(), metaObject);
+        this.setFieldValByName("updateDate", LocalDateTime.now(), metaObject);
     }
 }

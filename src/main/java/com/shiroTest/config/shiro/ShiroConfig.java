@@ -46,8 +46,10 @@ public class ShiroConfig {
 
         map.put("/user/login","anon");
         map.put("/user/register","anon");
-        map.put("/user/find/**","jwt[USER_READ,"+ PERMS_OR +",USER_READ_SELF]");
-        map.put("/user/findAll/**","jwt[USER_READ] || jwt[USER_READ_SELF]");
+        map.put("/user/find/**","jwt[USER_READ]");
+        map.put("/user/findAll/**","jwt[USER_READ]");
+        map.put("/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+
         map.put("/user/needUserEdit","jwt");
 //        map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
 

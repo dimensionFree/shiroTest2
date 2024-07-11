@@ -10,6 +10,7 @@ import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
 import com.shiroTest.function.user.service.IUserService;
+import com.shiroTest.utils.BcryptUtil;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
@@ -52,17 +53,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return getBaseMapper().selectByUsername(username);
     }
 
-    public Result getUserTokenResult(User existingUser, String jwtToken) {
+    public UserLoginInfo getUserTokenResult(User existingUser, String jwtToken) {
         User4Display user4Display = buildUser4Display(existingUser);
         UserLoginInfo build = UserLoginInfo.builder()
                 .user4Display(user4Display)
                 .token(jwtToken)
                 .build();
-        return Result.success(
-//                JSONUtil.toJsonStr(
-                build
-//                )
-        );
+        return build;
     }
 
     public Result getUser4DisplayResult(User existingUser) {
@@ -77,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (saveSuccess && needCascade(entity)) {
             return retBool(getBaseMapper().cascadeInsert(entity));
         } else {
-            return false;
+            return saveSuccess;
         }
     }
 
@@ -110,5 +107,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         } else {
             throw new MyException(ResultCodeEnum.TOKEN_ERROR, "invalid token");
         }
+    }
+
+    public UserLoginInfo loginUser(String username, String password) throws MyException {
+        User existingUser = getByUsername(username);
+        if (Objects.isNull(existingUser)){
+            throw new MyException(ResultCodeEnum.USER_NOT_EXISTS,"用户不存在，无法登录");
+        }
+        boolean match = BcryptUtil.match(password, existingUser.getPassword());
+        if (!match){
+            throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
+        }
+        String jwtToken = createTokenAndCache(existingUser);
+        return getUserTokenResult(existingUser, jwtToken);
     }
 }

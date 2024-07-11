@@ -90,9 +90,6 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected boolean isPermitted(Permission permission, AuthorizationInfo info) {
         boolean permitted = super.isPermitted(permission, info);
-//        if (!permitted){
-//            throw new AuthenticationException("no authorization:"+permission.toString());
-//        }
         return permitted;
 //        return true;
     }

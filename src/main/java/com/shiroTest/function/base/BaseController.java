@@ -52,7 +52,6 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 
     @GetMapping("/find/{id}")
     public Result getById(@PathVariable("id") String id){
-        checkSelfAuth(id,"_READ");
         return beforeReturn(Result.success(service.getById(id))) ;
     }
 
@@ -95,8 +94,8 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 
     @PostMapping("/create")
     public Result create(@RequestBody T data){
-
-        return Result.success(service.save(data));
+        boolean save = service.save(data);
+        return Result.success(save);
     }
 
 
@@ -112,8 +111,10 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
     }
 
 
-    @PutMapping("put/{id}")
+    @PutMapping("update/{id}")
     public Result putUserById(@PathVariable("id") String id,@RequestBody T data){
+        checkSelfAuth(id,"_READ");
+
         UpdateWrapper<T> wrapper=new UpdateWrapper<>();
         wrapper.eq("id",id);
         boolean update = service.update(data, wrapper);

@@ -54,23 +54,18 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
         boolean save = getService().save(user);
         String jwtToken = getService().createTokenAndCache(user);
-        return getService().getUserTokenResult(user,jwtToken);
+        return Result.success(
+                getService().getUserTokenResult(user,jwtToken)
+        );
     }
 
     @PostMapping("/login")
     public Result login(@RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
         String password = userPwdDto.getPassword();
-        User existingUser = getService().getByUsername(username);
-        if (Objects.isNull(existingUser)){
-            throw new MyException(ResultCodeEnum.USER_NOT_EXISTS,"用户不存在，无法登录");
-        }
-        boolean match = BcryptUtil.match(password, existingUser.getPassword());
-        if (!match){
-            throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
-        }
-        String jwtToken = getService().createTokenAndCache(existingUser);
-        return getService().getUserTokenResult(existingUser, jwtToken);
+        return Result.success(
+                getService().loginUser(username,password)
+        );
     }
 
     @Override
