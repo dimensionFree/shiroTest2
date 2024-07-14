@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseTest{
-
-    @Autowired
-    protected MockMvc mockMvc;
+//
+//    @Autowired
+//    protected MockMvc mockMvc;
 
 }

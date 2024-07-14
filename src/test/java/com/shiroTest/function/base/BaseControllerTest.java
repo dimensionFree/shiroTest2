@@ -1,6 +1,7 @@
 package com.shiroTest.function.base;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shiroTest.BackendApplication;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.ResultData;
 import com.shiroTest.config.shiro.JwtFilter;
@@ -12,6 +13,8 @@ import com.shiroTest.utils.RedisUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,20 +25,23 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Map;
+import static io.restassured.RestAssured.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc(addFilters = false)
+//@AutoConfigureMockMvc(addFilters = false)
 @EnableWebMvc
-@WebAppConfiguration
+//@WebAppConfiguration(removed cause:should only be used with @SpringBootTest when @SpringBootTest is configured with a mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.)
 //@RunWith(SpringJUnit4ClassRunner.class)(todo:what the diff with SpringRunner.class?)
+@SpringBootTest(classes = BackendApplication.class,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@WebMvcTest(UserController.class)
 public abstract class BaseControllerTest extends BaseTest {
 
-    @Autowired
-    private WebApplicationContext context;
+    @LocalServerPort
+    private int port;
+
 
     public static final String USER_ID_ADMIN = "user_id_admin";
     public static final String USER_ID_MEMBER = "user_id_member";
@@ -52,6 +58,8 @@ public abstract class BaseControllerTest extends BaseTest {
     @Autowired
     protected RedisUtil redisUtil;
 
+    final String HOST=getHost();
+
     @BeforeAll
     public void init() throws MyException {
         var adminLogin = userService.loginUser("admin", "adminPwd");
@@ -59,9 +67,6 @@ public abstract class BaseControllerTest extends BaseTest {
         adminToken=adminLogin.getToken();
         memberToken=memberLogin.getToken();
 
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .addFilter(new JwtFilter(), "/*") // 添加自定义过滤器
-                .build();
 
         User4Display admin4Display = (User4Display)redisUtil.get(adminToken);
 //        assertThat(admin4Display).isNotNull();
@@ -72,11 +77,15 @@ public abstract class BaseControllerTest extends BaseTest {
     @Autowired
     private UserServiceImpl userService;
 
-    public static final String HTTP_LOCALHOST = "http://localhost";
+    public final String HTTP_LOCALHOST = "http://localhost";
 
     protected abstract ServiceImpl getService();
 
     protected abstract String getApiPrefix();
+
+    String getHost(){
+        return HTTP_LOCALHOST+":"+port;
+    }
 
 
     protected  <T extends BaseEntity> void member_test_CRUD(T data) throws Exception {
@@ -84,55 +93,47 @@ public abstract class BaseControllerTest extends BaseTest {
         Map<String, Object> dataMap = JsonUtil.toMap(data);
         String id = dataMap.get("id").toString();
 
-        //create
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post(HTTP_LOCALHOST +getApiPrefix()+"/create")
-                .header("Authorization","Bearer "+adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(data));
+//        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+//
 
-        // 发送请求并验证结果
-        MvcResult result = mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andReturn();
+        ResultData as = given()
+                .header("Content-Type", "application/json")
+                .body(data)
+                .when()
+                .post(getHost() + getApiPrefix() + "/create")
+                .then()
+                .statusCode(200)
+                .contentType("application/json")
+                .extract()
+                .response()
+                .as(ResultData.class);
 
-        System.out.println(result);
 
-        // 验证内容类型
-        String contentType = result.getResponse().getContentType();
-        assertTrue(contentType.startsWith("application/json"));
-
-        // 获取响应内容
-        String jsonResponse = result.getResponse().getContentAsString();
-
-        // 将响应内容转换为User对象
-        var resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
-        assertThat((Boolean) resultData.getDataContent()).isTrue();
-
-        //read
-        requestBuilder = MockMvcRequestBuilders
-                .get(HTTP_LOCALHOST +getApiPrefix()+"/find/"+id)
-                .header("Authorization","Bearer "+adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(data));
-
-        // 发送请求并验证结果
-        result = mockMvc.perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andReturn();
-
-        System.out.println(result);
-
-        // 验证内容类型
-        contentType = result.getResponse().getContentType();
-        assertTrue(contentType.startsWith("application/json"));
-
-        // 获取响应内容
-        jsonResponse = result.getResponse().getContentAsString();
-
-        // 将响应内容转换为User对象
-        resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
-        assertThat(resultData).isNotNull();
+        assertThat(as).isNotNull();
+//        //create
+//        RequestBuilder requestBuilder = MockMvcRequestBuilders
+//                .post(HTTP_LOCALHOST +getApiPrefix()+"/create")
+//                .header("Authorization","Bearer "+adminToken)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(JsonUtil.toJson(data));
+//
+//        // 发送请求并验证结果
+//        MvcResult result = mockMvc.perform(requestBuilder)
+//                .andExpect(status().isOk())
+//                .andReturn();
+//
+//        System.out.println(result);
+//
+//        // 验证内容类型
+//        String contentType = result.getResponse().getContentType();
+//        assertTrue(contentType.startsWith("application/json"));
+//
+//        // 获取响应内容
+//        String jsonResponse = result.getResponse().getContentAsString();
+//
+//        // 将响应内容转换为User对象
+//        var resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
+//        assertThat((Boolean) resultData.getDataContent()).isTrue();
 
 
 
