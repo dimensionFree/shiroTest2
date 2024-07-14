@@ -1,6 +1,7 @@
 package com.shiroTest.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import static com.shiroTest.config.JacksonConfig.setObjectMapper;
 
@@ -22,6 +24,14 @@ public class JsonUtil {
     static {
         objectMapper = new ObjectMapper();
         setObjectMapper(objectMapper);
+    }
+
+    public static Map<String, Object> toMap(Object obj) {
+        return objectMapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
+    }
+
+    public static Map<String, Object> toMap(String json) throws IOException {
+        return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
     }
 
     // 将对象序列化为JSON字符串

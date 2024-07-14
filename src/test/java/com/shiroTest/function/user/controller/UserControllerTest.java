@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,9 +43,11 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void crud_should_work() throws Exception {
+
         String inputUsername = "username";
         String inputPwd = "password";
         User user = new User(inputUsername, inputPwd);
+        user.setId(UUID.randomUUID().toString());
         member_test_CRUD(user);
     }
 

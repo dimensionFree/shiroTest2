@@ -46,6 +46,7 @@ public class ShiroConfig {
 
         map.put("/user/login","anon");
         map.put("/user/register","anon");
+        map.put("/user/create","jwt[USER_CREATE]");
         map.put("/user/find/**","jwt[USER_READ]");
         map.put("/user/findAll/**","jwt[USER_READ]");
         map.put("/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
