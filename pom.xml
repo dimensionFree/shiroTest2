@@ -126,6 +126,42 @@
         </dependency>
 
 
+        <!-- JUnit Platform Launcher Dependency -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Ensure correct versions for JUnit platform dependencies -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
+<!--        这个错误通常是由于Hibernate Validator的版本与Spring Boot版本之间的不兼容造成的。Spring Boot 2.3.x版本默认使用Hibernate Validator 6.x版本，
+而在较新的Spring Boot版本中可能会使用不同的Hibernate Validator版本。
+在Spring Boot 2.3.4.RELEASE中，你可能需要手动添加Hibernate Validator依赖。-->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.1.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
 
         <!--引入jwt-->
         <dependency>

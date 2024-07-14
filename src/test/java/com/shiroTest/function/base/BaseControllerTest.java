@@ -1,24 +1,18 @@
 package com.shiroTest.function.base;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.shiroTest.BackendApplication;
 import com.shiroTest.common.MyException;
-import com.shiroTest.common.Result;
 import com.shiroTest.common.ResultData;
 import com.shiroTest.config.shiro.JwtFilter;
-import com.shiroTest.function.role.model.Authority;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -30,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -57,7 +52,7 @@ public abstract class BaseControllerTest extends BaseTest {
     @Autowired
     protected RedisUtil redisUtil;
 
-    @Before
+    @BeforeAll
     public void init() throws MyException {
         var adminLogin = userService.loginUser("admin", "adminPwd");
         var memberLogin = userService.loginUser("member", "memberPwd");
