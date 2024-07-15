@@ -16,15 +16,25 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import static io.restassured.RestAssured.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +49,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@WebMvcTest(UserController.class)
 public abstract class BaseControllerTest extends BaseTest {
 
+
+    @Autowired
+    protected PlatformTransactionManager transactionManager;
+
     @LocalServerPort
     private int port;
 
@@ -46,14 +60,16 @@ public abstract class BaseControllerTest extends BaseTest {
     public static final String USER_ID_ADMIN = "user_id_admin";
     public static final String USER_ID_MEMBER = "user_id_member";
 
+    protected abstract ServiceImpl getService();
+
     public UserServiceImpl getUserService() {
         return userService;
     }
 
-    User admin;
-    User member;
-    String adminToken;
-    String memberToken;
+    protected User admin;
+    protected User member;
+    protected String adminToken;
+    protected String memberToken;
 
     @Autowired
     protected RedisUtil redisUtil;
@@ -79,37 +95,50 @@ public abstract class BaseControllerTest extends BaseTest {
 
     public final String HTTP_LOCALHOST = "http://localhost";
 
-    protected abstract ServiceImpl getService();
 
     protected abstract String getApiPrefix();
 
-    String getHost(){
+    protected String getHost(){
         return HTTP_LOCALHOST+":"+port;
     }
 
 
-    protected  <T extends BaseEntity> void member_test_CRUD(T data) throws Exception {
 
+    protected  <T extends BaseEntity> void member_test_CRUD(T data) throws Exception {
+        List<Runnable> tasks = new ArrayList<>();
         Map<String, Object> dataMap = JsonUtil.toMap(data);
         String id = dataMap.get("id").toString();
 
 //        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
 //
 
-        ResultData as = given()
-                .header("Content-Type", "application/json")
-                .body(data)
-                .when()
-                .post(getHost() + getApiPrefix() + "/create")
-                .then()
-                .statusCode(200)
-                .contentType("application/json")
-                .extract()
-                .response()
-                .as(ResultData.class);
+        try {
+            // 在try块中定义任务
+            tasks.add(() -> {
+                        getLog().info("Deleting data...");
+                        // 删除数据的实际逻辑
+                        getService().removeById(id);
+                    }
+            );
+
+            ResultData as = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .body(data)
+                    .when()
+                    .post(getHost() + getApiPrefix() + "/create")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
 
 
-        assertThat(as).isNotNull();
+            assertThat(as).isNotNull();
+        } finally {
+            processDeleteTask(tasks);
+        }
 //        //create
 //        RequestBuilder requestBuilder = MockMvcRequestBuilders
 //                .post(HTTP_LOCALHOST +getApiPrefix()+"/create")
@@ -138,4 +167,6 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
     }
+
+
 }

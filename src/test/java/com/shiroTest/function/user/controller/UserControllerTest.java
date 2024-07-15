@@ -1,20 +1,19 @@
 package com.shiroTest.function.user.controller;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.function.base.BaseControllerTest;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-
 public class UserControllerTest extends BaseControllerTest {
 
-
     @Override
-    protected ServiceImpl getService() {
+    public UserServiceImpl getService() {
         return service;
     }
 
@@ -29,13 +28,21 @@ public class UserControllerTest extends BaseControllerTest {
     public UserServiceImpl service;
 
     @Test
+    @Transactional
+    @Rollback
     public void crud_should_work() throws Exception {
 
         String inputUsername = "username";
         String inputPwd = "password";
-        User user = new User(inputUsername, inputPwd);
-        user.setId(UUID.randomUUID().toString());
-        member_test_CRUD(user);
+        User data = new User(inputUsername, inputPwd);
+        data.setId(UUID.randomUUID().toString());
+
+        try {
+            member_test_CRUD(data);
+        } finally {
+        }
+
+//
     }
 
 
