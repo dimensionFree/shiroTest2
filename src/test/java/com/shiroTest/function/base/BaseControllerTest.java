@@ -1,6 +1,7 @@
 package com.shiroTest.function.base;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageInfo;
 import com.shiroTest.BackendApplication;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.ResultData;
@@ -21,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.*;
@@ -158,8 +161,10 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
             assertThat(resultData).isNotNull();
-            List<Map<String,Object>> dataContent = (List) resultData.getDataContent();
-            Stream<String> ids = dataContent.stream().map(m -> m.get("id").toString());
+            PageInfo<Map<String,Object>> pageInfo = JsonUtil.fromMap((Map<String, Object>) resultData.getDataContent(), PageInfo.class);
+            assertThat(pageInfo.getSize()).isGreaterThanOrEqualTo(3);
+            var list = pageInfo.getList();
+            Set<String> ids = list.stream().map(i -> i.get("id").toString()).collect(Collectors.toSet());
             assertThat(ids).contains(id);
 
             LocalDateTime aHourAgo = LocalDateTime.now().minusHours(1);

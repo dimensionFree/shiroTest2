@@ -4,18 +4,14 @@ package com.shiroTest.function.user.controller;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.common.ResultData;
-import com.shiroTest.config.shiro.MyRealm;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
+import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
-import com.shiroTest.utils.JwtUtil;
-import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
@@ -69,22 +65,17 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     }
 
     @Override
-    protected Result beforeReturn(Result success) {
-        ResultData resultData = (ResultData) success.getBody();
-        User dataContent = (User) resultData.getDataContent();
-        if (Objects.nonNull(dataContent) ){
-            resultData.setDataContent(getService().buildUser4Display(dataContent));
+    protected Object beforeReturn(User success) {
+        if (Objects.isNull(success)){
+            return null;
         }
-        return success;
+        User4Display user4Display = getService().buildUser4Display(success);
+        return user4Display;
     }
 
-
     @Override
-    protected Result beforeReturnList(Result success) {
-        ResultData resultData = (ResultData) success.getBody();
-        var dataContent = (List<User>) resultData.getDataContent();
-        resultData.setDataContent(dataContent.stream().map(u->getService().buildUser4Display(u)).collect(Collectors.toList()));
-        return success;
+    protected List beforeReturnList(List<User> datas) {
+        return datas.stream().map(u->beforeReturn(u)).collect(Collectors.toList());
     }
 }
 

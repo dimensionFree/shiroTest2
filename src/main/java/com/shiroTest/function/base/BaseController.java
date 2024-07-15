@@ -3,6 +3,8 @@ package com.shiroTest.function.base;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.shiroTest.common.Result;
 import com.shiroTest.function.role.model.Authority;
 import com.shiroTest.function.user.model.User4Display;
@@ -11,6 +13,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,17 +45,27 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 
 
     @GetMapping("/findAll")
-    public Result getAll(){
-        return beforeReturnList(Result.success(service.list()));
+    public Result getAll(@RequestParam(defaultValue = "1") int currentPage,
+                         @RequestParam(defaultValue = "10") int pageSize){
+        // 开始分页
+        PageHelper.startPage(currentPage, pageSize);
+        List<T> list = service.list();
+
+        List beforeReturnList = beforeReturnList(list);
+        // 获取分页信息
+        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
+        return Result.success(pageInfo);
     }
 
-    protected Result beforeReturnList(Result success) {
-        return success;
+    protected List beforeReturnList(List<T> datas) {
+        return datas;
     }
 
     @GetMapping("/find/{id}")
     public Result getById(@PathVariable("id") String id){
-        return beforeReturn(Result.success(service.getById(id))) ;
+        T byId = service.getById(id);
+        var t = beforeReturn(byId);
+        return  Result.success(t);
     }
 
     protected void checkSelfAuth(String resourceId,String authStr) {
@@ -87,7 +100,7 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
         return getAuth("_EDIT_SELF");
     }
 
-    protected Result beforeReturn(Result success) {
+    protected Object beforeReturn(T success) {
         return success;
     }
 
