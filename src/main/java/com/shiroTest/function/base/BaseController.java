@@ -62,7 +62,7 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
         if (!haveAuthorities.contains(bigAuth)) {
             if (haveAuthorities.contains(getAuth(authStr+ SELF_AUTH_SUFFIX))){
                 T byId = service.getById(resourceId);
-                String creatorId = byId.getCreateBy();
+                String creatorId = byId.getCreatedBy();
                 if (!loginInfo.getId().equals(creatorId)){
                     throw new AuthenticationException("只有self权限，无法访问其他人的资源");
                 }
@@ -122,18 +122,9 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
     }
     @DeleteMapping("delete/{id}")
     public Result deleteById(@PathVariable("id") String id){
+        checkSelfAuth(id,"_EDIT");
         boolean delete = service.removeById(id);
         return Result.success(delete);
     }
-
-
-
-    @GetMapping("/needUserEdit")
-    public Result test(){
-        return Result.success(true);
-    }
-
-
-
 
 }

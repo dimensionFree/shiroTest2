@@ -72,7 +72,9 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     protected Result beforeReturn(Result success) {
         ResultData resultData = (ResultData) success.getBody();
         User dataContent = (User) resultData.getDataContent();
-        resultData.setDataContent(getService().buildUser4Display(dataContent));
+        if (Objects.nonNull(dataContent) ){
+            resultData.setDataContent(getService().buildUser4Display(dataContent));
+        }
         return success;
     }
 

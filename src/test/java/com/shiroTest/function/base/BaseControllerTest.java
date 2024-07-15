@@ -4,42 +4,29 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.BackendApplication;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.ResultData;
-import com.shiroTest.config.shiro.JwtFilter;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@AutoConfigureMockMvc(addFilters = false)
 @EnableWebMvc
@@ -104,7 +91,7 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
 
-    protected  <T extends BaseEntity> void member_test_CRUD(T data) throws Exception {
+    protected  <T extends BaseAuditableEntity> void member_test_CRUD(T data) throws Exception {
         List<Runnable> tasks = new ArrayList<>();
         Map<String, Object> dataMap = JsonUtil.toMap(data);
         String id = dataMap.get("id").toString();
@@ -121,7 +108,8 @@ public abstract class BaseControllerTest extends BaseTest {
                     }
             );
 
-            ResultData as = given()
+            //create
+            ResultData resultData = given()
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer "+adminToken)
                     .body(data)
@@ -135,37 +123,151 @@ public abstract class BaseControllerTest extends BaseTest {
                     .as(ResultData.class);
 
 
-            assertThat(as).isNotNull();
+            assertThat(resultData).isNotNull();
+            assertThat((Boolean) resultData.getDataContent()).isTrue();
+            //read
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+
+            assertThat(resultData).isNotNull();
+            String readId = ((Map<String, Object>) resultData.getDataContent()).get("id").toString();
+            assertThat(readId).isEqualTo(id);
+
+            //read all
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/findAll")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+
+            assertThat(resultData).isNotNull();
+            List<Map<String,Object>> dataContent = (List) resultData.getDataContent();
+            Stream<String> ids = dataContent.stream().map(m -> m.get("id").toString());
+            assertThat(ids).contains(id);
+
+            LocalDateTime aHourAgo = LocalDateTime.now().minusHours(1);
+            data.setCreatedDate(aHourAgo.toString());
+
+            //why use api to read but not service? service share same sqlSession, it will use it own cache,resulting in some reading error
+            //read
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+            assertThat(resultData).isNotNull();
+            var createdDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
+            assertThat(aHourAgo).isNotEqualTo(createdDate);
+
+//            clearMybatisLvl1Cache();
+//            var byId = JsonUtil.toMap(getService().getById(id));
+//            var createdDate = LocalDateTime.parse(byId.get("createdDate").toString());
+
+            //update
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .body(data)
+                    .when()
+                    .put(getHost() + getApiPrefix() + "/update/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+
+            assertThat(resultData).isNotNull();
+            assertThat((Boolean) resultData.getDataContent()).isTrue();
+
+            //read
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+            assertThat(resultData).isNotNull();
+            var updatedCreateDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
+            assertThat(aHourAgo).isEqualTo(updatedCreateDate);
+
+//
+//            clearMybatisLvl1Cache();
+//
+//            byId = JsonUtil.toMap(getService().getById(id));
+//            var updatedCreateDate = LocalDateTime.parse(byId.get("createdDate").toString());
+
+            //delete
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .body(data)
+                    .when()
+                    .delete(getHost() + getApiPrefix() + "/delete/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+
+            assertThat(resultData).isNotNull();
+            assertThat((Boolean) resultData.getDataContent()).isTrue();
+            clearMybatisLvl1Cache();
+
+            //read
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/"+id)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+            assertThat(resultData).isNotNull();
+            assertThat(resultData.getDataContent()).isNull();
+//            var updatedCreateDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
+//            assertThat(aHourAgo).isEqualTo(updatedCreateDate);
+//            assertThat(deleted).isNull();
+
+
         } finally {
             processDeleteTask(tasks);
+//            getService().removeById(id);
         }
-//        //create
-//        RequestBuilder requestBuilder = MockMvcRequestBuilders
-//                .post(HTTP_LOCALHOST +getApiPrefix()+"/create")
-//                .header("Authorization","Bearer "+adminToken)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(JsonUtil.toJson(data));
-//
-//        // 发送请求并验证结果
-//        MvcResult result = mockMvc.perform(requestBuilder)
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        System.out.println(result);
-//
-//        // 验证内容类型
-//        String contentType = result.getResponse().getContentType();
-//        assertTrue(contentType.startsWith("application/json"));
-//
-//        // 获取响应内容
-//        String jsonResponse = result.getResponse().getContentAsString();
-//
-//        // 将响应内容转换为User对象
-//        var resultData = JsonUtil.fromJson(jsonResponse, ResultData.class);
-//        assertThat((Boolean) resultData.getDataContent()).isTrue();
-
-
-
     }
 
 

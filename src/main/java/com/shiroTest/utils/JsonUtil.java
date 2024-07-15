@@ -86,4 +86,8 @@ public class JsonUtil {
             throw new RuntimeException("Error writing JSON to file", e);
         }
     }
+
+    public static <T> T fromMap(Map<String, Object> map, Class<T> clazz) {
+        return objectMapper.convertValue(map, clazz);
+    }
 }

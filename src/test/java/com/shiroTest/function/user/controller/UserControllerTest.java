@@ -36,13 +36,8 @@ public class UserControllerTest extends BaseControllerTest {
         String inputPwd = "password";
         User data = new User(inputUsername, inputPwd);
         data.setId(UUID.randomUUID().toString());
+        member_test_CRUD(data);
 
-        try {
-            member_test_CRUD(data);
-        } finally {
-        }
-
-//
     }
 
 

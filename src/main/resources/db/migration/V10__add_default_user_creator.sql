@@ -1,3 +1,3 @@
 UPDATE user
-SET create_by = COALESCE(create_by, id)
-WHERE create_by IS NULL;
+SET created_by = COALESCE(created_by, id)
+WHERE created_by IS NULL;

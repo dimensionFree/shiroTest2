@@ -28,10 +28,10 @@ public class ArticleServiceImplTest extends BaseServiceTest {
         boolean save = service.save(article);
         Article byId = service.getById(article.getId());
         assertEquals(byId.getPreface(), "Hello,world!");
-        assertTrue(StringUtils.isNotBlank(byId.getCreateBy()));
-        assertNotNull(byId.getCreateDate());
-        assertTrue(StringUtils.isNotBlank(byId.getUpdateBy()));
-        assertNotNull(byId.getUpdateDate());
+        assertTrue(StringUtils.isNotBlank(byId.getCreatedBy()));
+        assertNotNull(byId.getCreatedDate());
+        assertTrue(StringUtils.isNotBlank(byId.getUpdatedBy()));
+        assertNotNull(byId.getUpdatedDate());
 
 
     }

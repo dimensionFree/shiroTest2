@@ -1,6 +1,8 @@
 package com.shiroTest.config.flyway;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,14 @@ public class MigrationConfiguration {
 //    FlywayMigrationInitializer delayedFlywayInitializer(Flyway flyway) {
 //        return new FlywayMigrationInitializer(flyway, null);
 //    }
+
+    /**
+     * ApplicationRunner to trigger Flyway migration after JPA DDL
+     */
+    @Bean
+    public ApplicationRunner applicationRunner(Flyway flyway) {
+        return args -> flyway.migrate();
+    }
 
 }
 

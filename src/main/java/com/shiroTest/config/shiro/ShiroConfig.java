@@ -50,6 +50,7 @@ public class ShiroConfig {
         map.put("/user/find/**","jwt[USER_READ]");
         map.put("/user/findAll/**","jwt[USER_READ]");
         map.put("/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+        map.put("/user/delete/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
 
         map.put("/user/needUserEdit","jwt");
 //        map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器

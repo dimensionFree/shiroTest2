@@ -33,10 +33,10 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             }
             log.warn(e.getMessage());
         }
-        this.setFieldValByName("createBy", editorUserId, metaObject);
-        this.setFieldValByName("createDate", LocalDateTime.now(), metaObject);
-        this.setFieldValByName("updateBy", editorUserId, metaObject);
-        this.setFieldValByName("updateDate", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("createdBy", editorUserId, metaObject);
+        this.setFieldValByName("createdDate", LocalDateTime.now().toString(), metaObject);
+        this.setFieldValByName("updatedBy", editorUserId, metaObject);
+        this.setFieldValByName("updatedDate", LocalDateTime.now().toString(), metaObject);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             id=DEFAULT_OPERATOR;
             log.warn(e.getMessage());
         }
-        this.setFieldValByName("updateBy",id , metaObject);
-        this.setFieldValByName("updateDate", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("updatedBy",id , metaObject);
+        this.setFieldValByName("updatedDate", LocalDateTime.now().toString(), metaObject);
     }
 }

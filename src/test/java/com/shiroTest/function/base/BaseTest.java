@@ -2,6 +2,8 @@ package com.shiroTest.function.base;
 
 import com.shiroTest.BackendApplication;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -22,11 +24,19 @@ import java.util.concurrent.Future;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = BackendApplication.class)
 //自动回滚数据库
-@Transactional
+//@Transactional
+//@Rollback
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Rollback
 @Slf4j
 public abstract class BaseTest{
+
+    @Autowired
+    SqlSessionFactory sqlSessionFactory;
+
+    protected void clearMybatisLvl1Cache(){
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        sqlSession.clearCache();
+    }
 
     protected static final ExecutorService executorService = Executors.newFixedThreadPool(2);
 //

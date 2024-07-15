@@ -36,7 +36,7 @@ public class User extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    @TableId(value = "id", type = IdType.UUID)
     @Id
     private String id;
 
