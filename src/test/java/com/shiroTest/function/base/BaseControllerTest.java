@@ -259,14 +259,9 @@ public abstract class BaseControllerTest extends BaseTest {
                     .as(ResultData.class);
             assertThat(resultData).isNotNull();
             assertThat(resultData.getDataContent()).isNull();
-//            var updatedCreateDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
-//            assertThat(aHourAgo).isEqualTo(updatedCreateDate);
-//            assertThat(deleted).isNull();
-
 
         } finally {
             processDeleteTask(tasks);
-//            getService().removeById(id);
         }
     }
 
