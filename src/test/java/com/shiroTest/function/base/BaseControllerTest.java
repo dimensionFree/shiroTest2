@@ -166,6 +166,29 @@ public abstract class BaseControllerTest extends BaseTest {
             var list = pageInfo.getList();
             Set<String> ids = list.stream().map(i -> i.get("id").toString()).collect(Collectors.toSet());
             assertThat(ids).contains(id);
+            //read all
+            resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+adminToken)
+                    .queryParam("currentPage",1)
+                    .queryParam("pageSize",1)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/findAll")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+
+            assertThat(resultData).isNotNull();
+            pageInfo = JsonUtil.fromMap((Map<String, Object>) resultData.getDataContent(), PageInfo.class);
+            assertThat(pageInfo.getSize()).isEqualTo(1);
+            assertThat(pageInfo.getPages()).isGreaterThanOrEqualTo(3);
+            list = pageInfo.getList();
+            ids = list.stream().map(i -> i.get("id").toString()).collect(Collectors.toSet());
+            assertThat(ids).contains(id);
 
             LocalDateTime aHourAgo = LocalDateTime.now().minusHours(1);
             data.setCreatedDate(aHourAgo.toString());
@@ -186,10 +209,6 @@ public abstract class BaseControllerTest extends BaseTest {
             assertThat(resultData).isNotNull();
             var createdDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
             assertThat(aHourAgo).isNotEqualTo(createdDate);
-
-//            clearMybatisLvl1Cache();
-//            var byId = JsonUtil.toMap(getService().getById(id));
-//            var createdDate = LocalDateTime.parse(byId.get("createdDate").toString());
 
             //update
             resultData = given()
@@ -224,12 +243,6 @@ public abstract class BaseControllerTest extends BaseTest {
             assertThat(resultData).isNotNull();
             var updatedCreateDate = ((Map<String, Object>) resultData.getDataContent()).get("createdDate").toString();
             assertThat(aHourAgo).isEqualTo(updatedCreateDate);
-
-//
-//            clearMybatisLvl1Cache();
-//
-//            byId = JsonUtil.toMap(getService().getById(id));
-//            var updatedCreateDate = LocalDateTime.parse(byId.get("createdDate").toString());
 
             //delete
             resultData = given()

@@ -51,9 +51,16 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
         PageHelper.startPage(currentPage, pageSize);
         List<T> list = service.list();
 
-        List beforeReturnList = beforeReturnList(list);
         // 获取分页信息
-        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
+        PageInfo<T> pageInfo = new PageInfo<>(list);
+
+        // 在分页信息基础上进行处理
+        List beforeReturnList = beforeReturnList(list);
+        pageInfo.setList(beforeReturnList);
+
+//        List beforeReturnList = beforeReturnList(list);
+//        // 获取分页信息
+//        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
         return Result.success(pageInfo);
     }
 
