@@ -8,6 +8,7 @@ import com.shiroTest.common.ResultData;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
+import com.shiroTest.utils.DeleteDataHelper;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -83,7 +84,7 @@ public abstract class BaseControllerTest extends BaseTest {
     @Autowired
     private UserServiceImpl userService;
 
-    public final String HTTP_LOCALHOST = "http://localhost";
+    private final String HTTP_LOCALHOST = "http://localhost";
 
 
     protected abstract String getApiPrefix();
@@ -104,12 +105,11 @@ public abstract class BaseControllerTest extends BaseTest {
 
         try {
             // 在try块中定义任务
-            tasks.add(() -> {
-                        getLog().info("Deleting data...");
-                        // 删除数据的实际逻辑
-                        getService().removeById(id);
-                    }
-            );
+            DeleteDataHelper.addTask(() -> {
+                getLog().info("Deleting data...");
+                // 删除数据的实际逻辑
+                getService().removeById(id);
+            });
 
             //create
             ResultData resultData = given()
@@ -279,7 +279,7 @@ public abstract class BaseControllerTest extends BaseTest {
             assertThat(resultData.getDataContent()).isNull();
 
         } finally {
-            processDeleteTask(tasks);
+            DeleteDataHelper.clear();
         }
     }
 

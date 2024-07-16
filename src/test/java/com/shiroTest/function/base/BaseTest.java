@@ -38,7 +38,6 @@ public abstract class BaseTest{
         sqlSession.clearCache();
     }
 
-    protected static final ExecutorService executorService = Executors.newFixedThreadPool(2);
 //
 //    @Autowired
 //    protected MockMvc mockMvc;
@@ -47,20 +46,4 @@ public abstract class BaseTest{
         return log;
     }
 
-    protected void processDeleteTask(List<Runnable> tasks) {
-
-        for (Runnable task : tasks) {
-            if (task != null) {
-                try {
-                    // 在finally块中提交并执行任务
-                    Future<?> submit = executorService.submit(task);
-                    submit.get(); // 等待任务完成
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    executorService.shutdown();
-                }
-            }
-        }
-    }
 }
