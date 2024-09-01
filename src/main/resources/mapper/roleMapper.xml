@@ -22,5 +22,17 @@
         where role.id=#{id}
     </select>
 
+    <select id="selectList" resultMap="role">
+        SELECT *
+        FROM `role`
+        LEFT JOIN role_authorities ra ON role.id = ra.role_id
+        LEFT JOIN role_features rf ON role.id = rf.role_id
+        <where>
+            <if test="ew != null">
+                ${ew.sqlSegment}
+            </if>
+        </where>
+    </select>
+
 
 </mapper>

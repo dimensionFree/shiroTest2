@@ -43,7 +43,7 @@ public class ShiroConfig {
         Map<String, String> map = new HashMap<String, String>();
 //        map.put("/index.jsp", "authc");
 //        map.put("/login.jsp","anon");
-
+        //user
         map.put("/user/login","anon");
         map.put("/user/register","anon");
         map.put("/user/create","jwt[USER_CREATE]");
@@ -51,9 +51,11 @@ public class ShiroConfig {
         map.put("/user/findAll/**","jwt[USER_READ]");
         map.put("/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
         map.put("/user/delete/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+        //role
+        map.put("/role/findAll/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
 
-        map.put("/user/needUserEdit","jwt");
-//        map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
+//        map.put("/user/needUserEdit","jwt");
+        map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
 
