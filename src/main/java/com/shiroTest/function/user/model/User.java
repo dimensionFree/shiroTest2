@@ -8,8 +8,6 @@ import com.shiroTest.function.quickMenu.MenuItem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -45,7 +43,7 @@ public class User extends BaseAuditableEntity {
 
     private String roleId;
 
-    private String state;
+    private String state= State.ACTIVE.name();
 
     @NotBlank
     @Length(min = 4,max = 10,message = "username length error")
