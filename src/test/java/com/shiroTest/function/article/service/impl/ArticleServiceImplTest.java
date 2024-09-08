@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -14,11 +15,6 @@ public class ArticleServiceImplTest extends BaseServiceTest {
 
     @Autowired
     ArticleServiceImpl service;
-
-//    @Test
-//    public void testOrder() {
-//        System.out.println("testOrder");
-//    }
     @Test
     public void save_should_get_preface() {
         Article article = new Article();
@@ -32,6 +28,10 @@ public class ArticleServiceImplTest extends BaseServiceTest {
         assertNotNull(byId.getCreatedDate());
         assertTrue(StringUtils.isNotBlank(byId.getUpdatedBy()));
         assertNotNull(byId.getUpdatedDate());
+
+        Article latestArticle = service.getLatestArticle();
+        assertThat(latestArticle.getId()).isEqualTo(article.getId());
+
 
 
     }

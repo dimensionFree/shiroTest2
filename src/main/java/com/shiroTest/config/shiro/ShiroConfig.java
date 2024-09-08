@@ -54,7 +54,9 @@ public class ShiroConfig {
         //role
         map.put("/role/findAll/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
 
-//        map.put("/user/needUserEdit","jwt");
+        //article
+        map.put("/article/read/latest","anon");
+
         map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
