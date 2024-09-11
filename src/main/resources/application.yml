@@ -10,6 +10,18 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME} # 替换为你的Gmail账号
+    password: ${MAIL_PASSWORD}         # 替换为你的Gmail密码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
   redis:
     host: localhost

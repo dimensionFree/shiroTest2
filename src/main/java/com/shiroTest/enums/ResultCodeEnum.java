@@ -23,6 +23,8 @@ public enum ResultCodeEnum {
     USER_BLOCKED("2004", "用户封禁", HttpStatus.UNAUTHORIZED),
     USER_DUPLICATE("2005", "用户已存在", HttpStatus.BAD_REQUEST),
     USER_PASSWORD_ERROR("2005", "密码错误", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_REGISTER("2006", "邮箱已注册", HttpStatus.BAD_REQUEST),
+    VERIFICATION_NOT_MATCH("2007", "验证码与邮箱不匹配", HttpStatus.BAD_REQUEST),
 
     PARAM_ERROR("3000", "参数错误", HttpStatus.BAD_REQUEST),
     PARAM_NULL("3001", "参数为空", HttpStatus.BAD_REQUEST),

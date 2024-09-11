@@ -12,11 +12,13 @@ import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.shiroTest.function.base.BaseController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -38,14 +40,19 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     }
 
     @PostMapping("/register")
-    public Result register(@RequestBody UserPwdDto userPwdDto) throws MyException {
+    public Result register(@Validated(UserPwdDto.Register.class) @RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
         String password = userPwdDto.getPassword();
+        String email = userPwdDto.getEmail();
+        String verificationCode = userPwdDto.getVerificationCode();
+
+        getService().checkVerificationCode(email,verificationCode);
+
         User byUsername = getService().getByUsername(username);
         if (Objects.nonNull(byUsername)){
             throw new MyException(ResultCodeEnum.USER_DUPLICATE,"用户已存在，无法注册");
         }
-        User user = new User(username, BcryptUtil.encode(password), RoleServiceImpl.ROLE_ID_MEMBER);
+        User user = new User(username, BcryptUtil.encode(password),email, RoleServiceImpl.ROLE_ID_MEMBER);
 
 
         boolean save = getService().save(user);
@@ -56,9 +63,10 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     }
 
     @PostMapping("/login")
-    public Result login(@RequestBody UserPwdDto userPwdDto) throws MyException {
+    public Result login(@Validated(UserPwdDto.Login.class) @RequestBody UserPwdDto userPwdDto) throws MyException {
         String username = userPwdDto.getUsername();
         String password = userPwdDto.getPassword();
+
         return Result.success(
                 getService().loginUser(username,password)
         );
@@ -77,5 +85,29 @@ public class UserController extends BaseController<User, UserServiceImpl> {
     protected List beforeReturnList(List<User> datas) {
         return datas.stream().map(u->beforeReturn(u)).collect(Collectors.toList());
     }
+
+
+    @PostMapping("/send-verification-code")
+    public Result sendVerificationCode(@RequestBody Map<String, String> request) throws MyException {
+        String email = request.get("email");
+        // 检查邮箱是否已被注册
+        User existingUser = getService().getByEmail(email);
+        if (existingUser != null) {
+            throw new MyException(ResultCodeEnum.EMAIL_ALREADY_REGISTER, "邮箱已被使用");
+        }
+
+        // 生成验证码
+        String verificationCode = getService().generateVerificationCode();
+
+        // 将验证码和邮箱关联，并存储在临时存储（例如Redis），设置有效期
+        getService().saveVerificationCode(email, verificationCode);
+
+        // 发送验证码到邮箱
+        getService().sendVerificationEmail(email, verificationCode);
+
+        return Result.success("验证码已发送，请检查您的邮箱");
+    }
+
+
 }
 

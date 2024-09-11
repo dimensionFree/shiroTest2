@@ -68,6 +68,13 @@ public class User extends BaseAuditableEntity {
         this.roleId = roleId;
 
     }
+    public User(String username, String password,String email,String roleId) {
+        this.password = password;
+        this.username = username;
+        this.email = email;
+        this.roleId = roleId;
+
+    }
     public User(String username, String password) {
         this.password = password;
         this.username = username;

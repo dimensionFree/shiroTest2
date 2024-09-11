@@ -46,6 +46,7 @@ public class ShiroConfig {
         //user
         map.put("/user/login","anon");
         map.put("/user/register","anon");
+        map.put("/user/send-verification-code","anon");
         map.put("/user/create","jwt[USER_CREATE]");
         map.put("/user/find/**","jwt[USER_READ]");
         map.put("/user/findAll/**","jwt[USER_READ]");
@@ -56,6 +57,8 @@ public class ShiroConfig {
 
         //article
         map.put("/article/read/latest","anon");
+        map.put("/article/findAll/**","anon");
+
 
         map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器
 

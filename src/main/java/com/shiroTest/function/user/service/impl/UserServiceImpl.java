@@ -1,9 +1,11 @@
 package com.shiroTest.function.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
 import com.shiroTest.enums.ResultCodeEnum;
+import com.shiroTest.function.mail.EmailService;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.dao.UserMapper;
 import com.shiroTest.function.user.model.User;
@@ -16,6 +18,7 @@ import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -42,6 +47,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private JwtUtil jwtUtil;
     @Autowired
     private RoleServiceImpl roleService;
+
+    @Autowired
+    private EmailService emailService;
 
 
     public User4Display buildUser4Display(User user) {
@@ -122,5 +130,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         String jwtToken = createTokenAndCache(existingUser);
         return getUserTokenResult(existingUser, jwtToken);
+    }
+
+    public User getByEmail(String email) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email",email);
+        return getBaseMapper().selectOne(queryWrapper);
+    }
+
+    public String generateVerificationCode() {
+        // 生成6位随机数字验证码
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000);
+        return String.valueOf(code);
+    }
+
+    public void saveVerificationCode(String email, String code) {
+        // 使用 Redis 存储验证码，设置过期时间为10分钟
+        redisUtil.set(getVerificationCacheKey(email), code, 10, TimeUnit.MINUTES);
+    }
+
+    private String getVerificationCacheKey(String email) {
+        return "email_verification_code:" + email;
+    }
+
+    public void sendVerificationEmail(String email, String code) {
+        String message = "您的验证码是：" + code + "，有效期为10分钟。";
+        emailService.sendEmail(email,"邮箱验证",message);
+
+    }
+
+
+    public void checkVerificationCode(String email, String verificationCode) throws MyException {
+        if (!verificationCode.equals(redisUtil.get(getVerificationCacheKey(email)))) {
+            throw new MyException(ResultCodeEnum.VERIFICATION_NOT_MATCH, "验证码与邮箱不匹配");
+        }
     }
 }
