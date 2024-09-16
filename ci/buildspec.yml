@@ -31,9 +31,9 @@ phases:
       - docker ps
       - echo Waiting for MySQL to start...
       - |
-      until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null; do
-      echo -n "."; sleep 1;
-      done
+        until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null; do
+          echo -n "."; sleep 1;
+        done
       - echo MySQL is up and running
 #      - echo Installing MySQL 8...
 #      - sudo yum update -y
