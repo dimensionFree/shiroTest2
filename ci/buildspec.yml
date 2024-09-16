@@ -4,7 +4,7 @@ env:
   variables:
     CI_DATABASE_URL: "jdbc:mysql://localhost:3306"
     CI_DATABASE_USER: "root"
-    CI_DATABASE_PASSWORD: "rootpassword"
+    CI_DATABASE_PASSWORD: "root"
   parameter-store:
     DEV_DB_URL: "/myapp/datebase_url"
     DEV_DB_USER: "/myapp/datebase_username"
@@ -27,7 +27,7 @@ phases:
 #      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
 #      - sleep 20  # 等待 MySQL 完全启动
       - echo Starting MySQL container
-      - docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb -p 3306:3306 -d mysql:latest
+      - docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=shiroTest -p 3306:3306 -d mysql:latest
       - docker ps
       - echo Waiting for MySQL to start...
       - |
