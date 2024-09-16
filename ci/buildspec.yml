@@ -28,7 +28,7 @@ phases:
       - sleep 20  # 等待 MySQL 完全启动
   pre_build:
     commands:
-      - docker exec -it mysql-test mysql --version
+      - docker exec mysql-test mysql --version
       - echo Doing mvn test...
       # 显示从 Parameter Store 获取的变量
       - echo DEV_DB_URL is $DEV_DB_URL
