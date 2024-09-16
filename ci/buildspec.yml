@@ -1,12 +1,36 @@
 version: 0.2
 
+env:
+  parameter-store:
+    DB_URL: "DB_URL"
+    DB_USER: "DB_USERNAME"
+    DB_PASSWORD: "DB_PASSWORD"
+    MAIL_PASSWORD: "MAIL_PASSWORD"
+    MAIL_USERNAME: "MAIL_USERNAME"
+
 phases:
   install:
     runtime-versions:
       java: corretto11
+    commands:
+      - echo Installing Redis...
+      - sudo yum install -y redis
+      - redis-server --daemonize yes  # 后台启动 Redis
   pre_build:
     commands:
       - echo Doing mvn test...
+      # 显示从 Parameter Store 获取的变量
+      - echo DB_URL is $DB_URL
+      - echo DB_USER is $DB_USER
+      - echo DB_PASSWORD is $DB_PASSWORD
+      - echo MAIL_PASSWORD is MAIL_PASSWORD
+      - echo MAIL_PASSWORD is MAIL_PASSWORD
+      # 在测试前设置环境变量
+      - export DATABASE_URL=$DB_URL
+      - export DATABASE_USER=$DB_USER
+      - export DATABASE_PASSWORD=$DB_PASSWORD
+      - export MAIL_PASSWORD=MAIL_PASSWORD
+      - export MAIL_PASSWORD=MAIL_PASSWORD
       - mvn test
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
