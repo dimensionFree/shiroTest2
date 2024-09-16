@@ -4,7 +4,7 @@ env:
   variables:
     CI_DATABASE_URL: "jdbc:mysql://mysqlDb:3306"
     CI_DATABASE_USER: "root"
-    CI_DATABASE_PASSWORD: "root"
+    CI_DATABASE_PASSWORD: "rootpassword"
   parameter-store:
     DEV_DB_URL: "/myapp/datebase_url"
     DEV_DB_USER: "/myapp/datebase_username"
@@ -22,32 +22,12 @@ phases:
       - echo Starting Redis container...
       - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
       - echo Pulling MySQL 8 Docker image...
-      - docker pull mysql:8.0  # 指定 MySQL 8.0 版本
-#      - echo Starting MySQL container...
-#      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
-#      - sleep 20  # 等待 MySQL 完全启动
-      - echo Starting MySQL container
-      - docker run --name mysqlDb -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=shiroTest -p 3306:3306 -d mysql:latest
-      - docker ps
-      - echo Waiting for MySQL to start...
-      - |
-        until docker exec mysqlDb mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null; do
-          echo -n "."; sleep 1;
-        done
-      - echo MySQL is up and running
-#      - echo Installing MySQL 8...
-#      - sudo yum update -y
-#      - sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
-#      - sudo yum install -y mysql-community-server
-#      - echo Starting MySQL service...
-#      - sudo service mysqld start
-#      - echo Waiting for MySQL to fully start...
-#      - sleep 20  # 等待 MySQL 服务完全启动
-#      - sudo grep 'temporary password' /var/log/mysqld.log  # 获取临时 root 密码
-#      # 设置 MySQL root 用户密码
-#      - sudo mysqladmin -u root password 'rootpassword'
-#      - echo Creating database shiroTest...
-#      - mysql -u root -p rootpassword -e "CREATE DATABASE shiroTest;"
+      - docker pull mysql:8.0
+      - echo Creating Docker network...
+      - docker network create mynetwork  # 创建自定义 Docker 网络
+      - echo Starting MySQL container...
+      - docker run --name mysqlDb --network mynetwork -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -d mysql:8.0
+      - sleep 30  # 等待 MySQL 启动
 
 
   pre_build:
