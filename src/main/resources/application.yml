@@ -2,7 +2,7 @@ jwt:
   secret: 2fa959d2db491f91659a3473ffaaded9
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}/shiroTest?allowPublicKeyRetrieval=true&useSSL=false&createDatabaseIfNotExist=true&characterEncoding=utf8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
