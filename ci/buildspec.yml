@@ -45,6 +45,11 @@ phases:
       - export DB_PASSWORD=$CI_DATABASE_PASSWORD
       - export MAIL_PASSWORD=$MAIL_PASSWORD
       - export MAIL_USERNAME=$MAIL_USERNAME
+      - echo $DB_URL
+      - echo $DB_PASSWORD
+      - echo $DB_PASSWORD
+      - echo $MAIL_PASSWORD
+      - echo $MAIL_USERNAME
       - mvn test
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
