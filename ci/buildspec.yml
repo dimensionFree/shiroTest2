@@ -9,19 +9,19 @@ phases:
       - echo Doing mvn test...
       - mvn test
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region <region-code> | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<region-code>.amazonaws.com
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
       - mvn package
-      - docker build -t eureka .
-      - docker tag eureka:latest <account-id>.dkr.ecr.<region-code>.amazonaws.com/eureka:latest
+      - docker build -t backend .
+      - docker tag backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend:latest
   post_build:
     commands:
       - echo Build completed on `date`
-      - docker push <account-id>.dkr.ecr.<region-code>.amazonaws.com/eureka:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend:latest
       - echo Writing image definitions file...
-      - printf '{"ImageURI":"<account-id>.dkr.ecr.<region-code>.amazonaws.com/eureka:latest"}' > imageDetail.json
+      - printf '{"ImageURI":"%s.dkr.ecr.%s.amazonaws.com/backend:latest"}' $AWS_ACCOUNT_ID $AWS_DEFAULT_REGION > imageDetail.json
 artifacts:
   files:
     - imageDetail.json
