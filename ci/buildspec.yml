@@ -22,12 +22,12 @@ phases:
       - echo Starting Redis container...
       - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
       - echo "Installing MySQL server..."
-      - sudo yum update -y
-      - sudo yum install -y mysql-server
+      - sudo rpm -Uvh https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+      - sudo yum install -y mysql-community-server
       - sudo service mysqld start
       - sudo mysqladmin -u root password "rootpassword"
       - echo "Creating database..."
-      - mysql -u root -p rootpassword -e "CREATE DATABASE shiroTest"
+      - mysql -u root -prootpassword -e "CREATE DATABASE shiroTest"
       - echo "MySQL installation completed."
 
   #      - echo Pulling MySQL 8 Docker image...
