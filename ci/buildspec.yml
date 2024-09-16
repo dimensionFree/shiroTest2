@@ -13,13 +13,10 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-      - echo Installing Redis...
-      - curl -O http://download.redis.io/redis-stable.tar.gz
-      - tar -xvzf redis-stable.tar.gz
-      - cd redis-stable
-      - make
-      - sudo make install
-      - redis-server --daemonize yes  # 后台启动 Redis
+      - echo Pulling Redis Docker image...
+      - docker pull redis:latest  # 拉取 Redis 镜像
+      - echo Starting Redis container...
+      - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
   pre_build:
     commands:
       - echo Doing mvn test...
