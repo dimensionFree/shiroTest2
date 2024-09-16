@@ -27,7 +27,7 @@ phases:
       - sudo service mysqld start
       - sudo mysqladmin -u root password "rootpassword"
       - echo "Creating database..."
-      - mysql -u root -prootpassword -e "CREATE DATABASE shiroTest"
+      - mysql -u root -p rootpassword -e "CREATE DATABASE shiroTest"
       - echo "MySQL installation completed."
 
   #      - echo Pulling MySQL 8 Docker image...
