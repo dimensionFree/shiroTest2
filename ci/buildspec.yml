@@ -6,11 +6,11 @@ env:
     CI_DATABASE_USER: "root"
     CI_DATABASE_PASSWORD: "rootpassword"
   parameter-store:
-    DB_URL: "/DB_URL"
-    DB_USER: "/DB_USERNAME"
-    DB_PASSWORD: "/DB_PASSWORD"
-    MAIL_PASSWORD: "/MAIL_PASSWORD"
-    MAIL_USERNAME: "/MAIL_USERNAME"
+    DEV_DB_URL: "/myapp/datebase_url"
+    DEV_DB_USER: "/myapp/datebase_username"
+    DEV_DB_PASSWORD: "/myapp/datebase_pwd"
+    DEV_MAIL_PASSWORD: "/myapp/email_pwd"
+    DEV_MAIL_USERNAME: "/myapp/email_username"
 
 phases:
   install:
@@ -30,15 +30,15 @@ phases:
     commands:
       - echo Doing mvn test...
       # 显示从 Parameter Store 获取的变量
-      - echo DB_URL is $DB_URL
-      - echo DB_USER is $DB_USER
-      - echo DB_PASSWORD is $DB_PASSWORD
-      - echo MAIL_PASSWORD is $MAIL_PASSWORD
-      - echo MAIL_USERNAME is $MAIL_USERNAME
+      - echo DEV_DB_URL is $DEV_DB_URL
+      - echo DEV_DB_USER is $DEV_DB_USER
+      - echo DEV_DB_PASSWORD is $DEV_DB_PASSWORD
+      - echo DEV_MAIL_PASSWORD is $DEV_MAIL_PASSWORD
+      - echo DEV_MAIL_USERNAME is $DEV_MAIL_USERNAME
       # 显示从 设置的变量
-      - echo DB_URL is $CI_DATABASE_URL
-      - echo DB_USER is $CI_DATABASE_USER
-      - echo DB_PASSWORD is $CI_DATABASE_PASSWORD
+      - echo CI_DB_URL is $CI_DATABASE_URL
+      - echo CI_DB_USER is $CI_DATABASE_USER
+      - echo CI_DB_PASSWORD is $CI_DATABASE_PASSWORD
       # 在测试前设置环境变量
       - export DB_URL=$CI_DATABASE_URL
       - export DB_USERNAME=$CI_DATABASE_USER
