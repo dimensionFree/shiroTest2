@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shiroTest.function.article.dao.ArticleMapper;
 import com.shiroTest.function.article.model.Article;
+import com.shiroTest.function.article.model.ArticleDto;
 import com.shiroTest.function.article.service.IArticleService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,5 +30,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public boolean save(Article entity) {
         return super.save(entity);
+    }
+
+
+
+    public List<ArticleDto> listDto() {
+        return getBaseMapper().selectArticleDto();
     }
 }
