@@ -24,14 +24,14 @@ phases:
       - echo DB_URL is $DB_URL
       - echo DB_USER is $DB_USER
       - echo DB_PASSWORD is $DB_PASSWORD
-      - echo MAIL_PASSWORD is MAIL_PASSWORD
-      - echo MAIL_PASSWORD is MAIL_PASSWORD
+      - echo MAIL_PASSWORD is $MAIL_PASSWORD
+      - echo MAIL_USERNAME is $MAIL_USERNAME
       # 在测试前设置环境变量
-      - export DATABASE_URL=$DB_URL
-      - export DATABASE_USER=$DB_USER
-      - export DATABASE_PASSWORD=$DB_PASSWORD
-      - export MAIL_PASSWORD=MAIL_PASSWORD
-      - export MAIL_PASSWORD=MAIL_PASSWORD
+      - export DB_URL=$DB_URL
+      - export DB_USERNAME=$DB_USER
+      - export DB_PASSWORD=$DB_PASSWORD
+      - export MAIL_PASSWORD=$MAIL_PASSWORD
+      - export MAIL_USERNAME=$MAIL_USERNAME
       - mvn test
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
