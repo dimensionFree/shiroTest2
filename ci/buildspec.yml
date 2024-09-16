@@ -1,6 +1,10 @@
 version: 0.2
 
 env:
+  variables:
+    CI_DATABASE_URL: "jdbc:mysql://localhost:3306"
+    CI_DATABASE_USER: "root"
+    CI_DATABASE_PASSWORD: "rootpassword"
   parameter-store:
     DB_URL: "/DB_URL"
     DB_USER: "/DB_USERNAME"
@@ -17,6 +21,11 @@ phases:
       - docker pull redis:latest  # 拉取 Redis 镜像
       - echo Starting Redis container...
       - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
+      - echo Pulling MySQL 8 Docker image...
+      - docker pull mysql:8.0  # 指定 MySQL 8.0 版本
+      - echo Starting MySQL container...
+      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=testdb -p 3306:3306 mysql:8.0
+      - sleep 20  # 等待 MySQL 完全启动
   pre_build:
     commands:
       - echo Doing mvn test...
@@ -26,10 +35,14 @@ phases:
       - echo DB_PASSWORD is $DB_PASSWORD
       - echo MAIL_PASSWORD is $MAIL_PASSWORD
       - echo MAIL_USERNAME is $MAIL_USERNAME
+      # 显示从 设置的变量
+      - echo DB_URL is $CI_DATABASE_URL
+      - echo DB_USER is $CI_DATABASE_USER
+      - echo DB_PASSWORD is $CI_DATABASE_PASSWORD
       # 在测试前设置环境变量
-      - export DB_URL=$DB_URL
-      - export DB_USERNAME=$DB_USER
-      - export DB_PASSWORD=$DB_PASSWORD
+      - export DB_URL=$CI_DATABASE_URL
+      - export DB_USERNAME=$CI_DATABASE_USER
+      - export DB_PASSWORD=$CI_DATABASE_PASSWORD
       - export MAIL_PASSWORD=$MAIL_PASSWORD
       - export MAIL_USERNAME=$MAIL_USERNAME
       - mvn test
