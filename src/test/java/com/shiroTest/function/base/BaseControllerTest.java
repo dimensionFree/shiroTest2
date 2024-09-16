@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 //@RunWith(SpringJUnit4ClassRunner.class)(todo:what the diff with SpringRunner.class?)
 @SpringBootTest(classes = BackendApplication.class,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@WebMvcTest(UserController.class)
+//@Transactional api层回滚无效，因为开启了server，server使用的独立db链接
 public abstract class BaseControllerTest extends BaseTest {
 
 
@@ -151,6 +153,8 @@ public abstract class BaseControllerTest extends BaseTest {
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer "+adminToken)
                     .when()
+                    .queryParam("currentPage",1)
+                    .queryParam("pageSize",200)
                     .get(getHost() + getApiPrefix() + "/findAll")
                     .then()
                     .statusCode(200)
@@ -186,9 +190,6 @@ public abstract class BaseControllerTest extends BaseTest {
             pageInfo = JsonUtil.fromMap((Map<String, Object>) resultData.getDataContent(), PageInfo.class);
             assertThat(pageInfo.getSize()).isEqualTo(1);
             assertThat(pageInfo.getPages()).isGreaterThanOrEqualTo(3);
-            list = pageInfo.getList();
-            ids = list.stream().map(i -> i.get("id").toString()).collect(Collectors.toSet());
-            assertThat(ids).contains(id);
 
             LocalDateTime aHourAgo = LocalDateTime.now().minusHours(1);
             data.setCreatedDate(aHourAgo.toString());

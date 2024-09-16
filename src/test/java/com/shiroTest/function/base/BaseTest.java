@@ -24,8 +24,8 @@ import java.util.concurrent.Future;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = BackendApplication.class)
 //自动回滚数据库
-//@Transactional
-//@Rollback
+@Transactional
+@Rollback
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 public abstract class BaseTest{
