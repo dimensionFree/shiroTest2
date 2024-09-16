@@ -23,9 +23,17 @@ phases:
       - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
       - echo Pulling MySQL 8 Docker image...
       - docker pull mysql:8.0  # 指定 MySQL 8.0 版本
-      - echo Starting MySQL container...
-      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
-      - sleep 20  # 等待 MySQL 完全启动
+#      - echo Starting MySQL container...
+#      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
+#      - sleep 20  # 等待 MySQL 完全启动
+      - echo Starting MySQL container
+      - docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb -p 3306:3306 -d mysql:latest
+      - docker ps
+      - echo Waiting for MySQL to start
+      - until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null ; do
+      echo -n "." ; sleep 1 ;
+      done
+      - echo MySQL is up and running
 #      - echo Installing MySQL 8...
 #      - sudo yum update -y
 #      - sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
@@ -56,11 +64,11 @@ phases:
       - echo CI_DB_USER is $CI_DATABASE_USER
       - echo CI_DB_PASSWORD is $CI_DATABASE_PASSWORD
       # 在测试前设置环境变量
-      - export DB_URL=jdbc:mysql://database-local.cbmgeeq06t1q.ap-northeast-1.rds.amazonaws.com:3306
-      - export DB_USERNAME=admin
-      - export DB_PASSWORD=3T8XbFSITvyM8wDMSHkD
-      - export MAIL_PASSWORD=$MAIL_PASSWORD
-      - export MAIL_USERNAME=$MAIL_USERNAME
+      - export DB_URL=$CI_DATABASE_URL
+      - export DB_USERNAME=$CI_DATABASE_USER
+      - export DB_PASSWORD=$CI_DATABASE_PASSWORD
+      - export MAIL_PASSWORD=$DEV_MAIL_PASSWORD
+      - export MAIL_USERNAME=$DEV_MAIL_USERNAME
       - echo $DB_URL
       - echo $DB_USERNAME
       - echo $DB_PASSWORD
