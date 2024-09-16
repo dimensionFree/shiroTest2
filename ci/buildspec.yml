@@ -29,10 +29,10 @@ phases:
       - echo Starting MySQL container
         - docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb -p 3306:3306 -d mysql:latest
         - docker ps
-        - echo Waiting for MySQL to start
+        - echo Waiting for MySQL to start...
         - |
-        until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null ; do
-        echo -n "." ; sleep 1 ;
+        until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=root --silent &> /dev/null; do
+        echo -n "."; sleep 1;
         done
         - echo MySQL is up and running
 #      - echo Installing MySQL 8...
