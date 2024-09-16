@@ -21,11 +21,26 @@ phases:
       - docker pull redis:latest  # 拉取 Redis 镜像
       - echo Starting Redis container...
       - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
-      - echo Pulling MySQL 8 Docker image...
-      - docker pull mysql:8.0  # 指定 MySQL 8.0 版本
-      - echo Starting MySQL container...
-      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
-      - sleep 20  # 等待 MySQL 完全启动
+#      - echo Pulling MySQL 8 Docker image...
+#      - docker pull mysql:8.0  # 指定 MySQL 8.0 版本
+#      - echo Starting MySQL container...
+#      - docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 mysql:8.0
+#      - sleep 20  # 等待 MySQL 完全启动
+      - echo Installing MySQL 8...
+      - sudo yum update -y
+      - sudo yum install -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+      - sudo yum install -y mysql-community-server
+      - echo Starting MySQL service...
+      - sudo service mysqld start
+      - echo Waiting for MySQL to fully start...
+      - sleep 20  # 等待 MySQL 服务完全启动
+      - sudo grep 'temporary password' /var/log/mysqld.log  # 获取临时 root 密码
+      # 设置 MySQL root 用户密码
+      - sudo mysqladmin -u root password 'rootpassword'
+      - echo Creating database shiroTest...
+      - mysql -u root -p rootpassword -e "CREATE DATABASE shiroTest;"
+
+
   pre_build:
     commands:
       - docker exec mysql-test mysql --version
