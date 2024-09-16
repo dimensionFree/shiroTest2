@@ -2,11 +2,11 @@ version: 0.2
 
 env:
   parameter-store:
-    DB_URL: "DB_URL"
-    DB_USER: "DB_USERNAME"
-    DB_PASSWORD: "DB_PASSWORD"
-    MAIL_PASSWORD: "MAIL_PASSWORD"
-    MAIL_USERNAME: "MAIL_USERNAME"
+    DB_URL: "/DB_URL"
+    DB_USER: "/DB_USERNAME"
+    DB_PASSWORD: "/DB_PASSWORD"
+    MAIL_PASSWORD: "/MAIL_PASSWORD"
+    MAIL_USERNAME: "/MAIL_USERNAME"
 
 phases:
   install:
