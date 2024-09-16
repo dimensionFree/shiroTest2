@@ -14,7 +14,11 @@ phases:
       java: corretto11
     commands:
       - echo Installing Redis...
-      - sudo yum install -y redis
+      - curl -O http://download.redis.io/redis-stable.tar.gz
+      - tar -xvzf redis-stable.tar.gz
+      - cd redis-stable
+      - make
+      - sudo make install
       - redis-server --daemonize yes  # 后台启动 Redis
   pre_build:
     commands:
