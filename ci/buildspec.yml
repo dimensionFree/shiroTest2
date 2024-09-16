@@ -46,7 +46,7 @@ phases:
       - export MAIL_PASSWORD=$MAIL_PASSWORD
       - export MAIL_USERNAME=$MAIL_USERNAME
       - echo $DB_URL
-      - echo $DB_PASSWORD
+      - echo $DB_USERNAME
       - echo $DB_PASSWORD
       - echo $MAIL_PASSWORD
       - echo $MAIL_USERNAME
