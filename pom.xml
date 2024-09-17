@@ -35,7 +35,11 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <db.url>${env.DB_URL}</db.url>
+        <db.username>${env.DB_USERNAME}</db.username>
+        <db.password>${env.DB_PASSWORD}</db.password>
     </properties>
+
 
     <dependencies>
 
@@ -275,10 +279,9 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>8.0.2</version>
                 <configuration>
-                    <!-- 数据库连接配置 -->
-                    <url>${env.DB_URL}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
-                    <user>${env.DB_USERNAME}</user>
-                    <password>${env.DB_PASSWORD}</password>
+                    <url>${db.url}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
+                    <user>${db.username}</user>
+                    <password>${db.password}</password>
                 </configuration>
 
             </plugin>
