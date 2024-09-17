@@ -47,11 +47,11 @@ phases:
       - echo CI_DB_USER is $CI_DATABASE_USER
       - echo CI_DB_PASSWORD is $CI_DATABASE_PASSWORD
       # 在测试前设置环境变量
-      - export DB_URL=$CI_DATABASE_URL
-      - export DB_USERNAME=$CI_DATABASE_USER
-      - export DB_PASSWORD=$CI_DATABASE_PASSWORD
-      - export MAIL_PASSWORD=$DEV_MAIL_PASSWORD
-      - export MAIL_USERNAME=$DEV_MAIL_USERNAME
+      - export DB_URL="$CI_DATABASE_URL"
+      - export DB_USERNAME="$CI_DATABASE_USER"
+      - export DB_PASSWORD="$CI_DATABASE_PASSWORD"
+      - export MAIL_PASSWORD="$DEV_MAIL_PASSWORD"
+      - export MAIL_USERNAME="$DEV_MAIL_USERNAME"
       - echo "Checking environment variables..."
       - if [ "$DB_URL" == "jdbc:mysql://localhost:3306" ]; then echo "DB_URL is correct"; else echo "DB_URL is incorrect"; fi
       - if [ "$DB_USERNAME" == "root" ]; then echo "DB_USERNAME is correct"; else echo "DB_USERNAME is incorrect"; fi
