@@ -50,11 +50,11 @@ phases:
       - export MAIL_PASSWORD=$DEV_MAIL_PASSWORD
       - export MAIL_USERNAME=$DEV_MAIL_USERNAME
       - echo "Checking environment variables..."
-      - if [ "$DB_URL" == "jdbc:mysql://localhost:3306" ]; then echo "DB_URL is correct"; else echo "DB_URL is incorrect"; fi
-      - if [ "$DB_USERNAME" == "root" ]; then echo "DB_USERNAME is correct"; else echo "DB_USERNAME is incorrect"; fi
-      - if [ "$DB_PASSWORD" == "rootpassword" ]; then echo "DB_PASSWORD is correct"; else echo "DB_PASSWORD is incorrect"; fi
-      - if [ "$MAIL_PASSWORD" == "ynryetfaibweiaub" ]; then echo "MAIL_PASSWORD is correct"; else echo "MAIL_PASSWORD is incorrect"; fi
-      - if [ "$MAIL_USERNAME" == "mailsenderblogweb@gmail.com" ]; then echo "MAIL_USERNAME is correct"; else echo "MAIL_USERNAME is incorrect"; fi
+      - if [ "$DB_URL" == "jdbc:mysql://localhost:3306/" ]; then echo "DB_URL is correct"; else echo "DB_URL is incorrect"; fi
+      - if [ "$DB_USERNAME" == "root1" ]; then echo "DB_USERNAME is correct"; else echo "DB_USERNAME is incorrect"; fi
+      - if [ "$DB_PASSWORD" == "rootpassword1" ]; then echo "DB_PASSWORD is correct"; else echo "DB_PASSWORD is incorrect"; fi
+      - if [ "$MAIL_PASSWORD" == "ynryetfaibweiaub1" ]; then echo "MAIL_PASSWORD is correct"; else echo "MAIL_PASSWORD is incorrect"; fi
+      - if [ "$MAIL_USERNAME" == "mailsenderblogweb@gmail.com1" ]; then echo "MAIL_USERNAME is correct"; else echo "MAIL_USERNAME is incorrect"; fi
       - mvn test -D env.DB_URL=$DB_URL -D env.DB_USERNAME=$DB_USERNAME -D env.DB_PASSWORD=$DB_PASSWORD
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
