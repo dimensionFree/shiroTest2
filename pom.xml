@@ -35,9 +35,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <db.url>jdbc:mysql://localhost:3306</db.url>
-        <db.username>root</db.username>
-        <db.password>rootpassword</db.password>
+        <db.url>${env.DB_URL}</db.url>
+        <db.username>${env.DB_USERNAME}</db.username>
+        <db.password>${env.DB_PASSWORD}</db.password>
     </properties>
 
 
@@ -279,7 +279,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>8.0.2</version>
                 <configuration>
-                    <url>${db.url}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
+                    <url>${db.url}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8&amp;enabledTLSProtocols=TLSv1.2</url>
                     <user>${db.username}</user>
                     <password>${db.password}</password>
                 </configuration>
