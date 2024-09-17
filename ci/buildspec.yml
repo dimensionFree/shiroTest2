@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    CI_DATABASE_URL: "jdbc:mysql://mysqlDb:3306"
+    CI_DATABASE_URL: "jdbc:mysql://localhost:3306"
     CI_DATABASE_USER: "root"
     CI_DATABASE_PASSWORD: "rootpassword"
   parameter-store:
