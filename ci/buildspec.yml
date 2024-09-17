@@ -26,8 +26,8 @@ phases:
       - echo Creating Docker network...
       - echo Starting MySQL container...
       - docker run --name mysqlDb -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 -d mysql:8.0
-
-      - sleep 30  # 等待 MySQL 启动
+      - echo "Waiting for MySQL to start..."
+      - for i in {1..10}; do if docker exec mysqlDb mysqladmin ping -u root -p rootpassword &> /dev/null; then echo "MySQL is up!"; break; else echo "Waiting..."; sleep 6; fi; done
 
 
   pre_build:
