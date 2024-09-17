@@ -35,9 +35,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-<!--        <db.url>jdbc:mysql://localhost:3306</db.url>-->
-<!--        <db.username>root</db.username>-->
-<!--        <db.password>rootpassword</db.password>-->
+        <db.url>jdbc:mysql://localhost:3306</db.url>
+        <db.username>root</db.username>
+        <db.password>rootpassword</db.password>
     </properties>
 
 
@@ -272,20 +272,20 @@
 
     </dependencies>
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.flywaydb</groupId>-->
-<!--                <artifactId>flyway-maven-plugin</artifactId>-->
-<!--                <version>8.0.2</version>-->
-<!--                <configuration>-->
-<!--                    <url>${db.url}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>-->
-<!--                    <user>${db.username}</user>-->
-<!--                    <password>${db.password}</password>-->
-<!--                </configuration>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.0.2</version>
+                <configuration>
+                    <url>${db.url}/shiroTest?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf8</url>
+                    <user>${db.username}</user>
+                    <password>${db.password}</password>
+                </configuration>
 
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
