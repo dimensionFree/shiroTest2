@@ -17,7 +17,6 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-      - mvn -v
       - echo Pulling Redis Docker image...
       - docker pull redis:latest  # 拉取 Redis 镜像
       - echo Starting Redis container...
@@ -26,7 +25,8 @@ phases:
       - docker pull mysql:8.0
       - echo Creating Docker network...
       - echo Starting MySQL container...
-      - docker run --name mysqlDb -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -d mysql:8.0
+      - docker run --name mysqlDb -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 -d mysql:8.0
+
       - sleep 30  # 等待 MySQL 启动
 
 
