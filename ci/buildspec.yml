@@ -58,6 +58,7 @@ phases:
       - if [ "$DB_PASSWORD" == "rootpassword" ]; then echo "DB_PASSWORD is correct"; else echo "DB_PASSWORD is incorrect"; fi
       - if [ "$MAIL_PASSWORD" == "ynryetfaibweiaub" ]; then echo "MAIL_PASSWORD is correct"; else echo "MAIL_PASSWORD is incorrect"; fi
       - if [ "$MAIL_USERNAME" == "mailsenderblogweb@gmail.com" ]; then echo "MAIL_USERNAME is correct"; else echo "MAIL_USERNAME is incorrect"; fi
+      - ls
       - mvn test -Ddb.url="jdbc:mysql://localhost:3306" -Ddb.username="root" -Ddb.password="rootpassword"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
