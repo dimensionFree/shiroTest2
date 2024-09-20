@@ -40,14 +40,14 @@ spring:
 server:
   port: 80
 #日志记录级别
-logging:
-  level:
-    org.springframework: info
-    org.springframework.jdbc.datasource: DEBUG
-    com.zaxxer.hikari: DEBUG  # 如果你使用的是 HikariCP 连接池
-    org.hibernate: DEBUG  # 如果你使用 Hibernate 作为 JPA 提供程序
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari.HikariDataSource: DEBUG
+#logging:
+#  level:
+#    org.springframework: info
+#    org.springframework.jdbc.datasource: DEBUG
+#    com.zaxxer.hikari: DEBUG  # 如果你使用的是 HikariCP 连接池
+#    org.hibernate: DEBUG  # 如果你使用 Hibernate 作为 JPA 提供程序
+#    com.zaxxer.hikari.HikariConfig: DEBUG
+#    com.zaxxer.hikari.HikariDataSource: DEBUG
 mybatis-plus:
   config-location: classpath:mybatis-config.xml
 

@@ -32,6 +32,8 @@ phases:
           echo -n "." ; sleep 1 ;
         done
       - echo MySQL is up and running
+      - docker exec -it mysql-container mysql -h localhost -P 3306 -u root -p
+      - docker logs mysql-container
 
   pre_build:
     commands:
