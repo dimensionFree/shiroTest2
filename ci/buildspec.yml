@@ -17,15 +17,15 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
-#      - echo Pulling Redis Docker image...
-      - docker pull redis:latest  # 拉取 Redis 镜像
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<region>.amazonaws.com
+      - echo Pulling Redis Docker image from ECR...
+      - docker pull <account-id>.dkr.ecr.<region>.amazonaws.com/my_image_store:redis-latest
       - echo Starting Redis container...
-      - docker run -d --name redis -p 6379:6379 redis:latest  # 启动 Redis 容器
-      - echo Pulling MySQL 8 Docker image...
-#      - docker pull mysql:8.0
-      - echo Starting MySQL container
-      - docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 -d mysql:8.0
-      - docker ps
+      - docker run -d --name redis -p 6379:6379 <account-id>.dkr.ecr.<region>.amazonaws.com/my_image_store:redis-latest
+      - echo Pulling MySQL Docker image from ECR...
+      - docker pull <account-id>.dkr.ecr.<region>.amazonaws.com/my_image_store:mysql-8.0
+      - echo Starting MySQL container...
       - echo Waiting for MySQL to start
       - |
         until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=rootpassword --silent &> /dev/null ; do
