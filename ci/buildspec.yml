@@ -26,7 +26,7 @@ phases:
       - echo Pulling MySQL Docker image from ECR...
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
       - echo Starting MySQL container...
-      - docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 <account-id>.dkr.ecr.<region>.amazonaws.com/my_image_store:mysql-8.0
+      - docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
       - echo Waiting for MySQL to start
       - |
         until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=rootpassword --silent &> /dev/null ; do
