@@ -36,6 +36,7 @@ phases:
       - docker logs mysql-container
       - sudo yum install net-tools -y
       - netstat -tuln
+      - docker ps
 
 
 
