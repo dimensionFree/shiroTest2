@@ -22,11 +22,14 @@ phases:
       - echo Pulling Redis Docker image from ECR...
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:redis-6.0
       - echo Starting Redis container...
-      - docker run -d --name redis -p 6379:6379 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:redis-6.0
+#      - docker run -d --name redis -p 6379:6379 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:redis-6.0
+      - docker run --network host $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:redis-6.0
       - echo Pulling MySQL Docker image from ECR...
       - docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
       - echo Starting MySQL container...
-      - docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
+#      - docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
+      - docker run --network host -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
+
       - echo Waiting for MySQL to start
       - |
         until docker exec mysql-container mysqladmin ping --host localhost --port 3306 --user=root --password=rootpassword --silent &> /dev/null ; do
@@ -41,9 +44,9 @@ phases:
       - docker port mysql-container
       - docker inspect redis | grep -i "networkmode"
       - docker inspect mysql-container | grep -i "networkmode"
-      - sudo yum install -y nc
-      - nc -zv localhost 6379
-      - nc -zv localhost 3306
+#      - sudo yum install -y nc
+#      - nc -zv localhost 6379
+#      - nc -zv localhost 3306
 
   pre_build:
     commands:
