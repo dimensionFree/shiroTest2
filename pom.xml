@@ -35,9 +35,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <db.url>jdbc:mysql://localhost:3306</db.url>
-        <db.username>root</db.username>
-        <db.password>rootpassword</db.password>
+        <db.url>${env.DB_URL}</db.url>
+        <db.username>${env.DB_USERNAME}</db.username>
+        <db.password>${env.DB_PASSWORD}</db.password>
     </properties>
 
 
