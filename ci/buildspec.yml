@@ -34,7 +34,8 @@ phases:
         done
       - echo MySQL is up and running
       - docker logs mysql-container
-      - ss -tuln
+      - lsof -i -P -n
+
 
   pre_build:
     commands:
