@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    CI_DATABASE_URL: "jdbc:mysql://127.0.0.1:3306"
+    CI_DATABASE_URL: "jdbc:mysql://localhost:3306"
     CI_DATABASE_USER: "root"
     CI_DATABASE_PASSWORD: "rootpassword"
   parameter-store:
@@ -29,7 +29,7 @@ phases:
       - docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=shiroTest -p 3306:3306 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/my_image_store:mysql-8.0
       - echo Waiting for MySQL to start
       - |
-        until docker exec mysql-container mysqladmin ping --host 127.0.0.1 --port 3306 --user=root --password=rootpassword --silent &> /dev/null ; do
+        until docker exec mysql-container mysqladmin ping --host localhost --port 3306 --user=root --password=rootpassword --silent &> /dev/null ; do
           echo -n "." ; sleep 1 ;
         done
       - echo MySQL is up and running
@@ -55,13 +55,13 @@ phases:
       - export MAIL_PASSWORD="$DEV_MAIL_PASSWORD"
       - export MAIL_USERNAME="$DEV_MAIL_USERNAME"
       - echo "Checking environment variables..."
-      - if [ "$DB_URL" == "jdbc:mysql://127.0.0.1:3306" ]; then echo "DB_URL is correct"; else echo "DB_URL is incorrect"; fi
+      - if [ "$DB_URL" == "jdbc:mysql://localhost:3306" ]; then echo "DB_URL is correct"; else echo "DB_URL is incorrect"; fi
       - if [ "$DB_USERNAME" == "root" ]; then echo "DB_USERNAME is correct"; else echo "DB_USERNAME is incorrect"; fi
       - if [ "$DB_PASSWORD" == "rootpassword" ]; then echo "DB_PASSWORD is correct"; else echo "DB_PASSWORD is incorrect"; fi
       - if [ "$MAIL_PASSWORD" == "ynryetfaibweiaub" ]; then echo "MAIL_PASSWORD is correct"; else echo "MAIL_PASSWORD is incorrect"; fi
       - if [ "$MAIL_USERNAME" == "mailsenderblogweb@gmail.com" ]; then echo "MAIL_USERNAME is correct"; else echo "MAIL_USERNAME is incorrect"; fi
       - ls
-      - mvn test -Ddb.url="jdbc:mysql://127.0.0.1:3306" -Ddb.username="root" -Ddb.password="rootpassword"
+      - mvn test -Ddb.url="jdbc:mysql://localhost:3306" -Ddb.username="root" -Ddb.password="rootpassword"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
