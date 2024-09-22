@@ -33,14 +33,14 @@ phases:
           echo -n "." ; sleep 1 ;
         done
       - echo MySQL is up and running
-      - docker logs mysql-container
-      - sudo yum install net-tools -y
-      - sudo netstat -tulnp
-      - docker ps
-      - docker port mysql-container
-      - docker port mysql-container
-      - docker inspect redis | grep -i "networkmode"
-      - docker inspect mysql-container | grep -i "networkmode"
+#      - docker logs mysql-container
+#      - sudo yum install net-tools -y
+#      - sudo netstat -tulnp
+#      - docker ps
+#      - docker port mysql-container
+#      - docker port mysql-container
+#      - docker inspect redis | grep -i "networkmode"
+#      - docker inspect mysql-container | grep -i "networkmode"
 #      - sudo yum install -y nc
 #      - nc -zv localhost 6379
 #      - nc -zv localhost 3306
