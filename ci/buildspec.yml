@@ -37,6 +37,13 @@ phases:
       - sudo yum install net-tools -y
       - netstat -tuln
       - docker ps
+      - docker port mysql-container
+      - docker port mysql-container
+      - docker inspect redis | grep -i "networkmode"
+      - docker inspect mysql-container | grep -i "networkmode"
+      - telnet localhost 6379
+      - telnet localhost 3306
+
 
 
 
