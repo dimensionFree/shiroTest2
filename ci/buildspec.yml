@@ -17,6 +17,8 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
+      - sudo ufw status
+      - sudo ufw allow 3306
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo Pulling Redis Docker image from ECR...
@@ -34,6 +36,7 @@ phases:
         done
       - echo MySQL is up and running
       - docker logs mysql-container
+
 
   pre_build:
     commands:
