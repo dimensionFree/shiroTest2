@@ -27,27 +27,21 @@ import javax.persistence.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@Table
-@Entity
+
+
 public class Role extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
-    @Id
+
     private String id;
 
     private String roleName;
 
-    @ElementCollection(targetClass = Authority.class)
-    @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
-    @CollectionTable(name = "role_authorities", joinColumns = @JoinColumn(name = "role_id"))
     private Set<Authority> authorities = new HashSet<>();
 
 
-    @ElementCollection(targetClass = Feature.class)
-    @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
-    @CollectionTable(name = "role_features", joinColumns = @JoinColumn(name = "role_id"))
     private Set<Feature> features = new HashSet<>();
 
     public Set<Authority> getAuthorities() {

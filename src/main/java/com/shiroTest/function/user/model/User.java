@@ -28,14 +28,13 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames= {"username"},name = "usernameUnique")},indexes = {})
-@Entity
+
 public class User extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 
     @TableId(value = "id", type = IdType.UUID)
-    @Id
+
     private String id;
 
     @NotNull
@@ -52,10 +51,6 @@ public class User extends BaseAuditableEntity {
     @Email
     private String email;
 
-    @ElementCollection(targetClass = MenuItem.class)
-    @Enumerated(EnumType.ORDINAL) // 可以选择EnumType.ORDINAL以使用枚举的序数作为数据库中的存储方式
-    @CollectionTable(name = "user_quick_menu_items", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name="quick_menu_item_ordinal")
     @TableField(exist = false)
     private Set<MenuItem> quickMenuItems= new HashSet<>();
 
