@@ -2,12 +2,14 @@
 echo "Running Docker container from ECR..."
 
 ## 登录到 ECR
-#aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 # Export variables
 export AWS_ACCOUNT_ID=724758113747
 export AWS_REGION=ap-northeast-1
 export REPOSITORY_NAME=backend
+
+aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
 
 echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
 echo "AWS_REGION: $AWS_REGION"
