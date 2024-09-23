@@ -87,6 +87,5 @@ phases:
       - printf '{"ImageURI":"%s.dkr.ecr.%s.amazonaws.com/backend:latest"}' $AWS_ACCOUNT_ID $AWS_DEFAULT_REGION > imageDetail.json
 artifacts:
   files:
-#    - imageDetail.json
-#    - taskdef.json
     - appspec.yml
+    - scripts/**/*
