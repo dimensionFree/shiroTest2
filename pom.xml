@@ -159,9 +159,9 @@
             <scope>test</scope>
         </dependency>
 
-<!--        这个错误通常是由于Hibernate Validator的版本与Spring Boot版本之间的不兼容造成的。Spring Boot 2.3.x版本默认使用Hibernate Validator 6.x版本，
-而在较新的Spring Boot版本中可能会使用不同的Hibernate Validator版本。
-在Spring Boot 2.3.4.RELEASE中，你可能需要手动添加Hibernate Validator依赖。-->
+        <!--        这个错误通常是由于Hibernate Validator的版本与Spring Boot版本之间的不兼容造成的。Spring Boot 2.3.x版本默认使用Hibernate Validator 6.x版本，
+        而在较新的Spring Boot版本中可能会使用不同的Hibernate Validator版本。
+        在Spring Boot 2.3.4.RELEASE中，你可能需要手动添加Hibernate Validator依赖。-->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -284,6 +284,19 @@
                     <password>${db.password}</password>
                 </configuration>
 
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.shiroTest.BackendApplication</mainClass> <!-- 入口类 -->
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
