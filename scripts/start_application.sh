@@ -46,6 +46,12 @@ CONTAINER_ID=$(docker run -d -p 80:80 \
   -e MAIL_PASSWORD="$DEV_MAIL_USERNAME" \
   $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
 
+# 检查是否成功启动容器
+if [ $? -ne 0 ]; then
+  echo "Docker container failed to start."
+  exit 1
+fi
+
 # 输出 Docker 容器的日志
 echo "Fetching logs from the container..."
 docker logs $CONTAINER_ID
