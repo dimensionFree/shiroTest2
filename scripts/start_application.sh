@@ -23,6 +23,18 @@ DB_PASSWORD=$(aws ssm get-parameter --name "/myapp/datebase_pwd" --with-decrypti
 DEV_MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
 DEV_MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
 
+# 调试输出，确保正确获取到值
+echo "DB_URL: $DB_URL"
+echo "DB_USERNAME: $DB_USERNAME"
+echo "DB_PASSWORD: $DB_PASSWORD"
+echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
+echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
+
+# 输出其他调试信息
+echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
+echo "AWS_REGION: $AWS_REGION"
+echo "REPOSITORY_NAME: $REPOSITORY_NAME"
+N
 # 运行 Docker 容器并传递环境变量
 docker run -d -p 80:80 \
   -e DB_URL="$DB_URL" \
