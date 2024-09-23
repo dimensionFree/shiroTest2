@@ -52,12 +52,12 @@ fi
 echo "Fetching logs from the container..."
 docker logs $CONTAINER_ID
 
-# 等待容器变为健康状态
-echo "Waiting for the container to be healthy..."
-while [ "$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)" != "healthy" ]; do
-  echo "Container is not healthy yet. Waiting..."
-  sleep 5
-done
+## 等待容器变为健康状态
+#echo "Waiting for the container to be healthy..."
+#while [ "$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)" != "healthy" ]; do
+#  echo "Container is not healthy yet. Waiting..."
+#  sleep 5
+#done
 
 
 echo "docker run excuted"
