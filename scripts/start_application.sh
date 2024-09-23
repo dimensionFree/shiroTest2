@@ -4,6 +4,10 @@ echo "Running Docker container from ECR..."
 ## 登录到 ECR
 #aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
+echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
+echo "AWS_REGION: $AWS_REGION"
+echo "REPOSITORY_NAME: $REPOSITORY_NAME"
+
 # 拉取镜像
 docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
 
