@@ -43,11 +43,28 @@ echo "AWS_REGION: $AWS_REGION"
 echo "REPOSITORY_NAME: $REPOSITORY_NAME"
 
 # 运行 Docker 容器并传递环境变量
-docker run -d -p 80:80 \
+
+
+
+CONTAINER_ID=$(docker run -d -p 80:80 \
   -e DB_URL="$DB_URL" \
   -e DB_USERNAME="$DB_USERNAME" \
   -e DB_PASSWORD="$DB_PASSWORD" \
   -e MAIL_USERNAME="$DEV_MAIL_PASSWORD" \
   -e MAIL_PASSWORD="$DEV_MAIL_USERNAME" \
-  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
+  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
+
+# 输出 Docker 容器的日志
+echo "Fetching logs from the container..."
+docker logs $CONTAINER_ID
+
+# 等待容器变为健康状态
+echo "Waiting for the container to be healthy..."
+while [ "$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)" != "healthy" ]; do
+  echo "Container is not healthy yet. Waiting..."
+  sleep 5
+done
+
+
+echo "docker run excuted"
 
