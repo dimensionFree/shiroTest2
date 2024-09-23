@@ -44,8 +44,8 @@ logging:
   level:
     org.springframework: info
     org.flywaydb: DEBUG  # Flyway 日志级别
-#    org.springframework.jdbc.datasource: DEBUG
-#    com.zaxxer.hikari: DEBUG  # 如果你使用的是 HikariCP 连接池
+    org.springframework.jdbc.datasource: DEBUG
+    com.zaxxer.hikari: DEBUG  # 如果你使用的是 HikariCP 连接池
 #    org.hibernate: DEBUG  # 如果你使用 Hibernate 作为 JPA 提供程序
 #    com.zaxxer.hikari.HikariConfig: DEBUG
 #    com.zaxxer.hikari.HikariDataSource: DEBUG

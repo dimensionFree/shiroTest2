@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:latest
+    ports:
+      - "80:80"
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MAIL_USERNAME=${DEV_MAIL_USERNAME}
+      - MAIL_PASSWORD=${DEV_MAIL_PASSWORD}
+    depends_on:
+      - redis
+
+  redis:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my_image_store:redis-6.0
+    ports:
+      - "6379:6379"

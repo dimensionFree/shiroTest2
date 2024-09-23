@@ -37,20 +37,35 @@ echo "DB_PASSWORD: $DB_PASSWORD"
 echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
 
-# 运行 Docker 容器并传递环境变量
-echo "gonna runing container"
+sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
 
-CONTAINER_ID=$(docker run -d -p 80:80 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e MAIL_USERNAME="$DEV_MAIL_USERNAME" -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
 
-# 检查是否成功启动容器
-if [ $? -ne 0 ]; then
-  echo "Docker container failed to start."
-  exit 1
-fi
+# 启动 Docker Compose
+echo "Starting services with Docker Compose"
+docker-compose up -d \
+  -e DB_URL="$DB_URL" \
+  -e DB_USERNAME="$DB_USERNAME" \
+  -e DB_PASSWORD="$DB_PASSWORD" \
+  -e MAIL_USERNAME="$DEV_MAIL_USERNAME" \
+  -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD"
 
-# 输出 Docker 容器的日志
-echo "Fetching logs from the container..."
-docker logs $CONTAINER_ID
+
+## 运行 Docker 容器并传递环境变量
+#echo "gonna runing container"
+#
+#CONTAINER_ID=$(docker run -d -p 80:80 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e MAIL_USERNAME="$DEV_MAIL_USERNAME" -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
+#
+## 检查是否成功启动容器
+#if [ $? -ne 0 ]; then
+#  echo "Docker container failed to start."
+#  exit 1
+#fi
+
+## 输出 Docker 容器的日志
+#echo "Fetching logs from the container..."
+#docker logs $CONTAINER_ID
 
 ## 等待容器变为健康状态
 #echo "Waiting for the container to be healthy..."
