@@ -10,16 +10,9 @@ export REPOSITORY_NAME=backend
 
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-
-echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
-echo "AWS_REGION: $AWS_REGION"
-echo "REPOSITORY_NAME: $REPOSITORY_NAME"
-
-# 拉取镜像
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
-
-# 启动容器
-docker run -d -p 80:80 $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
+## 拉取镜像
+#echo "pulling docker"
+#docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest
 
 #!/bin/bash
 
@@ -43,9 +36,7 @@ echo "AWS_REGION: $AWS_REGION"
 echo "REPOSITORY_NAME: $REPOSITORY_NAME"
 
 # 运行 Docker 容器并传递环境变量
-
-
-
+echo "gonna runing container"
 CONTAINER_ID=$(docker run -d -p 80:80 \
   -e DB_URL="$DB_URL" \
   -e DB_USERNAME="$DB_USERNAME" \
