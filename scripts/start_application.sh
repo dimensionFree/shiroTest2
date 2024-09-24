@@ -44,9 +44,7 @@ echo "DB_PASSWORD: $DB_PASSWORD"
 echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
 
-# 检查 Docker Compose 是否已安装
-echo "Docker Compose not found. Installing..."
-
+echo "Docker Compose Installing..."
 # 获取最新版本号
 COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 
@@ -56,14 +54,13 @@ sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERS
 # 设置可执行权限
 sudo chmod +x /usr/local/bin/docker-compose
 
-# 检查 Docker Compose 版本
-docker-compose --version
+# 等待直到 docker-compose 可以使用
+until command -v docker-compose &> /dev/null; do
+    echo "Waiting for Docker Compose to be installed..."
+    sleep 1
+done
 
-# 确保路径已更新
-export PATH=$PATH:/usr/local/bin
-
-# 等待几秒钟以确保安装生效
-sleep 5
+echo "Docker Compose installed."
 
 # 启动 Docker Compose
 echo "Starting services with Docker Compose..."
