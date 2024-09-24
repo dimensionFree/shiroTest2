@@ -72,16 +72,17 @@ docker-compose up -d
 #  exit 1
 #fi
 
-## 输出 Docker 容器的日志
-#echo "Fetching logs from the container..."
-#docker logs $CONTAINER_ID
+# 输出 Docker 容器的日志
+echo "Fetching logs from the container..."
+docker logs $(docker ps -q --filter "name=backend")  # 替换为你的服务名
 
-## 等待容器变为健康状态
-#echo "Waiting for the container to be healthy..."
-#while [ "$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)" != "healthy" ]; do
-#  echo "Container is not healthy yet. Waiting..."
-#  sleep 5
-#done
+# 等待容器变为健康状态
+echo "Waiting for the container to be healthy..."
+CONTAINER_ID=$(docker ps -q --filter "name=backend")  # 替换为你的服务名
+while [ "$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID)" != "healthy" ]; do
+  echo "Container is not healthy yet. Waiting..."
+  sleep 5
+done
 
 
 echo "docker run excuted"
