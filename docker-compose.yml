@@ -3,7 +3,7 @@ services:
   backend:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:latest
     ports:
-      - "80:80"
+      - "8080:8080"
     environment:
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
@@ -12,8 +12,17 @@ services:
       - MAIL_PASSWORD=${DEV_MAIL_PASSWORD}
     depends_on:
       - redis
+    networks:
+      - app-network  # 指定网络
 
   redis:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my_image_store:redis-6.0
     ports:
       - "6379:6379"
+    networks:
+      - app-network  # 指定网络
+
+# 定义网络
+networks:
+  app-network:
+    driver: bridge  # 使用 bridge 网络驱动（Docker 默认）

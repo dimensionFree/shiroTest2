@@ -65,7 +65,7 @@ docker-compose -p my-backend-service up -d
 ## 运行 Docker 容器并传递环境变量
 #echo "gonna runing container"
 #
-#CONTAINER_ID=$(docker run -d -p 80:80 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e MAIL_USERNAME="$DEV_MAIL_USERNAME" -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
+#CONTAINER_ID=$(docker run -d -p 8080:8080 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e MAIL_USERNAME="$DEV_MAIL_USERNAME" -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
 #
 ## 检查是否成功启动容器
 #if [ $? -ne 0 ]; then

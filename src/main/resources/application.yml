@@ -38,7 +38,7 @@ spring:
 
 #tomcat端口
 server:
-  port: 80
+  port: 8080
 #日志记录级别
 logging:
   level:
