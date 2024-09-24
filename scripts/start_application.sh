@@ -18,7 +18,7 @@ echo "logining aws"
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
 ##删除历史镜像
-docker image prune -a -f
+docker rmi $(docker images | grep backend | awk '{print $3}')
 
 ## 拉取镜像
 echo "pulling docker"
