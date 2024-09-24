@@ -1,6 +1,6 @@
 version: '3'
 services:
-  app:
+  backend:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:latest
     ports:
       - "80:80"
