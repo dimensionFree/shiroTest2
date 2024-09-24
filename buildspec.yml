@@ -88,4 +88,5 @@ phases:
 artifacts:
   files:
     - appspec.yml
+    - docker-compose.yml
     - scripts/**/*
