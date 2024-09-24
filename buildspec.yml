@@ -84,6 +84,7 @@ phases:
       - echo Build completed on `date`
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend:latest
       - echo Writing image definitions file...
+      - pwd
       - printf '{"ImageURI":"%s.dkr.ecr.%s.amazonaws.com/backend:latest"}' $AWS_ACCOUNT_ID $AWS_DEFAULT_REGION > imageDetail.json
 artifacts:
   files:

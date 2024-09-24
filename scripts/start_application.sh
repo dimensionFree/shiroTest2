@@ -45,6 +45,7 @@ echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
 
 echo "Docker Compose Installing..."
+pwd
 # 获取最新版本号
 COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 
