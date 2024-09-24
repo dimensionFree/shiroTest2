@@ -57,6 +57,12 @@ fi
 # 检查 Docker Compose 版本
 docker-compose --version
 
+# 确保路径已更新
+export PATH=$PATH:/usr/local/bin
+
+# 等待几秒钟以确保安装生效
+sleep 5
+
 # 启动 Docker Compose
 echo "Starting services with Docker Compose..."
 docker-compose up -d
