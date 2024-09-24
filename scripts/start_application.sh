@@ -55,17 +55,12 @@ sudo curl -L "https://github.com/docker/compose/releases/download/${curl -s http
 sleep 20
 
 
-# 设置可执行权限
-sudo chmod +x /usr/local/bin/docker-compose
-
-
 echo "Docker Compose installed."
-
 ls
 
 # 启动 Docker Compose
 echo "Starting services with Docker Compose..."
-docker-compose up -d
+docker-compose -p my-backend-service up -d
 
 ## 运行 Docker 容器并传递环境变量
 #echo "gonna runing container"
