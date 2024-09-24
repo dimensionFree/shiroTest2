@@ -30,6 +30,13 @@ DB_PASSWORD=$(aws ssm get-parameter --name "/myapp/datebase_pwd" --with-decrypti
 DEV_MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
 DEV_MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
 
+# Export variables
+export DB_URL
+export DB_USERNAME
+export DB_PASSWORD
+export DEV_MAIL_USERNAME
+export DEV_MAIL_PASSWORD
+
 # 调试输出，确保正确获取到值
 echo "DB_URL: $DB_URL"
 echo "DB_USERNAME: $DB_USERNAME"
@@ -37,20 +44,22 @@ echo "DB_PASSWORD: $DB_PASSWORD"
 echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
 
-sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# 检查 Docker Compose 是否已安装
+if ! command -v docker-compose &> /dev/null; then
+    echo "Docker Compose not found. Installing..."
+    sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+    echo "Docker Compose installed."
+else
+    echo "Docker Compose is already installed."
+fi
+
+# 检查 Docker Compose 版本
 docker-compose --version
 
-
 # 启动 Docker Compose
-echo "Starting services with Docker Compose"
-docker-compose up -d \
-  -e DB_URL="$DB_URL" \
-  -e DB_USERNAME="$DB_USERNAME" \
-  -e DB_PASSWORD="$DB_PASSWORD" \
-  -e MAIL_USERNAME="$DEV_MAIL_USERNAME" \
-  -e MAIL_PASSWORD="$DEV_MAIL_PASSWORD"
-
+echo "Starting services with Docker Compose..."
+docker-compose up -d
 
 ## 运行 Docker 容器并传递环境变量
 #echo "gonna runing container"
