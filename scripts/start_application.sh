@@ -45,14 +45,16 @@ echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_MAIL_PASSWORD: $DEV_MAIL_PASSWORD"
 
 # 检查 Docker Compose 是否已安装
-if ! command -v docker-compose &> /dev/null; then
-    echo "Docker Compose not found. Installing..."
-    sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    echo "Docker Compose installed."
-else
-    echo "Docker Compose is already installed."
-fi
+echo "Docker Compose not found. Installing..."
+
+# 获取最新版本号
+COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+
+# 下载并安装 Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# 设置可执行权限
+sudo chmod +x /usr/local/bin/docker-compose
 
 # 检查 Docker Compose 版本
 docker-compose --version
