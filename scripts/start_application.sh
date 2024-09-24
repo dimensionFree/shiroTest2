@@ -51,16 +51,16 @@ COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/l
 # 下载并安装 Docker Compose
 sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
+sleep 20
+
+
 # 设置可执行权限
 sudo chmod +x /usr/local/bin/docker-compose
 
-# 等待直到 docker-compose 可以使用
-until command -v docker-compose &> /dev/null; do
-    echo "Waiting for Docker Compose to be installed..."
-    sleep 1
-done
 
 echo "Docker Compose installed."
+
+ls
 
 # 启动 Docker Compose
 echo "Starting services with Docker Compose..."
