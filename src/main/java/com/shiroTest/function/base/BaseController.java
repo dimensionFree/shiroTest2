@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 public class BaseController<T extends BaseAuditableEntity, S extends IService<T>> {
     public static final String SELF_AUTH_SUFFIX = "_SELF";
     @Autowired

@@ -44,20 +44,20 @@ public class ShiroConfig {
 //        map.put("/index.jsp", "authc");
 //        map.put("/login.jsp","anon");
         //user
-        map.put("/user/login","anon");
-        map.put("/user/register","anon");
-        map.put("/user/send-verification-code","anon");
-        map.put("/user/create","jwt[USER_CREATE]");
-        map.put("/user/find/**","jwt[USER_READ]");
-        map.put("/user/findAll/**","jwt[USER_READ]");
-        map.put("/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
-        map.put("/user/delete/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+        map.put("/api/user/login","anon");
+        map.put("/api/user/register","anon");
+        map.put("/api/user/send-verification-code","anon");
+        map.put("/api/user/create","jwt[USER_CREATE]");
+        map.put("/api/user/find/**","jwt[USER_READ]");
+        map.put("/api/user/findAll/**","jwt[USER_READ]");
+        map.put("/api/user/update/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+        map.put("/api/user/delete/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
         //role
-        map.put("/role/findAll/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
+        map.put("/api/role/findAll/**","jwt[USER_EDIT,"+ PERMS_OR +",USER_EDIT_SELF]");
 
         //article
-        map.put("/article/read/latest","anon");
-        map.put("/article/findAll/**","anon");
+        map.put("/api/article/read/latest","anon");
+        map.put("/api/article/findAll/**","anon");
 
 
         map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器

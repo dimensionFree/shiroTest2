@@ -17,7 +17,7 @@ import com.shiroTest.function.role.model.Role;
  * @since 2024-06-03
  */
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/api/role")
 public class RoleController extends BaseController<Role, RoleServiceImpl> {
 
 }

@@ -24,7 +24,7 @@ import java.util.List;
  * @since 2023-09-04
  */
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 public class ArticleController extends BaseController<Article, ArticleServiceImpl> {
 
     public ArticleController() {

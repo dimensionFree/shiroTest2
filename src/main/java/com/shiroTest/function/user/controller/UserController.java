@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @since 2023-11-12
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
 
