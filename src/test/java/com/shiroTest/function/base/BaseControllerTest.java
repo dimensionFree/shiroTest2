@@ -92,7 +92,7 @@ public abstract class BaseControllerTest extends BaseTest {
     protected abstract String getApiPrefix();
 
     protected String getHost(){
-        return HTTP_LOCALHOST+":"+port;
+        return HTTP_LOCALHOST+":"+port+"/api";
     }
 
 
