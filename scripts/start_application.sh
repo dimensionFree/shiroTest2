@@ -30,24 +30,24 @@ docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:l
 DB_URL=$(aws ssm get-parameter --name "/myapp/datebase_url" --with-decryption --query "Parameter.Value" --output text)
 DB_USERNAME=$(aws ssm get-parameter --name "/myapp/datebase_username" --with-decryption --query "Parameter.Value" --output text)
 DB_PASSWORD=$(aws ssm get-parameter --name "/myapp/datebase_pwd" --with-decryption --query "Parameter.Value" --output text)
-MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
-MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
-REDIS_HOST=my-backend-service-redis-1
+DEV_MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
+DEV_MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
+DEV_REDIS_HOST=my-backend-service-redis-1
 
 # Export variables
 export DB_URL
 export DB_USERNAME
 export DB_PASSWORD
-export MAIL_USERNAME
-export MAIL_PASSWORD
-export REDIS_HOST
+export DEV_MAIL_USERNAME
+export DEV_MAIL_PASSWORD
+export DEV_REDIS_HOST
 
 # 调试输出，确保正确获取到值
 echo "DB_URL: $DB_URL"
 echo "DB_USERNAME: $DB_USERNAME"
 echo "DB_PASSWORD: $DB_PASSWORD"
-echo "MAIL_USERNAME: $MAIL_USERNAME"
-echo "REDIS_HOST: $REDIS_HOST"
+echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
+echo "DEV_REDIS_HOST: $DEV_REDIS_HOST"
 
 echo "Docker Compose Installing..."
 pwd
@@ -70,7 +70,7 @@ docker-compose -p my-backend-service up -d
 ## 运行 Docker 容器并传递环境变量
 #echo "gonna runing container"
 #
-#CONTAINER_ID=$(docker run -d -p 8080:8080 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e MAIL_USERNAME="$MAIL_USERNAME" -e MAIL_PASSWORD="$MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
+#CONTAINER_ID=$(docker run -d -p 8080:8080 -e DB_URL="$DB_URL" -e DB_USERNAME="$DB_USERNAME" -e DB_PASSWORD="$DB_PASSWORD" -e DEV_MAIL_USERNAME="$DEV_MAIL_USERNAME" -e DEV_MAIL_PASSWORD="$DEV_MAIL_PASSWORD" $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPOSITORY_NAME:latest)
 #
 ## 检查是否成功启动容器
 #if [ $? -ne 0 ]; then

@@ -10,6 +10,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - MAIL_USERNAME=${DEV_MAIL_USERNAME}
       - MAIL_PASSWORD=${DEV_MAIL_PASSWORD}
+      - REDIS_HOST=${DEV_REDIS_HOST}
     depends_on:
       - redis
     networks:
