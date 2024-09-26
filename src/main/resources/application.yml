@@ -24,7 +24,7 @@ spring:
             required: true
 
   redis:
-    host: localhost
+    host:  ${REDIS_HOST}
     port: 6379
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
