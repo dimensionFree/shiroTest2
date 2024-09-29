@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,8 +40,9 @@ public class ShiroConfig {
         filterMap.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
 
-        // 配置系统受限资源
-        Map<String, String> map = new HashMap<String, String>();
+        // 配置系统受限资源 path match at PathMatchingFilterChainResolver.getChain
+        //need linkedhashmap to keep it sorted
+        Map<String, String> map = new LinkedHashMap<>();
 //        map.put("/index.jsp", "authc");
 //        map.put("/login.jsp","anon");
         //user
@@ -57,6 +59,7 @@ public class ShiroConfig {
 
         //article
         map.put("/api/article/read/latest","anon");
+        map.put("/api/article/find/**","anon");
         map.put("/api/article/findAll/**","anon");
 
 
