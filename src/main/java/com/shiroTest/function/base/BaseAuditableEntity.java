@@ -14,8 +14,8 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
 @MappedSuperclass
+@Data
 public class BaseAuditableEntity extends BaseEntity{
     // 审计字段
     @TableField(fill = FieldFill.INSERT)

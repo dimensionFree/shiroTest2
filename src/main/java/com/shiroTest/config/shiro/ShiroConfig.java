@@ -61,6 +61,8 @@ public class ShiroConfig {
         map.put("/api/article/read/latest","anon");
         map.put("/api/article/find/**","anon");
         map.put("/api/article/findAll/**","anon");
+        map.put("/api/article/create","jwt[ARTICLE_CREATE]");
+        map.put("/api/article/update/**","jwt[ARTICLE_CREATE]");
 
 
         map.put("/**", "jwt");   // 所有请求通过我们自己的过滤器

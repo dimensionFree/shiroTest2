@@ -33,10 +33,6 @@ public class Role extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
-
-    private String id;
-
     private String roleName;
 
     private Set<Authority> authorities = new HashSet<>();

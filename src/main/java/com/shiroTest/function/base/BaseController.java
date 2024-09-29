@@ -113,13 +113,18 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 
     @PostMapping("/create")
     public Result create(@RequestBody T data){
-        boolean save = service.save(data);
-        return Result.success(save);
+        boolean saveSuccess = service.save(data);
+        if (saveSuccess){
+            return Result.success(data.getId());
+        }
+        return Result.fail("save failed");
     }
 
 
     @PatchMapping("patch/{id}")
     public Result patchUserById(@PathVariable("id") String id,@RequestBody Map<String,Object> patchMap){
+        checkSelfAuth(id,"_READ");
+
         UpdateWrapper<T> wrapper=new UpdateWrapper<>();
         wrapper.eq("id",id);
         for (Map.Entry<String, Object> entry : patchMap.entrySet()) {
@@ -132,7 +137,7 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 
     @PutMapping("update/{id}")
     public Result putUserById(@PathVariable("id") String id,@RequestBody T data){
-        checkSelfAuth(id,"_READ");
+        checkSelfAuth(id,"_EDIT");
 
         UpdateWrapper<T> wrapper=new UpdateWrapper<>();
         wrapper.eq("id",id);

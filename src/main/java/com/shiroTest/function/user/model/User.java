@@ -33,10 +33,6 @@ public class User extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.UUID)
-
-    private String id;
-
     @NotNull
     private String password;
 
