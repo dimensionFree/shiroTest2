@@ -39,7 +39,7 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
     @Override
     public Result getAll(int currentPage, int pageSize) {
         // 开始分页
-        PageHelper.startPage(currentPage, pageSize);
+        PageHelper.startPage(currentPage, pageSize,"created_date DESC");
         List<ArticleDto> list = getService().listDto();
 
         // 获取分页信息
