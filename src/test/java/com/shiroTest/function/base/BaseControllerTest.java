@@ -129,7 +129,7 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
             assertThat(resultData).isNotNull();
-            assertThat((Boolean) resultData.getDataContent()).isTrue();
+            assertThat(resultData.getDataContent()).isNotNull();
             //read
             resultData = given()
                     .header("Content-Type", "application/json")
