@@ -1,6 +1,7 @@
 package com.shiroTest.function.base;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageHelper;
@@ -8,11 +9,14 @@ import com.github.pagehelper.PageInfo;
 import com.shiroTest.common.Result;
 import com.shiroTest.function.role.model.Authority;
 import com.shiroTest.function.user.model.User4Display;
+import com.shiroTest.utils.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,25 +47,92 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
     }
 
 
+//    @GetMapping("/findAll")
+//    public Result getAll(@RequestParam(defaultValue = "1") int currentPage,
+//                         @RequestParam(defaultValue = "10") int pageSize){
+//        // 开始分页
+//        PageHelper.startPage(currentPage, pageSize);
+//        List<T> list = service.list();
+//
+//        // 获取分页信息
+//        PageInfo<T> pageInfo = new PageInfo<>(list);
+//
+//        // 在分页信息基础上进行处理
+//        List beforeReturnList = beforeReturnList(list);
+//        pageInfo.setList(beforeReturnList);
+//
+//        return Result.success(pageInfo);
+//    }
+
+//    @GetMapping("/findAll")
+//    public Result getAll(@RequestBody FilterWrapper wrapper,
+//                         @RequestParam(defaultValue = "1") int currentPage,
+//                         @RequestParam(defaultValue = "10") int pageSize) {
+//        // 开始分页
+//        PageHelper.startPage(currentPage, pageSize);
+//
+//        // 构建查询条件
+//        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+//
+//        if (wrapper != null && wrapper.getFilters() != null) {
+//            for (Map.Entry<String, Object> entry : wrapper.getFilters().entrySet()) {
+//                queryWrapper.eq(entry.getKey(), entry.getValue());
+//            }
+//        }
+//
+//        if (wrapper != null && wrapper.getSortBy() != null) {
+//            if (Boolean.TRUE.equals(wrapper.getAscending())) {
+//                queryWrapper.orderByAsc(wrapper.getSortBy());
+//            } else {
+//                queryWrapper.orderByDesc(wrapper.getSortBy());
+//            }
+//        }
+//
+//        List<T> list = service.list(queryWrapper);
+//        PageInfo<T> pageInfo = new PageInfo<>(list);
+//
+//        return Result.success(pageInfo);
+//    }
+//
+
     @GetMapping("/findAll")
     public Result getAll(@RequestParam(defaultValue = "1") int currentPage,
-                         @RequestParam(defaultValue = "10") int pageSize){
+                         @RequestParam(defaultValue = "10") int pageSize,
+                         @RequestParam(required = false) String sortBy,
+                         @RequestParam(required = false) Boolean ascending,
+                         @RequestParam(required = false)  String filtersStr) throws IOException {
         // 开始分页
         PageHelper.startPage(currentPage, pageSize);
-        List<T> list = service.list();
+
+        // 构建查询条件
+        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+
+        // 根据前端传递的过滤条件进行筛选
+
+        if (StringUtils.isNotEmpty(filtersStr)) {
+            Map<String, Object> filters = JsonUtil.toMap(filtersStr);
+            for (Map.Entry<String, Object> entry : filters.entrySet()) {
+                queryWrapper.eq("a."+ entry.getKey(), entry.getValue().toString());
+            }
+        }
+//        // 添加排序条件
+//        if (sortBy != null) {
+//            if (Boolean.TRUE.equals(ascending)) {
+//                queryWrapper.orderByAsc(sortBy);
+//            } else {
+//                queryWrapper.orderByDesc(sortBy);
+//            }
+//        }
+
+        List<T> list = service.list(queryWrapper);
 
         // 获取分页信息
         PageInfo<T> pageInfo = new PageInfo<>(list);
-
-        // 在分页信息基础上进行处理
-        List beforeReturnList = beforeReturnList(list);
-        pageInfo.setList(beforeReturnList);
-
-//        List beforeReturnList = beforeReturnList(list);
-//        // 获取分页信息
-//        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
         return Result.success(pageInfo);
     }
+
+
+
 
     protected List beforeReturnList(List<T> datas) {
         return datas;

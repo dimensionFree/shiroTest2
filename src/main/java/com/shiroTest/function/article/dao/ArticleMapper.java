@@ -1,9 +1,11 @@
 package com.shiroTest.function.article.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shiroTest.function.article.model.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.shiroTest.function.article.model.ArticleDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -19,6 +21,10 @@ import java.util.List;
 @Mapper
 public interface ArticleMapper extends BaseMapper<Article> {
 
-    @Select("SELECT a.*,user.username as createdUserName from article a , user WHERE a.created_by=user.id")
-     public List<ArticleDto> selectArticleDto();
+//    @Select("SELECT a.*,user.username as createdUserName from article a , user WHERE a.created_by=user.id")
+//     public List<ArticleDto> selectArticleDto();
+
+
+//     public List<ArticleDto> selectArticleDto(QueryWrapper<ArticleDto> queryWrapper);
+     public List<ArticleDto> selectArticleDto(@Param("ew") QueryWrapper<ArticleDto> queryWrapper);
 }

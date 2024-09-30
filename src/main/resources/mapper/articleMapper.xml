@@ -2,4 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shiroTest.function.article.dao.ArticleMapper">
 
+
+
+    <resultMap id="ArticleDto" type="com.shiroTest.function.article.model.ArticleDto">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="preface" property="preface"/>
+        <result column="content" property="content"/>
+        <result column="createdUserName" property="createdUserName"/>
+    </resultMap>
+
+
+
+    <select id="selectArticleDto" resultMap="ArticleDto">
+        SELECT a.*, user.username as createdUserName
+        FROM article a
+        JOIN user ON a.created_by = user.id
+        <where>
+            <if test="ew != null">
+                ${ew.sqlSegment}
+            </if>
+        </where>
+    </select>
+
+
 </mapper>
