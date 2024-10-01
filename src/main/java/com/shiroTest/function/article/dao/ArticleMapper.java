@@ -27,4 +27,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
 //     public List<ArticleDto> selectArticleDto(QueryWrapper<ArticleDto> queryWrapper);
      public List<ArticleDto> selectArticleDto(@Param("ew") QueryWrapper<ArticleDto> queryWrapper);
+
+     @Select("SELECT a.*,user.username as createdUserName from article a JOIN user ON a.created_by=`user`.id WHERE a.id=#{id}")
+     public ArticleDto selectArticleDtoById(String id);
 }

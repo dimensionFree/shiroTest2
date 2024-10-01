@@ -41,4 +41,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public List<ArticleDto> listDto(QueryWrapper<ArticleDto> queryWrapper) {
         return getBaseMapper().selectArticleDto(queryWrapper);
     }
+
+
+    public ArticleDto getDtoById(String id) {
+        return getBaseMapper().selectArticleDtoById(id);
+
+    }
 }

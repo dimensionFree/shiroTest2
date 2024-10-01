@@ -12,6 +12,7 @@ import com.shiroTest.function.base.FilterWrapper;
 import com.shiroTest.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -41,18 +42,6 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
     public Result getLatestArticle(){
         return Result.success(getService().getLatestArticle());
     }
-//
-//    @Override
-//    public Result getAll(int currentPage, int pageSize) {
-
-//
-//    }
-
-
-//    @Override
-//    public Result getAll(FilterWrapper wrapper, int currentPage, int pageSize) {
-//        return super.getAll(wrapper, currentPage, pageSize);
-//    }
 
 
     @Override
@@ -96,6 +85,14 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
 
         return Result.success(pageInfo);
 
+    }
+
+
+    @Override
+    public Result getById(@PathVariable("id") String id) {
+        ArticleDto byId = getService().getDtoById(id);
+//        var t = beforeReturn(byId);
+        return  Result.success(byId);
     }
 }
 
