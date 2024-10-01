@@ -47,53 +47,6 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
     }
 
 
-//    @GetMapping("/findAll")
-//    public Result getAll(@RequestParam(defaultValue = "1") int currentPage,
-//                         @RequestParam(defaultValue = "10") int pageSize){
-//        // 开始分页
-//        PageHelper.startPage(currentPage, pageSize);
-//        List<T> list = service.list();
-//
-//        // 获取分页信息
-//        PageInfo<T> pageInfo = new PageInfo<>(list);
-//
-//        // 在分页信息基础上进行处理
-//        List beforeReturnList = beforeReturnList(list);
-//        pageInfo.setList(beforeReturnList);
-//
-//        return Result.success(pageInfo);
-//    }
-
-//    @GetMapping("/findAll")
-//    public Result getAll(@RequestBody FilterWrapper wrapper,
-//                         @RequestParam(defaultValue = "1") int currentPage,
-//                         @RequestParam(defaultValue = "10") int pageSize) {
-//        // 开始分页
-//        PageHelper.startPage(currentPage, pageSize);
-//
-//        // 构建查询条件
-//        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
-//
-//        if (wrapper != null && wrapper.getFilters() != null) {
-//            for (Map.Entry<String, Object> entry : wrapper.getFilters().entrySet()) {
-//                queryWrapper.eq(entry.getKey(), entry.getValue());
-//            }
-//        }
-//
-//        if (wrapper != null && wrapper.getSortBy() != null) {
-//            if (Boolean.TRUE.equals(wrapper.getAscending())) {
-//                queryWrapper.orderByAsc(wrapper.getSortBy());
-//            } else {
-//                queryWrapper.orderByDesc(wrapper.getSortBy());
-//            }
-//        }
-//
-//        List<T> list = service.list(queryWrapper);
-//        PageInfo<T> pageInfo = new PageInfo<>(list);
-//
-//        return Result.success(pageInfo);
-//    }
-//
 
     @GetMapping("/findAll")
     public Result getAll(@RequestParam(defaultValue = "1") int currentPage,

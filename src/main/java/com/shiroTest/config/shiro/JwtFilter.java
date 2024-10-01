@@ -56,8 +56,12 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             // 交给 myRealm
             SecurityUtils.getSubject().login(new JwtToken(token));
 
+            //if jwt auth,login is enough
+            if (Objects.isNull(mappedValue)){
+                return true;
+            }
 
-            boolean permitted = getPermittedByPermStr((String[]) mappedValue);
+            boolean permitted =  getPermittedByPermStr((String[]) mappedValue);
             return permitted;
         } catch (Exception e) {
             errorMsg = "权限不足："+e.getMessage();
