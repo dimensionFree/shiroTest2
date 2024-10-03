@@ -11,11 +11,8 @@ import com.shiroTest.function.article.service.impl.ArticleServiceImpl;
 import com.shiroTest.function.base.FilterWrapper;
 import com.shiroTest.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
 import com.shiroTest.function.base.BaseController;
 
 import java.io.IOException;
@@ -45,7 +42,11 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
 
 
     @Override
-    public Result getAll(int currentPage, int pageSize, String sortBy, Boolean ascending, String filtersStr) throws IOException {
+    public Result getAll(@RequestParam(defaultValue = "1") int currentPage,
+                         @RequestParam(defaultValue = "10") int pageSize,
+                         @RequestParam(required = false) String sortBy,
+                         @RequestParam(required = false) Boolean ascending,
+                         @RequestParam(required = false)  String filtersStr) throws IOException {
 
 
 
