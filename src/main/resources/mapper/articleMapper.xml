@@ -15,9 +15,19 @@
 
 
     <select id="selectArticleDto" resultMap="ArticleDto">
-        SELECT a.*, user.username as createdUserName
-        FROM article a
-        JOIN user ON a.created_by = user.id
+        SELECT
+        a.id,
+        a.title,
+        a.preface,
+        a.created_date,
+        a.created_by,
+        a.updated_date,
+        a.updated_by,
+        user.username as createdUserName
+        FROM
+        article a
+        JOIN
+        user ON a.created_by = user.id;
         <where>
             <if test="ew != null">
                 ${ew.sqlSegment}
