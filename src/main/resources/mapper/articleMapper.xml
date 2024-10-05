@@ -27,7 +27,7 @@
         FROM
         article a
         JOIN
-        user ON a.created_by = user.id;
+        user ON a.created_by = user.id
         <where>
             <if test="ew != null">
                 ${ew.sqlSegment}
