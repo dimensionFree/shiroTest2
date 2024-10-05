@@ -78,9 +78,10 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 //        }
 
         List<T> list = service.list(queryWrapper);
+        List beforeReturnList = beforeReturnList(list);
 
         // 获取分页信息
-        PageInfo<T> pageInfo = new PageInfo<>(list);
+        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
         return Result.success(pageInfo);
     }
 
