@@ -115,18 +115,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             String userId = jwtUtil.getUserId(token);
             return getById(userId);
         } else {
-            throw new MyException(ResultCodeEnum.TOKEN_ERROR, "invalid token");
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, error.getMessage());
         }
     }
 
     public UserLoginInfo loginUser(String username, String password) throws MyException {
         User existingUser = getByUsername(username);
         if (Objects.isNull(existingUser)){
-            throw new MyException(ResultCodeEnum.USER_NOT_EXISTS,"用户不存在，无法登录");
+            ResultCodeEnum error = ResultCodeEnum.USER_NOT_EXISTS;
+            throw new MyException(error, error.getMessage());
         }
         boolean match = BcryptUtil.match(password, existingUser.getPassword());
         if (!match){
-            throw new MyException(ResultCodeEnum.USER_ERROR,"wrong pwd，无法登录");
+            ResultCodeEnum error = ResultCodeEnum.USER_ERROR;
+            throw new MyException(error, error.getMessage());
         }
         String jwtToken = createTokenAndCache(existingUser);
         return getUserTokenResult(existingUser, jwtToken);
@@ -155,15 +158,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     public void sendVerificationEmail(String email, String code) {
-        String message = "您的验证码是：" + code + "，有效期为10分钟。";
-        emailService.sendEmail(email,"邮箱验证",message);
+        String message = "あなたの認証コードは：" + code + "，期限は10分です。";
+        emailService.sendEmail(email,"メール認証",message);
 
     }
 
 
     public void checkVerificationCode(String email, String verificationCode) throws MyException {
         if (!verificationCode.equals(redisUtil.get(getVerificationCacheKey(email)))) {
-            throw new MyException(ResultCodeEnum.VERIFICATION_NOT_MATCH, "验证码与邮箱不匹配");
+            ResultCodeEnum error = ResultCodeEnum.VERIFICATION_NOT_MATCH;
+            throw new MyException(error, error.getMessage());
+        }
+    }
+    public void checkEmailRegistering(String email) throws MyException {
+
+        if (Objects.nonNull(redisUtil.get(getVerificationCacheKey(email)))) {
+            ResultCodeEnum error = ResultCodeEnum.VERIFICATION_CODE_EXIST;
+            throw new MyException(error, error.getMessage());
         }
     }
 }

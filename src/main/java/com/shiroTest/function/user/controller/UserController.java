@@ -50,7 +50,8 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
         User byUsername = getService().getByUsername(username);
         if (Objects.nonNull(byUsername)){
-            throw new MyException(ResultCodeEnum.USER_DUPLICATE,"用户已存在，无法注册");
+            ResultCodeEnum error = ResultCodeEnum.USER_DUPLICATE;
+            throw new MyException(error, error.getMessage());
         }
         User user = new User(username, BcryptUtil.encode(password),email, RoleServiceImpl.ROLE_ID_MEMBER);
 
@@ -93,8 +94,11 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         // 检查邮箱是否已被注册
         User existingUser = getService().getByEmail(email);
         if (existingUser != null) {
-            throw new MyException(ResultCodeEnum.EMAIL_ALREADY_REGISTER, "邮箱已被使用");
+            ResultCodeEnum error = ResultCodeEnum.EMAIL_ALREADY_REGISTER;
+            throw new MyException(error, error.getMessage());
         }
+
+        getService().checkEmailRegistering(email);
 
         // 生成验证码
         String verificationCode = getService().generateVerificationCode();
@@ -105,7 +109,7 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         // 发送验证码到邮箱
         getService().sendVerificationEmail(email, verificationCode);
 
-        return Result.success("验证码已发送，请检查您的邮箱");
+        return Result.success("認証コード発送済み、メールをチェックしてください");
     }
 
 
