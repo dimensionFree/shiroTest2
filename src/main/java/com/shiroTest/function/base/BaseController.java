@@ -78,11 +78,22 @@ public class BaseController<T extends BaseAuditableEntity, S extends IService<T>
 //        }
 
         List<T> list = service.list(queryWrapper);
-        List beforeReturnList = beforeReturnList(list);
 
         // 获取分页信息
-        PageInfo<T> pageInfo = new PageInfo<>(beforeReturnList);
-        return Result.success(pageInfo);
+        PageInfo<T> pageInfo = new PageInfo<>(list);
+
+        // 对列表进行进一步处理
+        List modifiedList = beforeReturnList(list);
+
+        // 创建新的分页对象，保持分页信息但替换列表内容
+        PageInfo<Object> modifiedPageInfo = new PageInfo<>(modifiedList);
+        modifiedPageInfo.setPageNum(pageInfo.getPageNum());
+        modifiedPageInfo.setPageSize(pageInfo.getPageSize());
+        modifiedPageInfo.setTotal(pageInfo.getTotal());
+        modifiedPageInfo.setPages(pageInfo.getPages());
+
+
+        return Result.success(modifiedPageInfo);
     }
 
 
