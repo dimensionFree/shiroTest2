@@ -6,6 +6,7 @@ import com.shiroTest.function.article.dao.ArticleMapper;
 import com.shiroTest.function.article.model.Article;
 import com.shiroTest.function.article.model.ArticleDto;
 import com.shiroTest.function.article.service.IArticleService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public List<ArticleDto> listDto(QueryWrapper<ArticleDto> queryWrapper) {
         return getBaseMapper().selectArticleDto(queryWrapper);
     }
+
 
 
     public ArticleDto getDtoById(String id) {

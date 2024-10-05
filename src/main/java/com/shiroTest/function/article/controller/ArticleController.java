@@ -60,7 +60,13 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
         if (StringUtils.isNotEmpty(filtersStr)) {
             Map<String, Object> filters = JsonUtil.toMap(filtersStr);
             for (Map.Entry<String, Object> entry : filters.entrySet()) {
-                queryWrapper.eq("a."+ entry.getKey(), entry.getValue().toString());
+                String key = entry.getKey();
+                String val = entry.getValue().toString();
+                if (key.equals("content")){
+                    queryWrapper.apply("MATCH(content) AGAINST({0} IN NATURAL LANGUAGE MODE)", val);
+                }else {
+                    queryWrapper.eq("a."+ key, val);
+                }
             }
         }
 
@@ -82,7 +88,7 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
 
 //        // 在分页信息基础上进行处理
 //        List beforeReturnList = beforeReturnList(list);
-        pageInfo.setList(list);
+//        pageInfo.setList(list);
 
         return Result.success(pageInfo);
 

@@ -8,6 +8,7 @@ import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.mail.EmailService;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.dao.UserMapper;
+import com.shiroTest.function.user.model.State;
 import com.shiroTest.function.user.model.User;
 import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserLoginInfo;
@@ -124,6 +125,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User existingUser = getByUsername(username);
         if (Objects.isNull(existingUser)){
             ResultCodeEnum error = ResultCodeEnum.USER_NOT_EXISTS;
+            throw new MyException(error, error.getMessage());
+        }
+        if (State.LOCKED.equals(existingUser.getState())){
+            ResultCodeEnum error = ResultCodeEnum.USER_BLOCKED;
             throw new MyException(error, error.getMessage());
         }
         boolean match = BcryptUtil.match(password, existingUser.getPassword());
