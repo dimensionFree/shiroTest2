@@ -1,0 +1,1 @@
+ALTER TABLE article ADD view_count INT UNSIGNED DEFAULT 0;

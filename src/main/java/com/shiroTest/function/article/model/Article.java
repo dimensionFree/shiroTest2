@@ -40,6 +40,8 @@ public class Article extends BaseAuditableEntity {
 
     private String content="";
 
+    private int viewCount =0;
+
 
     // 去除常见 Markdown 标记的方法
     public static String removeMarkdownSyntax(String text) {

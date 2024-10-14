@@ -3,7 +3,6 @@ package com.shiroTest.utils;
 import com.shiroTest.config.shiro.MyRealm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,10 @@ public class RedisUtil {
     public void delete(String key) {
         log.info("delete(..) => key -> {}", key);
         redisTemplate.delete(key);
+    }
 
+    public Set<String> keys(String pattern){
+        return redisTemplate.keys(pattern);
     }
 
     /**
