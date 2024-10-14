@@ -16,8 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -52,7 +54,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 //    }
 
     public List<ArticleDto> listDto(QueryWrapper<ArticleDto> queryWrapper) {
-        return getBaseMapper().selectArticleDto(queryWrapper);
+        List<ArticleDto> articleDtos = getBaseMapper().selectArticleDto(queryWrapper);
+        Set<String> redisViewCountKeys = getRedisViewCountKeys();
+
+        articleDtos.stream().filter(a->redisViewCountKeys.contains(getRedisViewCountKey(a.getId()))).forEach(articleDto -> {
+            String id = articleDto.getId();
+            Object viewCountObj = redisUtil.get(getRedisViewCountKey(id));
+            if (Objects.nonNull(viewCountObj)){
+                articleDto.setViewCount((Integer) viewCountObj);
+            }
+        });
+        return articleDtos;
     }
 
 
@@ -67,7 +79,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         String redisViewCountKey = getRedisViewCountKey(articleDto.getId());
         if (!redisUtil.hasKey(redisViewCountKey)) {
-            redisUtil.set(redisViewCountKey, articleDto.getViewCount(),20, TimeUnit.SECONDS);
+            redisUtil.set(redisViewCountKey, articleDto.getViewCount(),120, TimeUnit.SECONDS);
         }
         redisUtil.incr(redisViewCountKey, 1);
 
@@ -79,9 +91,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     //every 60s
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 60000)
     public void syncViewCountToDb() {
-        Set<String> keys = redisUtil.keys(REDIS_VIEW_COUNT_PREFIX + "*");
+        Set<String> keys = getRedisViewCountKeys();
         log.info("gonna save view count article keys:{}",keys);
         for (String key : keys) {
             String articleId = key.replace(REDIS_VIEW_COUNT_PREFIX, "");
@@ -91,6 +103,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             updateWrapper.set("view_count", newViewCount);
             update(updateWrapper);
         }
+    }
+
+    private Set<String> getRedisViewCountKeys() {
+        return redisUtil.keys(REDIS_VIEW_COUNT_PREFIX + "*");
     }
 
 }
