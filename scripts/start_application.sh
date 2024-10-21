@@ -33,6 +33,7 @@ DB_PASSWORD=$(aws ssm get-parameter --name "/myapp/datebase_pwd" --with-decrypti
 DEV_MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
 DEV_MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
 TURNSTILE_SECRET=$(aws ssm get-parameter --name "/myapp/turnstileSecretKey" --with-decryption --query "Parameter.Value" --output text)
+JWT_SECRET=$(aws ssm get-parameter --name "/myapp/jwt_secret" --with-decryption --query "Parameter.Value" --output text)
 DEV_REDIS_HOST=my-backend-service-redis-1
 
 # Export variables
@@ -43,6 +44,7 @@ export DEV_MAIL_USERNAME
 export DEV_MAIL_PASSWORD
 export DEV_REDIS_HOST
 export TURNSTILE_SECRET
+export JWT_SECRET
 
 # 调试输出，确保正确获取到值
 echo "DB_URL: $DB_URL"
@@ -51,6 +53,7 @@ echo "DB_PASSWORD: $DB_PASSWORD"
 echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_REDIS_HOST: $DEV_REDIS_HOST"
 echo "TURNSTILE_SECRET: $TURNSTILE_SECRET"
+echo "JWT_SECRET: $JWT_SECRET"
 
 echo "Docker Compose Installing..."
 pwd

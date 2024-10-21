@@ -1,5 +1,5 @@
 jwt:
-  secret: 2fa959d2db491f91659a3473ffaaded9
+  secret:  ${JWT_SECRET}
 turnstile:
   secret: ${TURNSTILE_SECRET}
 spring:
