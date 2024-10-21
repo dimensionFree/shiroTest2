@@ -11,6 +11,7 @@ services:
       - MAIL_USERNAME=${DEV_MAIL_USERNAME}
       - MAIL_PASSWORD=${DEV_MAIL_PASSWORD}
       - REDIS_HOST=${DEV_REDIS_HOST}
+      - TURNSTILE_SECRET=${TURNSTILE_SECRET}
     depends_on:
       - redis
     networks:

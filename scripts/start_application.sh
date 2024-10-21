@@ -42,6 +42,7 @@ export DB_PASSWORD
 export DEV_MAIL_USERNAME
 export DEV_MAIL_PASSWORD
 export DEV_REDIS_HOST
+export TURNSTILE_SECRET
 
 # 调试输出，确保正确获取到值
 echo "DB_URL: $DB_URL"
@@ -49,6 +50,7 @@ echo "DB_USERNAME: $DB_USERNAME"
 echo "DB_PASSWORD: $DB_PASSWORD"
 echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
 echo "DEV_REDIS_HOST: $DEV_REDIS_HOST"
+echo "TURNSTILE_SECRET: $TURNSTILE_SECRET"
 
 echo "Docker Compose Installing..."
 pwd
