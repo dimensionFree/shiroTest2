@@ -1,5 +1,7 @@
 jwt:
   secret: 2fa959d2db491f91659a3473ffaaded9
+turnstile:
+  secret: ${TURNSTILE_SECRET}
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

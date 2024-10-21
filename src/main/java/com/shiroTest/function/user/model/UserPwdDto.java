@@ -19,6 +19,8 @@ public class UserPwdDto {
     @Email
     String email;
 
+    String turnstileResponse;
+
     public UserPwdDto() {
     }
 

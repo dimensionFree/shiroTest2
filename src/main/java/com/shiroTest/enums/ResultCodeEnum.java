@@ -25,6 +25,7 @@ public enum ResultCodeEnum {
     EMAIL_ALREADY_REGISTER("2006", "メールアドレスは既に登録されています", HttpStatus.BAD_REQUEST),
     VERIFICATION_NOT_MATCH("2007", "確認コードがメールアドレスと一致しません", HttpStatus.BAD_REQUEST),
     VERIFICATION_CODE_EXIST("2007", "有効な確認コードが既に存在します", HttpStatus.BAD_REQUEST),
+    CLOUDFLARE_VERIFICATION_FAIL("2008", "cloudFlare検証失敗", HttpStatus.BAD_REQUEST),
 
     PARAM_ERROR("3000", "パラメータエラー", HttpStatus.BAD_REQUEST),
     PARAM_NULL("3001", "パラメータが空です", HttpStatus.BAD_REQUEST),

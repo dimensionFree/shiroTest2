@@ -3,7 +3,6 @@ package com.shiroTest.function.user.controller;
 
 import com.shiroTest.common.MyException;
 import com.shiroTest.common.Result;
-import com.shiroTest.common.ResultData;
 import com.shiroTest.enums.ResultCodeEnum;
 import com.shiroTest.function.role.service.impl.RoleServiceImpl;
 import com.shiroTest.function.user.model.User;
@@ -11,7 +10,9 @@ import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
+import com.shiroTest.utils.TurnstileVerificationHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user")
 @Slf4j
 public class UserController extends BaseController<User, UserServiceImpl> {
+
+    @Autowired
+    TurnstileVerificationHelper turnstileVerificationHelper;
 
     public UserController() {
         super(User.class);
@@ -65,8 +69,17 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
     @PostMapping("/login")
     public Result login(@Validated(UserPwdDto.Login.class) @RequestBody UserPwdDto userPwdDto) throws MyException {
+
+        String turnstileToken = userPwdDto.getTurnstileResponse();
+        boolean isTurnstileVerified = turnstileVerificationHelper.verifyTurnstileToken(turnstileToken);
+        if (!isTurnstileVerified){
+            ResultCodeEnum error = ResultCodeEnum.CLOUDFLARE_VERIFICATION_FAIL;
+            throw new MyException(error, error.getMessage());
+        }
+
         String username = userPwdDto.getUsername();
         String password = userPwdDto.getPassword();
+
 
         return Result.success(
                 getService().loginUser(username,password)

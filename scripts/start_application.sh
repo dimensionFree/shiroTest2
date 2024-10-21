@@ -32,6 +32,7 @@ DB_USERNAME=$(aws ssm get-parameter --name "/myapp/datebase_username" --with-dec
 DB_PASSWORD=$(aws ssm get-parameter --name "/myapp/datebase_pwd" --with-decryption --query "Parameter.Value" --output text)
 DEV_MAIL_PASSWORD=$(aws ssm get-parameter --name "/myapp/email_pwd" --with-decryption --query "Parameter.Value" --output text)
 DEV_MAIL_USERNAME=$(aws ssm get-parameter --name "/myapp/email_username" --with-decryption --query "Parameter.Value" --output text)
+TURNSTILE_SECRET=$(aws ssm get-parameter --name "/myapp/turnstileSecretKey" --with-decryption --query "Parameter.Value" --output text)
 DEV_REDIS_HOST=my-backend-service-redis-1
 
 # Export variables
