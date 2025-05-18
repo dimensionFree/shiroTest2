@@ -45,7 +45,7 @@ echo "JWT_SECRET: $JWT_SECRET"
 #EOF
 #
 #echo "✅ init.sql generated."
-
+docker-compose down -v
 echo "▶️ Starting services via Docker Compose..."
 docker-compose -p my-backend-service up -d --build
 
