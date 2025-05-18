@@ -1,31 +1,51 @@
 version: '3'
+
 services:
   backend:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}:latest
     ports:
       - "8080:8080"
     environment:
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
+      # 使用docker内部网络，MySQL服务名为mysql，端口3306
+      - DB_URL=jdbc:mysql://mysql:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - DB_USERNAME=root
       - DB_PASSWORD=${DB_PASSWORD}
       - MAIL_USERNAME=${DEV_MAIL_USERNAME}
       - MAIL_PASSWORD=${DEV_MAIL_PASSWORD}
-      - REDIS_HOST=${DEV_REDIS_HOST}
+      - REDIS_HOST=redis
       - TURNSTILE_SECRET=${TURNSTILE_SECRET}
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - redis
+      - mysql  # 新增依赖：MySQL 启动后再启动 backend
     networks:
-      - app-network  # 指定网络
+      - app-network  # 使用自定义 bridge 网络
 
   redis:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my_image_store:redis-6.0
     ports:
       - "6379:6379"
     networks:
-      - app-network  # 指定网络
+      - app-network  # 使用相同网络确保 backend 可以访问 redis
 
-# 定义网络
+  mysql:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my_image_store:mysql-8.0.40
+    restart: always  # 容器崩溃后自动重启
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # root 用户密码
+      MYSQL_DATABASE: ${DB_NAME}           # 初始化时创建的数据库名
+    volumes:
+      - mysql-data:/var/lib/mysql  # 持久化 MySQL 数据
+    networks:
+      - app-network  # 保证与其他服务在同一网络下通信
+
+# 持久化卷定义，存放 MySQL 数据
+volumes:
+  mysql-data:
+
+# 自定义网络定义
 networks:
   app-network:
     driver: bridge  # 使用 bridge 网络驱动（Docker 默认）

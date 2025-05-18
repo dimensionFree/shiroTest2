@@ -121,6 +121,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
     }
 
+    /**
+     * auth based on role
+     *
+     * role -> admin member
+     * auth-> admin -> {read_user,read_article,edit,}
+     *
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws MyException
+     */
+
     public UserLoginInfo loginUser(String username, String password) throws MyException {
         User existingUser = getByUsername(username);
         if (Objects.isNull(existingUser)){
