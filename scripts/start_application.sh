@@ -36,15 +36,14 @@ echo "TURNSTILE_SECRET: $TURNSTILE_SECRET"
 echo "JWT_SECRET: $JWT_SECRET"
 
 #echo "▶️ Generating init.sql for MySQL initialization..."
-#mkdir -p mysql
-#
-#cat > ./mysql/init.sql <<EOF
-#CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
-#GRANT ALL PRIVILEGES ON shiroTest.* TO '${DB_USERNAME}'@'%';
-#FLUSH PRIVILEGES;
-#EOF
-#
-#echo "✅ init.sql generated."
+
+echo "▶️ Granting MySQL privileges for user '$DB_USERNAME'..."
+docker exec -i my-backend-service-mysql-1 mysql -uroot -p"$DB_PASSWORD" <<EOF_SCRIPT
+GRANT ALL PRIVILEGES ON shiroTest.* TO '${DB_USERNAME}'@'%';
+FLUSH PRIVILEGES;
+EOF_SCRIPT
+
+
 
 #down container remove volumn
 #docker-compose -p my-backend-service -f /docker-compose.yml down -v
