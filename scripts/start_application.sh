@@ -25,16 +25,26 @@ JWT_SECRET=$(aws ssm get-parameter --name "/myapp/jwt_secret" --with-decryption 
 export DB_URL DB_USERNAME DB_PASSWORD DEV_MAIL_USERNAME DEV_MAIL_PASSWORD DEV_REDIS_HOST TURNSTILE_SECRET JWT_SECRET
 export DEV_REDIS_HOST=my-backend-service-redis-1
 
-echo "▶️ Generating init.sql for MySQL initialization..."
-mkdir -p mysql
 
-cat > ./mysql/init.sql <<EOF
-CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
-GRANT ALL PRIVILEGES ON shiroTest.* TO '${DB_USERNAME}'@'%';
-FLUSH PRIVILEGES;
-EOF
+# 调试输出，确保正确获取到值
+echo "DB_URL: $DB_URL"
+echo "DB_USERNAME: $DB_USERNAME"
+echo "DB_PASSWORD: $DB_PASSWORD"
+echo "DEV_MAIL_USERNAME: $DEV_MAIL_USERNAME"
+echo "DEV_REDIS_HOST: $DEV_REDIS_HOST"
+echo "TURNSTILE_SECRET: $TURNSTILE_SECRET"
+echo "JWT_SECRET: $JWT_SECRET"
 
-echo "✅ init.sql generated."
+#echo "▶️ Generating init.sql for MySQL initialization..."
+#mkdir -p mysql
+#
+#cat > ./mysql/init.sql <<EOF
+#CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+#GRANT ALL PRIVILEGES ON shiroTest.* TO '${DB_USERNAME}'@'%';
+#FLUSH PRIVILEGES;
+#EOF
+#
+#echo "✅ init.sql generated."
 
 echo "▶️ Starting services via Docker Compose..."
 docker-compose -p my-backend-service up -d --build
