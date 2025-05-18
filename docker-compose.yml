@@ -35,7 +35,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # root 用户密码
       MYSQL_DATABASE: ${DB_NAME}           # 初始化时创建的数据库名
     volumes:
-      - mysql-data:/var/lib/mysql  # 持久化 MySQL 数据
+      - mysql-data:/var/lib/mysql           # ✅ 数据持久化
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # ✅ 初始化 SQL 挂载
     networks:
       - app-network  # 保证与其他服务在同一网络下通信
 
