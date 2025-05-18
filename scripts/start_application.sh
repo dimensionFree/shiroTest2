@@ -45,7 +45,9 @@ echo "JWT_SECRET: $JWT_SECRET"
 #EOF
 #
 #echo "✅ init.sql generated."
-docker-compose down -v
+
+#down container remove volumn
+#docker-compose -p my-backend-service -f /docker-compose.yml down -v
 echo "▶️ Starting services via Docker Compose..."
 docker-compose -p my-backend-service up -d --build
 
