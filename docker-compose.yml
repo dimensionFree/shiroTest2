@@ -29,7 +29,6 @@ services:
 
   mysql:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/my_image_store:mysql-8.0.40
-    restart: always  # 容器崩溃后自动重启
     ports:
       - "3306:3306"
     environment:
