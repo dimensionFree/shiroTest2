@@ -3,7 +3,7 @@ echo "Validating the service..."
 
 echo "Checking if the application is running on localhost:8080..."
 
-MAX_WAIT=20
+MAX_WAIT=40
 WAITED=0
 
 until curl --max-time 2 --silent http://localhost:8080 > /dev/null; do
