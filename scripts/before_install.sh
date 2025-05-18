@@ -7,4 +7,6 @@ echo "Stopping and removing Docker containers containing the keyword 'backend'..
 ## 删除名称中包含 'backend' 的容器
 #docker ps -a -q --filter "name=backend" | xargs -r docker rm
 
+docker-compose down -v
+
 echo "Containers with the keyword 'backend' have been stopped and removed (if any)."
