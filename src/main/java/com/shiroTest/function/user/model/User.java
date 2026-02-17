@@ -32,6 +32,8 @@ import java.util.Set;
 public class User extends BaseAuditableEntity {
 
     private static final long serialVersionUID=1L;
+    public static final int USERNAME_MIN_LENGTH = 4;
+    public static final int USERNAME_MAX_LENGTH = 255;
 
     @NotNull
     private String password;
@@ -41,7 +43,7 @@ public class User extends BaseAuditableEntity {
     private String state= State.ACTIVE.name();
 
     @NotBlank
-    @Length(min = 4,max = 10,message = "username length error")
+    @Length(min = USERNAME_MIN_LENGTH,max = USERNAME_MAX_LENGTH,message = "username length error")
     private String username;
 
     @Email

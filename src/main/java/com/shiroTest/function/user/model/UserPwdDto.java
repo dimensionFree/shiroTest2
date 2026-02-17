@@ -10,7 +10,12 @@ import javax.validation.constraints.NotBlank;
 
 public class UserPwdDto {
     @NotBlank(groups = {Register.class},message = "username cant be blank")
-    @Length(min = 4,max = 10,message = "username length error",groups = Register.class)
+    @Length(
+            min = User.USERNAME_MIN_LENGTH,
+            max = User.USERNAME_MAX_LENGTH,
+            message = "username length error",
+            groups = {Register.class, Login.class}
+    )
     String username;
     @NotBlank(groups = {Register.class},message = "pwd cant be blank")
     @Length(min = 4,max = 10,message = "pwd length error",groups = Register.class)

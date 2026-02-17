@@ -135,5 +135,62 @@ public class UserControllerTest extends BaseControllerTest {
     public void testLogin() {
     }
 
+    @Test
+    public void testRegister_username_length_255_should_success() {
+        String inputUsername = StringUtils.repeat("u", User.USERNAME_MAX_LENGTH);
+        String inputPwd = "password";
+        String email = "max255_" + UUID.randomUUID() + "@a.com";
+        String verificationCode = getService().generateVerificationCode();
+        getService().saveVerificationCode(email, verificationCode);
+        UserPwdDto user = new UserPwdDto(inputUsername, inputPwd, email, verificationCode);
+
+        ResultData resultData = given()
+                .header("Content-Type", "application/json")
+                .body(user)
+                .when()
+                .post(getHost() + getApiPrefix() + "/register")
+                .then()
+                .statusCode(200)
+                .contentType("application/json")
+                .extract()
+                .response()
+                .as(ResultData.class);
+
+        assertThat(resultData).isNotNull();
+        Map<String, Object> dataContent = (Map<String, Object>) resultData.getDataContent();
+        UserLoginInfo userLoginInfo = JsonUtil.fromMap(dataContent, UserLoginInfo.class);
+        User4Display user4Display = userLoginInfo.getUser4Display();
+        assertThat(user4Display).isNotNull();
+        assertThat(user4Display.getUsername()).hasSize(User.USERNAME_MAX_LENGTH);
+
+        DeleteDataHelper.addTask(() -> getService().removeById(user4Display.getId()));
+        DeleteDataHelper.clear();
+    }
+
+    @Test
+    public void testRegister_username_length_256_should_fail_validation() {
+        String inputUsername = StringUtils.repeat("u", User.USERNAME_MAX_LENGTH + 1);
+        String inputPwd = "password";
+        String email = "over255_" + UUID.randomUUID() + "@a.com";
+        String verificationCode = getService().generateVerificationCode();
+        getService().saveVerificationCode(email, verificationCode);
+        UserPwdDto user = new UserPwdDto(inputUsername, inputPwd, email, verificationCode);
+
+        ResultData resultData = given()
+                .header("Content-Type", "application/json")
+                .body(user)
+                .when()
+                .post(getHost() + getApiPrefix() + "/register")
+                .then()
+                .statusCode(400)
+                .contentType("application/json")
+                .extract()
+                .response()
+                .as(ResultData.class);
+
+        assertThat(resultData).isNotNull();
+        assertThat(resultData.getMessage()).contains("username length error");
+    }
+
 
 }
