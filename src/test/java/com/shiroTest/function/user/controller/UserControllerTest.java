@@ -12,10 +12,10 @@ import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.DeleteDataHelper;
 import com.shiroTest.utils.JsonUtil;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -48,8 +48,6 @@ public class UserControllerTest extends BaseControllerTest {
     public ArticleServiceImpl articleService;
 
     @Test
-    @Transactional
-    @Rollback
     public void crud_should_work() throws Exception {
 
         String inputUsername = "username";
@@ -137,34 +135,43 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void testRegister_username_length_255_should_success() {
-        String inputUsername = StringUtils.repeat("u", User.USERNAME_MAX_LENGTH);
-        String inputPwd = "password";
-        String email = "max255_" + UUID.randomUUID() + "@a.com";
-        String verificationCode = getService().generateVerificationCode();
-        getService().saveVerificationCode(email, verificationCode);
-        UserPwdDto user = new UserPwdDto(inputUsername, inputPwd, email, verificationCode);
 
-        ResultData resultData = given()
-                .header("Content-Type", "application/json")
-                .body(user)
-                .when()
-                .post(getHost() + getApiPrefix() + "/register")
-                .then()
-                .statusCode(200)
-                .contentType("application/json")
-                .extract()
-                .response()
-                .as(ResultData.class);
+        User4Display user4Display = null;
+        try {
+            String inputUsername = StringUtils.repeat("u", User.USERNAME_MAX_LENGTH);
+            String inputPwd = "password";
+            String email = "max255_" + UUID.randomUUID() + "@a.com";
+            String verificationCode = getService().generateVerificationCode();
+            getService().saveVerificationCode(email, verificationCode);
+            UserPwdDto user = new UserPwdDto(inputUsername, inputPwd, email, verificationCode);
 
-        assertThat(resultData).isNotNull();
-        Map<String, Object> dataContent = (Map<String, Object>) resultData.getDataContent();
-        UserLoginInfo userLoginInfo = JsonUtil.fromMap(dataContent, UserLoginInfo.class);
-        User4Display user4Display = userLoginInfo.getUser4Display();
-        assertThat(user4Display).isNotNull();
-        assertThat(user4Display.getUsername()).hasSize(User.USERNAME_MAX_LENGTH);
+            ResultData resultData = given()
+                    .header("Content-Type", "application/json")
+                    .body(user)
+                    .when()
+                    .post(getHost() + getApiPrefix() + "/register")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
 
-        DeleteDataHelper.addTask(() -> getService().removeById(user4Display.getId()));
-        DeleteDataHelper.clear();
+            assertThat(resultData).isNotNull();
+            Map<String, Object> dataContent = (Map<String, Object>) resultData.getDataContent();
+            UserLoginInfo userLoginInfo = JsonUtil.fromMap(dataContent, UserLoginInfo.class);
+            user4Display = userLoginInfo.getUser4Display();
+            assertThat(user4Display).isNotNull();
+            assertThat(user4Display.getUsername()).hasSize(User.USERNAME_MAX_LENGTH);
+            String id = user4Display.getId();
+            DeleteDataHelper.addTask(() -> {
+                getService().removeById(id);
+            });
+        } finally {
+            DeleteDataHelper.clear();
+        }
+
+
     }
 
     @Test

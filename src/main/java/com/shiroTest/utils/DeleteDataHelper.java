@@ -2,39 +2,39 @@ package com.shiroTest.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class DeleteDataHelper {
 
-    protected static final ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private static final List<Runnable> tasks = new ArrayList<>();
 
-
-    static List<Runnable> tasks = new ArrayList<>();
-
-
-    public static void addTask(Runnable runnable){
+    public static synchronized void addTask(Runnable runnable) {
         tasks.add(runnable);
     }
 
-
-    public static void clear(){
-        for (Runnable task : tasks) {
-            if (task != null) {
+    public static synchronized void clear() {
+        RuntimeException firstException = null;
+        try {
+            for (int i = tasks.size() - 1; i >= 0; i--) {
+                Runnable task = tasks.get(i);
+                if (task == null) {
+                    continue;
+                }
                 try {
-                    // 在finally块中提交并执行任务
-                    Future<?> submit = executorService.submit(task);
-                    submit.get(); // 等待任务完成
+                    task.run();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    executorService.shutdown();
+                    if (firstException == null) {
+                        firstException = new RuntimeException("DeleteDataHelper clear failed", e);
+                    } else {
+                        firstException.addSuppressed(e);
+                    }
                 }
             }
+        } finally {
+            tasks.clear();
+        }
+
+        if (firstException != null) {
+            throw firstException;
         }
     }
-
-
-
 }
