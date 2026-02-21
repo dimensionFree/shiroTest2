@@ -175,5 +175,7 @@ AI 在输出结果时，必须提供：
 5) 本地测试全部通过
 6) 按第 7 节格式输出交付结果
 
-## 9.前端对应位置
-D:\project\reactTest
+## 9.一些常用文件的路径
+前端：D:\project\reactTest
+AI助手live2d: D:\project\hiyori_pro_zh\hiyori_pro_zh
+
