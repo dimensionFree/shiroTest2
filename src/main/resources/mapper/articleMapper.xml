@@ -10,6 +10,7 @@
         <result column="preface" property="preface"/>
         <result column="content" property="content"/>
         <result column="view_count" property="viewCount"/>
+        <result column="is_public" property="isPublic"/>
         <result column="createdUserName" property="createdUserName"/>
     </resultMap>
 
@@ -21,6 +22,7 @@
         a.title,
         a.preface,
         a.view_count,
+        a.is_public,
         a.created_date,
         a.created_by,
         a.updated_date,
@@ -35,6 +37,26 @@
                 ${ew.sqlSegment}
             </if>
         </where>
+    </select>
+
+    <select id="selectArticleDtoById" resultMap="ArticleDto">
+        SELECT
+        a.id,
+        a.title,
+        a.preface,
+        a.content,
+        a.view_count,
+        a.is_public,
+        a.created_date,
+        a.created_by,
+        a.updated_date,
+        a.updated_by,
+        user.username as createdUserName
+        FROM
+        article a
+        JOIN
+        user ON a.created_by = user.id
+        WHERE a.id = #{id}
     </select>
 
 

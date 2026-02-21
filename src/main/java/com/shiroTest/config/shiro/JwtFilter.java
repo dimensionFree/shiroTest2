@@ -150,7 +150,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String origin = httpServletRequest.getHeader("Origin");
         httpServletResponse.setHeader("Access-control-Allow-Origin", origin==null?"":origin);
-        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,PATCH,DELETE,HEAD");
         String header = httpServletRequest.getHeader("Access-Control-Request-Headers");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", header==null?"":header);
         // 跨域发送一个option请求

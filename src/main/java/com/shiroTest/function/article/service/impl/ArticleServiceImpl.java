@@ -43,6 +43,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return this.getOne(queryWrapper);
     }
 
+    public Article getLatestPublicArticle() {
+        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_public", 1).orderByDesc("created_date").last("LIMIT 1");
+        return this.getOne(queryWrapper);
+    }
+
     @Override
     public boolean save(Article entity) {
         return super.save(entity);
