@@ -75,13 +75,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
 
     public ArticleDto getDtoById(String id) {
-        ArticleDto articleDto = getBaseMapper().selectArticleDtoById(id);
-        updateViewCount(articleDto);
-        return articleDto;
+        return getDtoById(id, true);
+    }
 
+    public ArticleDto getDtoById(String id, boolean shouldUpdateViewCount) {
+        ArticleDto articleDto = getBaseMapper().selectArticleDtoById(id);
+        if (shouldUpdateViewCount) {
+            updateViewCount(articleDto);
+        }
+        return articleDto;
     }
 
     private void updateViewCount(ArticleDto articleDto) {
+        if (articleDto == null) {
+            return;
+        }
 
         String redisViewCountKey = getRedisViewCountKey(articleDto.getId());
         if (!redisUtil.hasKey(redisViewCountKey)) {

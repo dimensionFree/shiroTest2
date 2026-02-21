@@ -59,7 +59,7 @@ public class ArticleControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void findById_should_record_read_log_with_client_ip_and_time() {
+    void findById_should_not_record_read_log() {
         try {
             // Given
             String articleId = createArticle(true);
@@ -71,6 +71,44 @@ public class ArticleControllerTest extends BaseControllerTest {
                     .header("User-Agent", "ArticleReadRecordTestAgent/1.0")
                     .when()
                     .get(getHost() + getApiPrefix() + "/find/" + articleId)
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+            // Then
+            assertThat(resultData).isNotNull();
+            assertThat(resultData.getDataContent()).isInstanceOf(Map.class);
+            String returnedId = ((Map<String, Object>) resultData.getDataContent()).get("id").toString();
+            assertThat(returnedId).isEqualTo(articleId);
+
+            clearMybatisLvl1Cache();
+            List<ArticleReadRecord> records = articleReadRecordService.list(
+                    new QueryWrapper<ArticleReadRecord>()
+                            .eq("article_id", articleId)
+                            .orderByDesc("read_time")
+            );
+            assertThat(records).isEmpty();
+        } finally {
+            DeleteDataHelper.clear();
+        }
+    }
+
+    @Test
+    void findById_withRecordReadTrue_should_record_read_log_with_client_ip_and_time() {
+        try {
+            // Given
+            String articleId = createArticle(true);
+
+            // When
+            ResultData resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("X-Forwarded-For", "9.8.7.6, 10.0.0.1")
+                    .header("User-Agent", "ArticleReadRecordTestAgent/1.0")
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
                     .then()
                     .statusCode(200)
                     .contentType("application/json")
@@ -169,14 +207,14 @@ public class ArticleControllerTest extends BaseControllerTest {
             given().header("Content-Type", "application/json")
                     .header("X-Forwarded-For", "1.1.1.1")
                     .when()
-                    .get(getHost() + getApiPrefix() + "/find/" + articleId)
+                    .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
                     .then()
                     .statusCode(200);
 
             given().header("Content-Type", "application/json")
                     .header("X-Forwarded-For", "2.2.2.2")
                     .when()
-                    .get(getHost() + getApiPrefix() + "/find/" + articleId)
+                    .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
                     .then()
                     .statusCode(200);
 

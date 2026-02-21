@@ -98,13 +98,15 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
         if (!id.matches(ID_PATTERN)) {
             return Result.fail("article id format invalid");
         }
-        ArticleDto byId = getService().getDtoById(id);
+        HttpServletRequest request = getCurrentRequest();
+        boolean shouldRecordRead = request != null && Boolean.parseBoolean(request.getParameter("recordRead"));
+
+        ArticleDto byId = getService().getDtoById(id, shouldRecordRead);
         if (byId != null && Boolean.FALSE.equals(byId.getIsPublic()) && getCurrentUserId() == null) {
             return Result.fail("article is not public");
         }
 
-        HttpServletRequest request = getCurrentRequest();
-        if (byId != null) {
+        if (shouldRecordRead && byId != null) {
             articleReadRecordService.recordRead(
                     id,
                     request == null ? "unknown" : extractClientIp(request),
@@ -120,7 +122,7 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
         if (StringUtils.isBlank(id) || !id.matches(ID_PATTERN)) {
             return Result.fail("article id format invalid");
         }
-        return Result.success(getService().getDtoById(id));
+        return Result.success(getService().getDtoById(id, false));
     }
 
     @PatchMapping("/manage/public/{id}")

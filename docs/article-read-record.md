@@ -1,28 +1,24 @@
 # 文章阅读记录
 
-## 功能说明
+## 规则说明
 
-- 当调用 `GET /api/article/find/{id}` 读取文章详情时，后端会自动写入一条阅读记录。
-- 阅读记录按“每次读取一条”落库，用于后续做阅读分析与审计。
-- 管理端可调用 `GET /api/article/read/detail/{id}` 获取阅读详情（需登录且有 `ARTICLE_READ` 权限）。
-- 管理端可调用 `PATCH /api/article/manage/public/{id}?isPublic=true|false` 切换文章公开状态（需 `ARTICLE_EDIT`）。
+- 文章详情统一使用 `GET /api/article/find/{id}`。
+- 只有当请求参数 `recordRead=true` 时，后端才会写入阅读记录。
+- 不传 `recordRead` 或传 `false` 时，仅返回详情，不记录阅读。
 
-## 记录字段
+## 前端调用约定
 
-- `article_id`：被阅读文章 ID
-- `reader_ip`：阅读者 IP（优先取 `X-Forwarded-For`，其次 `X-Real-IP`，最后 `remoteAddr`）
-- `read_time`：阅读时间（`DATETIME(6)`）
+- 阅读页面：`GET /api/article/find/{id}?recordRead=true`
+- 编辑页面：`GET /api/article/manage/find/{id}`（或 `GET /api/article/find/{id}` 且不带 `recordRead=true`）
+
+## 阅读记录字段
+
+- `article_id`：文章 ID
+- `reader_ip`：阅读者 IP（优先 `X-Forwarded-For`，其次 `X-Real-IP`，最后 `remoteAddr`）
+- `read_time`：阅读时间，`DATETIME(6)`
 - `reader_user_id`：登录用户 ID（匿名访问为空）
 - `reader_user_agent`：请求头 `User-Agent`
 
-## 数据库
+## 管理端统计接口
 
-- Flyway 脚本：
-  - `src/main/resources/db/migration/V19__add_article_read_record.sql`
-  - `src/main/resources/db/migration/V20__change_article_read_time_to_datetime.sql`
-- 文章公开状态：
-  - `src/main/resources/db/migration/V21__add_article_is_public.sql`
-- `article.is_public`：
-  - `1`：公开，匿名可读
-  - `0`：不公开，匿名不可读（登录用户可读）
-- 新表：`article_read_record`
+- `GET /api/article/read/detail/{id}`：查询文章阅读总量、去重 IP、按天统计、最近阅读记录（需 `ARTICLE_READ` 权限）。
