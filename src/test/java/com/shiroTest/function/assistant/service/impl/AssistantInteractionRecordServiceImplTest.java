@@ -97,6 +97,31 @@ class AssistantInteractionRecordServiceImplTest {
     }
 
     @Test
+    void recordInteraction_should_use_dev_public_ip_for_geo_when_client_ip_is_private() throws Exception {
+        ReflectionTestUtils.setField(assistantInteractionRecordService, "useDevPublicIpForLocal", true);
+        ReflectionTestUtils.setField(assistantInteractionRecordService, "devPublicIp", "8.8.4.4");
+        doReturn(new GeoContext("Japan", "Tokyo", "Setagaya", null, null))
+                .when(assistantRemoteClient).fetchGeoContext("8.8.4.4");
+
+        assistantInteractionRecordService.recordInteraction(
+                "AVATAR",
+                "tap",
+                Map.of("distance", 2),
+                "127.0.0.1",
+                null,
+                "UA-dev"
+        );
+
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(redisUtil).hPut(anyString(), anyString(), payloadCaptor.capture());
+        Map<String, Object> payload = JsonUtil.toMap(payloadCaptor.getValue());
+        assertThat(payload.get("clientIpCountry")).isEqualTo("Japan");
+        assertThat(payload.get("clientIpProvince")).isEqualTo("Tokyo");
+        assertThat(payload.get("clientIpCity")).isEqualTo("Setagaya");
+        assertThat(payload.get("clientIpLocation")).isEqualTo("Setagaya");
+    }
+
+    @Test
     void recordInteraction_should_bypass_aggregation_for_chat_type() {
         doReturn(new GeoContext("Japan", "Tokyo", "Minato", null, null))
                 .when(assistantRemoteClient).fetchGeoContext("8.8.4.4");

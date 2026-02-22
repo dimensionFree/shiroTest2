@@ -13,6 +13,7 @@ import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,10 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
     private RedisUtil redisUtil;
     @Autowired
     private IRecordIgnoreIpService recordIgnoreIpService;
+    @Value("${app.dev.use-public-ip-for-local:false}")
+    private boolean useDevPublicIpForLocal;
+    @Value("${app.dev.public-ip:}")
+    private String devPublicIp;
 
     private final ConcurrentHashMap<String, CacheItem<IpGeoSnapshot>> ipLocationCache = new ConcurrentHashMap<>();
 
@@ -278,12 +283,13 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
         if (StringUtils.isBlank(normalizedIp)) {
             return IpGeoSnapshot.unknown();
         }
-        if (isPrivateOrLocalIp(normalizedIp)) {
+        String ipForGeoLookup = resolveIpForGeoLookup(normalizedIp);
+        if (isPrivateOrLocalIp(ipForGeoLookup)) {
             return IpGeoSnapshot.privateNetwork();
         }
 
         long now = System.currentTimeMillis();
-        CacheItem<IpGeoSnapshot> cached = ipLocationCache.get(normalizedIp);
+        CacheItem<IpGeoSnapshot> cached = ipLocationCache.get(ipForGeoLookup);
         if (cached != null && cached.expireAt > now && cached.value != null) {
             return cached.value;
         }
@@ -291,7 +297,7 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
         IpGeoSnapshot resolved = IpGeoSnapshot.unknown();
         if (assistantRemoteClient != null) {
             try {
-                GeoContext geoContext = assistantRemoteClient.fetchGeoContext(normalizedIp);
+                GeoContext geoContext = assistantRemoteClient.fetchGeoContext(ipForGeoLookup);
                 if (geoContext != null) {
                     String country = sanitizeLocationValue(geoContext.getCountry());
                     String province = sanitizeLocationValue(geoContext.getProvince());
@@ -308,8 +314,23 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
             }
         }
 
-        ipLocationCache.put(normalizedIp, new CacheItem<>(resolved, now + IP_LOCATION_CACHE_TTL_MILLIS));
+        ipLocationCache.put(ipForGeoLookup, new CacheItem<>(resolved, now + IP_LOCATION_CACHE_TTL_MILLIS));
         return resolved;
+    }
+
+    private String resolveIpForGeoLookup(String originalIp) {
+        if (!isPrivateOrLocalIp(originalIp)) {
+            return originalIp;
+        }
+        if (!useDevPublicIpForLocal) {
+            return originalIp;
+        }
+        String configuredIp = StringUtils.trimToNull(devPublicIp);
+        if (configuredIp == null || isPrivateOrLocalIp(configuredIp)) {
+            return originalIp;
+        }
+        // 本地联调用配置的公网 IP 进行地理定位，避免 localhost/内网地址无法解析城市。
+        return configuredIp;
     }
 
     private String sanitizeLocationValue(String value) {

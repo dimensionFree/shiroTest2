@@ -121,6 +121,24 @@ class ArticleReadRecordServiceImplTest {
     }
 
     @Test
+    void recordRead_should_use_dev_public_ip_for_geo_when_reader_ip_is_private() throws Exception {
+        ReflectionTestUtils.setField(articleReadRecordService, "useDevPublicIpForLocal", true);
+        ReflectionTestUtils.setField(articleReadRecordService, "devPublicIp", "8.8.8.8");
+        doReturn(new GeoContext("Japan", "Tokyo", "Shibuya", null, null))
+                .when(assistantRemoteClient).fetchGeoContext("8.8.8.8");
+
+        articleReadRecordService.recordRead("article-id-dev-1", "127.0.0.1", null, null);
+
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(redisUtil).hPut(any(), any(), payloadCaptor.capture());
+        Map<String, Object> payload = JsonUtil.toMap(payloadCaptor.getValue());
+        assertThat(payload.get("readerIpCountry")).isEqualTo("Japan");
+        assertThat(payload.get("readerIpProvince")).isEqualTo("Tokyo");
+        assertThat(payload.get("readerIpCity")).isEqualTo("Shibuya");
+        assertThat(payload.get("readerIpLocation")).isEqualTo("Shibuya");
+    }
+
+    @Test
     void getReadDetail_should_return_summary_and_records() {
         // Given
         ArticleReadDailyStat dailyStat = new ArticleReadDailyStat();
