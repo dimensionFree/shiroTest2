@@ -65,6 +65,7 @@ public class ShiroConfig {
         map.put("/api/article/find/**","anon");
         map.put("/api/article/findAll/**","anon");
         map.put("/api/assistant/context","anon");
+        map.put("/api/assistant/interaction","anon");
         map.put("/api/article/create","jwt[ARTICLE_CREATE]");
         map.put("/api/article/update/**","jwt[ARTICLE_EDIT,"+ PERMS_OR +",ARTICLE_EDIT_SELF]");
 //        map.put("/api/article/delete/**","jwt[ARTICLE_EDIT,"+ PERMS_OR +",ARTICLE_EDIT_SELF]");

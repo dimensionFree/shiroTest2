@@ -2,6 +2,7 @@ package com.shiroTest.function.assistant.controller;
 
 import com.shiroTest.BackendApplication;
 import com.shiroTest.function.assistant.model.AssistantContextResponse;
+import com.shiroTest.function.assistant.service.IAssistantInteractionRecordService;
 import com.shiroTest.function.assistant.service.IAssistantService;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,10 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = BackendApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,6 +31,9 @@ class AssistantControllerTest {
 
     @MockBean
     private IAssistantService assistantService;
+
+    @MockBean
+    private IAssistantInteractionRecordService assistantInteractionRecordService;
 
     @BeforeEach
     void setUp() {
@@ -69,5 +77,51 @@ class AssistantControllerTest {
                 .as(Map.class);
 
         assertThat(body.get("message")).isEqualTo("downstream failed");
+    }
+
+    @Test
+    void recordInteraction_should_return_200_and_call_service() {
+        Map<String, Object> body = given()
+                .header("Content-Type", "application/json")
+                .body(Map.of(
+                        "interactionType", "AVATAR",
+                        "interactionAction", "tap",
+                        "interactionPayload", Map.of("x", 1, "y", 2)
+                ))
+                .when()
+                .post("/api/assistant/interaction")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(Map.class);
+
+        assertThat(body.get("code")).isEqualTo("200");
+        verify(assistantInteractionRecordService).recordInteraction(
+                eq("AVATAR"),
+                eq("tap"),
+                eq(Map.of("x", 1, "y", 2)),
+                anyString(),
+                isNull(),
+                anyString()
+        );
+    }
+
+    @Test
+    void recordInteraction_when_interactionAction_blank_should_return_400() {
+        Map<String, Object> body = given()
+                .header("Content-Type", "application/json")
+                .body(Map.of(
+                        "interactionType", "AVATAR",
+                        "interactionAction", " "
+                ))
+                .when()
+                .post("/api/assistant/interaction")
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(Map.class);
+
+        assertThat(body.get("message")).isEqualTo("interactionAction cannot be blank");
+        verify(assistantInteractionRecordService, never()).recordInteraction(anyString(), anyString(), isNull(), anyString(), isNull(), anyString());
     }
 }

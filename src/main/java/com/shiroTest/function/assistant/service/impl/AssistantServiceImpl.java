@@ -50,7 +50,7 @@ public class AssistantServiceImpl implements IAssistantService {
             return cached.value;
         }
         GeoContext fetched = assistantRemoteClient.fetchGeoContext(clientIp);
-        GeoContext safeValue = fetched == null ? new GeoContext("", null, null) : fetched;
+        GeoContext safeValue = fetched == null ? new GeoContext("", "", "", null, null) : fetched;
         geoCache.put(cacheKey, new CacheItem<>(safeValue, now + GEO_TTL_MILLIS));
         return safeValue;
     }

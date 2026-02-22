@@ -105,7 +105,7 @@ public class ArticleControllerTest extends BaseControllerTest {
             // When
             ResultData resultData = given()
                     .header("Content-Type", "application/json")
-                    .header("X-Forwarded-For", "9.8.7.6, 10.0.0.1")
+                    .header("X-Forwarded-For", "10.8.7.6, 10.0.0.1")
                     .header("User-Agent", "ArticleReadRecordTestAgent/1.0")
                     .when()
                     .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
@@ -129,7 +129,11 @@ public class ArticleControllerTest extends BaseControllerTest {
                             .orderByDesc("read_time")
             );
             assertThat(records).isNotEmpty();
-            assertThat(records.get(0).getReaderIp()).isEqualTo("9.8.7.6");
+            assertThat(records.get(0).getReaderIp()).isEqualTo("10.8.7.6");
+            assertThat(records.get(0).getReaderIpCountry()).isEqualTo("PRIVATE_NETWORK");
+            assertThat(records.get(0).getReaderIpProvince()).isEqualTo("PRIVATE_NETWORK");
+            assertThat(records.get(0).getReaderIpCity()).isEqualTo("PRIVATE_NETWORK");
+            assertThat(records.get(0).getReaderIpLocation()).isEqualTo("PRIVATE_NETWORK");
             assertThat(records.get(0).getReadTime()).isNotNull();
         } finally {
             DeleteDataHelper.clear();
@@ -205,14 +209,14 @@ public class ArticleControllerTest extends BaseControllerTest {
             String articleId = createArticle(true);
 
             given().header("Content-Type", "application/json")
-                    .header("X-Forwarded-For", "1.1.1.1")
+                    .header("X-Forwarded-For", "10.0.0.1")
                     .when()
                     .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
                     .then()
                     .statusCode(200);
 
             given().header("Content-Type", "application/json")
-                    .header("X-Forwarded-For", "2.2.2.2")
+                    .header("X-Forwarded-For", "10.0.0.2")
                     .when()
                     .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
                     .then()

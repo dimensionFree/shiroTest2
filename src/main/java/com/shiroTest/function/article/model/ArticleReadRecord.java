@@ -14,6 +14,14 @@ public class ArticleReadRecord extends BaseEntity {
 
     private String readerIp;
 
+    private String readerIpLocation;
+
+    private String readerIpCountry;
+
+    private String readerIpProvince;
+
+    private String readerIpCity;
+
     private String readerUserId;
 
     private String readerUserAgent;

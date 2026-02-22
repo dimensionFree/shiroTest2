@@ -28,7 +28,7 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
         if (isGeoAvailable(fromIpWho)) {
             return fromIpWho;
         }
-        return new GeoContext("", null, null);
+        return new GeoContext("", "", "", null, null);
     }
 
     @Override
@@ -60,12 +60,14 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
             String url = StringUtils.isBlank(clientIp) ? IPAPI_URL : "https://ipapi.co/" + clientIp + "/json/";
             String body = HttpUtil.get(url, TIMEOUT_MS);
             Map<String, Object> data = JsonUtil.toMap(body);
-            String city = toText(data.get("city"));
+            String country = toText(data.get("country_name"));
+            String province = toText(data.get("region"));
+            String city = firstNonBlank(toText(data.get("district")), toText(data.get("city")));
             Double latitude = toDouble(data.get("latitude"));
             Double longitude = toDouble(data.get("longitude"));
-            return new GeoContext(city, latitude, longitude);
+            return new GeoContext(country, province, city, latitude, longitude);
         } catch (Exception ignored) {
-            return new GeoContext("", null, null);
+            return new GeoContext("", "", "", null, null);
         }
     }
 
@@ -76,14 +78,16 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
             Map<String, Object> data = JsonUtil.toMap(body);
             Object success = data.get("success");
             if (Boolean.FALSE.equals(success)) {
-                return new GeoContext("", null, null);
+                return new GeoContext("", "", "", null, null);
             }
-            String city = toText(data.get("city"));
+            String country = toText(data.get("country"));
+            String province = toText(data.get("region"));
+            String city = firstNonBlank(toText(data.get("district")), toText(data.get("city")));
             Double latitude = toDouble(data.get("latitude"));
             Double longitude = toDouble(data.get("longitude"));
-            return new GeoContext(city, latitude, longitude);
+            return new GeoContext(country, province, city, latitude, longitude);
         } catch (Exception ignored) {
-            return new GeoContext("", null, null);
+            return new GeoContext("", "", "", null, null);
         }
     }
 
@@ -91,8 +95,20 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
         if (geoContext == null) {
             return false;
         }
+        if (StringUtils.isNotBlank(geoContext.getCountry()) || StringUtils.isNotBlank(geoContext.getProvince())) {
+            return true;
+        }
         return StringUtils.isNotBlank(geoContext.getCity())
                 || (geoContext.getLatitude() != null && geoContext.getLongitude() != null);
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (StringUtils.isNotBlank(value)) {
+                return value;
+            }
+        }
+        return "";
     }
 
     private String toText(Object value) {
