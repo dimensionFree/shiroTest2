@@ -10,13 +10,22 @@ import com.shiroTest.function.article.service.IArticleReadRecordService;
 import com.shiroTest.function.assistant.service.IRecordIgnoreIpService;
 import com.shiroTest.function.assistant.model.GeoContext;
 import com.shiroTest.function.assistant.service.AssistantRemoteClient;
+import com.shiroTest.utils.JsonUtil;
+import com.shiroTest.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -26,11 +35,16 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
     private static final String UNKNOWN_LOCATION = "UNKNOWN";
     private static final String PRIVATE_NETWORK_LOCATION = "PRIVATE_NETWORK";
     private static final long IP_LOCATION_CACHE_TTL_MILLIS = TimeUnit.HOURS.toMillis(24);
+    private static final String READ_CACHE_KEY_PREFIX = "ARTICLE_READ_AGG_";
+    private static final DateTimeFormatter READ_BUCKET_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    private static final long READ_CACHE_KEY_TTL_SECONDS = 180L;
 
     @Autowired(required = false)
     private AssistantRemoteClient assistantRemoteClient;
     @Autowired
     private IRecordIgnoreIpService recordIgnoreIpService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private final ConcurrentHashMap<String, CacheItem<IpGeoSnapshot>> ipLocationCache = new ConcurrentHashMap<>();
 
@@ -57,7 +71,17 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
         record.setReaderUserId(StringUtils.trimToNull(readerUserId));
         record.setReaderUserAgent(StringUtils.trimToNull(readerUserAgent));
         record.setReadTime(LocalDateTime.now());
-        save(record);
+        cacheReadRecord(record);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void flushCachedReadRecordsToDb() {
+        flushCachedReadRecords(false);
+    }
+
+    @Override
+    public int flushAllCachedReadRecordsToDb() {
+        return flushCachedReadRecords(true);
     }
 
     @Override
@@ -105,6 +129,115 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
         } finally {
             PageHelper.clearPage();
         }
+    }
+
+    private int flushCachedReadRecords(boolean includeCurrentBucket) {
+        Set<String> keys = redisUtil.keys(READ_CACHE_KEY_PREFIX + "*");
+        if (keys == null || keys.isEmpty()) {
+            return 0;
+        }
+        String currentBucket = currentMinuteBucket();
+        int totalPersistedCount = 0;
+        for (String key : keys) {
+            String bucket = bucketFromCacheKey(key);
+            if (StringUtils.isBlank(bucket)) {
+                continue;
+            }
+            if (!includeCurrentBucket && bucket.compareTo(currentBucket) >= 0) {
+                continue;
+            }
+            totalPersistedCount += flushOneReadCacheKey(key);
+        }
+        return totalPersistedCount;
+    }
+
+    private int flushOneReadCacheKey(String key) {
+        Map<Object, Object> cachedMap = redisUtil.hGetAll(key);
+        if (cachedMap == null || cachedMap.isEmpty()) {
+            redisUtil.delete(key);
+            return 0;
+        }
+        ArrayList<ArticleReadRecord> records = new ArrayList<>();
+        for (Object value : cachedMap.values()) {
+            if (value == null) {
+                continue;
+            }
+            Map<String, Object> cacheItem;
+            try {
+                cacheItem = JsonUtil.toMap(value.toString());
+            } catch (Exception ignored) {
+                continue;
+            }
+            String articleId = trimToNull(cacheItem.get("articleId"));
+            String readerIp = trimToNull(cacheItem.get("readerIp"));
+            if (StringUtils.isBlank(articleId) || StringUtils.isBlank(readerIp)) {
+                continue;
+            }
+            ArticleReadRecord record = new ArticleReadRecord();
+            record.setArticleId(articleId);
+            record.setReaderIp(readerIp);
+            record.setReaderIpLocation(trimToNull(cacheItem.get("readerIpLocation")));
+            record.setReaderIpCountry(trimToNull(cacheItem.get("readerIpCountry")));
+            record.setReaderIpProvince(trimToNull(cacheItem.get("readerIpProvince")));
+            record.setReaderIpCity(trimToNull(cacheItem.get("readerIpCity")));
+            record.setReaderUserId(trimToNull(cacheItem.get("readerUserId")));
+            record.setReaderUserAgent(trimToNull(cacheItem.get("readerUserAgent")));
+            String readTime = trimToNull(cacheItem.get("readTime"));
+            record.setReadTime(StringUtils.isBlank(readTime) ? LocalDateTime.now() : LocalDateTime.parse(readTime));
+            records.add(record);
+        }
+        int insertedCount = 0;
+        for (ArticleReadRecord record : records) {
+            try {
+                insertedCount += getBaseMapper().insert(record);
+            } catch (Exception ignored) {
+                // 缓存回放过程中遇到脏数据（如被删除文章的旧记录）时跳过，避免影响其余记录入库。
+            }
+        }
+        redisUtil.delete(key);
+        return insertedCount;
+    }
+
+    private void cacheReadRecord(ArticleReadRecord record) {
+        String key = READ_CACHE_KEY_PREFIX + currentMinuteBucket();
+        String field = buildReadField(record);
+        Map<String, Object> cacheItem = new HashMap<>();
+        cacheItem.put("articleId", record.getArticleId());
+        cacheItem.put("readerIp", record.getReaderIp());
+        cacheItem.put("readerIpLocation", record.getReaderIpLocation());
+        cacheItem.put("readerIpCountry", record.getReaderIpCountry());
+        cacheItem.put("readerIpProvince", record.getReaderIpProvince());
+        cacheItem.put("readerIpCity", record.getReaderIpCity());
+        cacheItem.put("readerUserId", record.getReaderUserId());
+        cacheItem.put("readerUserAgent", record.getReaderUserAgent());
+        cacheItem.put("readTime", record.getReadTime() == null ? null : record.getReadTime().toString());
+        redisUtil.hPut(key, field, JsonUtil.toJson(cacheItem));
+        redisUtil.expire(key, READ_CACHE_KEY_TTL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private String buildReadField(ArticleReadRecord record) {
+        return String.format(
+                "%s|%s|%s|%s",
+                StringUtils.trimToEmpty(record.getArticleId()),
+                StringUtils.trimToEmpty(record.getReaderIp()),
+                StringUtils.trimToEmpty(record.getReadTime() == null ? null : record.getReadTime().toString()),
+                UUID.randomUUID()
+        );
+    }
+
+    private String currentMinuteBucket() {
+        return LocalDateTime.now().format(READ_BUCKET_FORMAT);
+    }
+
+    private String bucketFromCacheKey(String key) {
+        if (!StringUtils.startsWith(key, READ_CACHE_KEY_PREFIX)) {
+            return null;
+        }
+        return key.substring(READ_CACHE_KEY_PREFIX.length());
+    }
+
+    private String trimToNull(Object value) {
+        return value == null ? null : StringUtils.trimToNull(value.toString());
     }
 
     private IpGeoSnapshot resolveReaderIpLocation(String readerIp) {

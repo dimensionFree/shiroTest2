@@ -93,21 +93,32 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
 
     @Scheduled(fixedRate = 60000)
     public void flushAggregatedInteractionsToDb() {
+        flushCachedInteractions(false);
+    }
+
+    @Override
+    public int flushAllCachedInteractionsToDb() {
+        return flushCachedInteractions(true);
+    }
+
+    private int flushCachedInteractions(boolean includeCurrentBucket) {
         Set<String> keys = redisUtil.keys(INTERACTION_CACHE_KEY_PREFIX + "*");
         if (keys == null || keys.isEmpty()) {
-            return;
+            return 0;
         }
         String currentBucket = currentMinuteBucket();
+        int totalPersistedCount = 0;
         for (String key : keys) {
             String bucket = bucketFromCacheKey(key);
             if (StringUtils.isBlank(bucket)) {
                 continue;
             }
-            if (bucket.compareTo(currentBucket) >= 0) {
+            if (!includeCurrentBucket && bucket.compareTo(currentBucket) >= 0) {
                 continue;
             }
-            flushOneCacheKey(key);
+            totalPersistedCount += flushOneCacheKey(key);
         }
+        return totalPersistedCount;
     }
 
     @Override
@@ -143,11 +154,11 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
         }
     }
 
-    private void flushOneCacheKey(String key) {
+    private int flushOneCacheKey(String key) {
         Map<Object, Object> cachedMap = redisUtil.hGetAll(key);
         if (cachedMap == null || cachedMap.isEmpty()) {
             redisUtil.delete(key);
-            return;
+            return 0;
         }
         ArrayList<AssistantInteractionRecord> records = new ArrayList<>();
         for (Object value : cachedMap.values()) {
@@ -184,6 +195,7 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
             saveBatch(records, 100);
         }
         redisUtil.delete(key);
+        return records.size();
     }
 
     private boolean shouldBypassAggregation(String interactionType) {

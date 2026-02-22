@@ -18,4 +18,6 @@ public interface IArticleReadRecordService extends IService<ArticleReadRecord> {
                                                  String articleId,
                                                  LocalDate startDate,
                                                  LocalDate endDate);
+
+    int flushAllCachedReadRecordsToDb();
 }

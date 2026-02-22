@@ -1,6 +1,7 @@
 package com.shiroTest.function.assistant.controller;
 
 import com.shiroTest.common.Result;
+import com.shiroTest.function.article.service.IArticleReadRecordService;
 import com.shiroTest.function.assistant.model.AssistantContextResponse;
 import com.shiroTest.function.assistant.model.AssistantInteractionRequest;
 import com.shiroTest.function.assistant.service.IAssistantService;
@@ -23,11 +24,14 @@ public class AssistantController {
 
     private final IAssistantService assistantService;
     private final IAssistantInteractionRecordService assistantInteractionRecordService;
+    private final IArticleReadRecordService articleReadRecordService;
 
     public AssistantController(IAssistantService assistantService,
-                               IAssistantInteractionRecordService assistantInteractionRecordService) {
+                               IAssistantInteractionRecordService assistantInteractionRecordService,
+                               IArticleReadRecordService articleReadRecordService) {
         this.assistantService = assistantService;
         this.assistantInteractionRecordService = assistantInteractionRecordService;
+        this.articleReadRecordService = articleReadRecordService;
     }
 
     @GetMapping("/context")
@@ -65,7 +69,8 @@ public class AssistantController {
                                                  @RequestParam(required = false) String interactionType,
                                                  @RequestParam(required = false) String interactionAction,
                                                  @RequestParam(required = false) String startDate,
-                                                 @RequestParam(required = false) String endDate) {
+                                                 @RequestParam(required = false) String endDate,
+                                                 @RequestParam(defaultValue = "false") boolean autoFlush) {
         if (currentPage < 1) {
             return Result.fail("currentPage must be >= 1");
         }
@@ -82,6 +87,10 @@ public class AssistantController {
         }
         if (parsedStartDate != null && parsedEndDate != null && parsedStartDate.isAfter(parsedEndDate)) {
             return Result.fail("startDate cannot be after endDate");
+        }
+        if (autoFlush) {
+            assistantInteractionRecordService.flushAllCachedInteractionsToDb();
+            articleReadRecordService.flushAllCachedReadRecordsToDb();
         }
         return Result.success(
                 assistantInteractionRecordService.getManageRecords(

@@ -21,4 +21,6 @@ public interface IAssistantInteractionRecordService extends IService<AssistantIn
                                                           String interactionAction,
                                                           LocalDate startDate,
                                                           LocalDate endDate);
+
+    int flushAllCachedInteractionsToDb();
 }

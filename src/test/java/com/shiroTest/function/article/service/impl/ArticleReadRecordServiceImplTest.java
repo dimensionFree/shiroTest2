@@ -7,6 +7,8 @@ import com.shiroTest.function.article.model.ArticleReadRecord;
 import com.shiroTest.function.assistant.model.GeoContext;
 import com.shiroTest.function.assistant.service.AssistantRemoteClient;
 import com.shiroTest.function.assistant.service.IRecordIgnoreIpService;
+import com.shiroTest.utils.JsonUtil;
+import com.shiroTest.utils.RedisUtil;
 import com.github.pagehelper.PageInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
@@ -26,6 +29,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(MockitoExtension.class)
 class ArticleReadRecordServiceImplTest {
@@ -37,6 +43,8 @@ class ArticleReadRecordServiceImplTest {
     private AssistantRemoteClient assistantRemoteClient;
     @Mock
     private IRecordIgnoreIpService recordIgnoreIpService;
+    @Mock
+    private RedisUtil redisUtil;
 
     private ArticleReadRecordServiceImpl articleReadRecordService;
 
@@ -46,11 +54,12 @@ class ArticleReadRecordServiceImplTest {
         ReflectionTestUtils.setField(articleReadRecordService, "baseMapper", articleReadRecordMapper);
         ReflectionTestUtils.setField(articleReadRecordService, "assistantRemoteClient", assistantRemoteClient);
         ReflectionTestUtils.setField(articleReadRecordService, "recordIgnoreIpService", recordIgnoreIpService);
+        ReflectionTestUtils.setField(articleReadRecordService, "redisUtil", redisUtil);
         lenient().when(recordIgnoreIpService.shouldIgnore(any())).thenReturn(false);
     }
 
     @Test
-    void recordRead_should_save_record_when_input_valid() {
+    void recordRead_should_save_record_when_input_valid() throws Exception {
         // Given
         String articleId = "article-id-1";
         String readerIp = "1.2.3.4";
@@ -60,12 +69,14 @@ class ArticleReadRecordServiceImplTest {
         articleReadRecordService.recordRead(articleId, readerIp, "user-id-1", "Mozilla");
 
         // Then
-        ArgumentCaptor<ArticleReadRecord> captor = ArgumentCaptor.forClass(ArticleReadRecord.class);
-        verify(articleReadRecordMapper).insert(captor.capture());
-        assertThat(captor.getValue().getReaderIpCountry()).isEqualTo("Japan");
-        assertThat(captor.getValue().getReaderIpProvince()).isEqualTo("Tokyo");
-        assertThat(captor.getValue().getReaderIpCity()).isEqualTo("Shinjuku");
-        assertThat(captor.getValue().getReaderIpLocation()).isEqualTo("Shinjuku");
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(redisUtil).hPut(any(), any(), payloadCaptor.capture());
+        verify(redisUtil).expire(any(), anyLong(), any(TimeUnit.class));
+        Map<String, Object> payload = JsonUtil.toMap(payloadCaptor.getValue());
+        assertThat(payload.get("readerIpCountry")).isEqualTo("Japan");
+        assertThat(payload.get("readerIpProvince")).isEqualTo("Tokyo");
+        assertThat(payload.get("readerIpCity")).isEqualTo("Shinjuku");
+        assertThat(payload.get("readerIpLocation")).isEqualTo("Shinjuku");
     }
 
     @Test
@@ -79,17 +90,17 @@ class ArticleReadRecordServiceImplTest {
     @Test
     void recordRead_should_throw_when_mapper_fails() {
         // Given
-        doThrow(new RuntimeException("db error")).when(articleReadRecordMapper).insert(any(ArticleReadRecord.class));
         doReturn(new GeoContext("Japan", "Osaka", "Kita", null, null)).when(assistantRemoteClient).fetchGeoContext("2.2.2.2");
+        doThrow(new RuntimeException("redis error")).when(redisUtil).hPut(any(), any(), any());
 
         // When / Then
         assertThatThrownBy(() -> articleReadRecordService.recordRead("article-id-2", "2.2.2.2", null, null))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("db error");
+                .hasMessageContaining("redis error");
     }
 
     @Test
-    void recordRead_should_mark_private_network_for_private_ip() {
+    void recordRead_should_mark_private_network_for_private_ip() throws Exception {
         // Given
         String articleId = "article-id-4";
         String readerIp = "192.168.1.5";
@@ -98,12 +109,13 @@ class ArticleReadRecordServiceImplTest {
         articleReadRecordService.recordRead(articleId, readerIp, null, null);
 
         // Then
-        ArgumentCaptor<ArticleReadRecord> captor = ArgumentCaptor.forClass(ArticleReadRecord.class);
-        verify(articleReadRecordMapper).insert(captor.capture());
-        assertThat(captor.getValue().getReaderIpCountry()).isEqualTo("PRIVATE_NETWORK");
-        assertThat(captor.getValue().getReaderIpProvince()).isEqualTo("PRIVATE_NETWORK");
-        assertThat(captor.getValue().getReaderIpCity()).isEqualTo("PRIVATE_NETWORK");
-        assertThat(captor.getValue().getReaderIpLocation()).isEqualTo("PRIVATE_NETWORK");
+        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        verify(redisUtil).hPut(any(), any(), payloadCaptor.capture());
+        Map<String, Object> payload = JsonUtil.toMap(payloadCaptor.getValue());
+        assertThat(payload.get("readerIpCountry")).isEqualTo("PRIVATE_NETWORK");
+        assertThat(payload.get("readerIpProvince")).isEqualTo("PRIVATE_NETWORK");
+        assertThat(payload.get("readerIpCity")).isEqualTo("PRIVATE_NETWORK");
+        assertThat(payload.get("readerIpLocation")).isEqualTo("PRIVATE_NETWORK");
         verify(assistantRemoteClient, never()).fetchGeoContext(any());
     }
 
@@ -153,7 +165,32 @@ class ArticleReadRecordServiceImplTest {
 
         articleReadRecordService.recordRead("article-id-skip", "10.10.10.10", null, null);
 
-        verify(articleReadRecordMapper, never()).insert(any(ArticleReadRecord.class));
+        verify(redisUtil, never()).hPut(any(), any(), any());
         verify(assistantRemoteClient, never()).fetchGeoContext(any());
+    }
+
+    @Test
+    void flushAllCachedReadRecordsToDb_should_persist_cached_records() {
+        String key = "ARTICLE_READ_AGG_200001010000";
+        Map<String, Object> cacheValue = Map.of(
+                "articleId", "article-id-9",
+                "readerIp", "10.0.0.5",
+                "readerIpLocation", "PRIVATE_NETWORK",
+                "readerIpCountry", "PRIVATE_NETWORK",
+                "readerIpProvince", "PRIVATE_NETWORK",
+                "readerIpCity", "PRIVATE_NETWORK",
+                "readerUserId", "u1",
+                "readerUserAgent", "UA-1",
+                "readTime", "2026-02-22T19:00:00"
+        );
+        when(redisUtil.keys("ARTICLE_READ_AGG_*")).thenReturn(Set.of(key));
+        when(redisUtil.hGetAll(key)).thenReturn(Map.of("f1", JsonUtil.toJson(cacheValue)));
+        when(articleReadRecordMapper.insert(any(ArticleReadRecord.class))).thenReturn(1);
+
+        int count = articleReadRecordService.flushAllCachedReadRecordsToDb();
+
+        assertThat(count).isEqualTo(1);
+        verify(articleReadRecordMapper).insert(any(ArticleReadRecord.class));
+        verify(redisUtil).delete(key);
     }
 }

@@ -85,6 +85,7 @@ public class ArticleControllerTest extends BaseControllerTest {
             String returnedId = ((Map<String, Object>) resultData.getDataContent()).get("id").toString();
             assertThat(returnedId).isEqualTo(articleId);
 
+            articleReadRecordService.flushAllCachedReadRecordsToDb();
             clearMybatisLvl1Cache();
             List<ArticleReadRecord> records = articleReadRecordService.list(
                     new QueryWrapper<ArticleReadRecord>()
@@ -123,6 +124,7 @@ public class ArticleControllerTest extends BaseControllerTest {
             String returnedId = ((Map<String, Object>) resultData.getDataContent()).get("id").toString();
             assertThat(returnedId).isEqualTo(articleId);
 
+            articleReadRecordService.flushAllCachedReadRecordsToDb();
             clearMybatisLvl1Cache();
             List<ArticleReadRecord> records = articleReadRecordService.list(
                     new QueryWrapper<ArticleReadRecord>()
@@ -223,6 +225,8 @@ public class ArticleControllerTest extends BaseControllerTest {
                     .then()
                     .statusCode(200);
 
+            articleReadRecordService.flushAllCachedReadRecordsToDb();
+
             ResultData detailResult = given()
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + adminToken)
@@ -268,6 +272,7 @@ public class ArticleControllerTest extends BaseControllerTest {
                     .queryParam("articleId", articleId)
                     .queryParam("startDate", LocalDate.now().minusDays(7).toString())
                     .queryParam("endDate", LocalDate.now().toString())
+                    .queryParam("autoFlush", true)
                     .when()
                     .get(getHost() + getApiPrefix() + "/read/manage/records")
                     .then()

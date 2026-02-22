@@ -116,4 +116,55 @@ public class AssistantManageControllerTest extends BaseControllerTest {
 
         assertThat(resultData.getMessage()).contains("startDate cannot be after endDate");
     }
+
+    @Test
+    void interactionManageRecords_should_auto_flush_when_flag_enabled() {
+        String action = "flush_tap_" + System.currentTimeMillis();
+        try {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(Map.of(
+                            "interactionType", "AVATAR",
+                            "interactionAction", action,
+                            "interactionPayload", Map.of("kind", "tap")
+                    ))
+                    .when()
+                    .post(getHost() + getApiPrefix() + "/interaction")
+                    .then()
+                    .statusCode(200);
+
+            ResultData queryResult = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .queryParam("currentPage", 1)
+                    .queryParam("pageSize", 20)
+                    .queryParam("interactionType", "AVATAR")
+                    .queryParam("interactionAction", action)
+                    .queryParam("startDate", LocalDate.now().minusDays(1).toString())
+                    .queryParam("endDate", LocalDate.now().toString())
+                    .queryParam("autoFlush", true)
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/interaction/manage/records")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+            assertThat(queryResult.getDataContent()).isInstanceOf(Map.class);
+            Map<String, Object> pageInfo = (Map<String, Object>) queryResult.getDataContent();
+            assertThat(pageInfo.get("list")).isInstanceOf(List.class);
+            List<Map<String, Object>> list = (List<Map<String, Object>>) pageInfo.get("list");
+            assertThat(list).isNotEmpty();
+            for (Map<String, Object> item : list) {
+                if (item.get("id") != null) {
+                    String id = item.get("id").toString();
+                    DeleteDataHelper.addTask(() -> assistantInteractionRecordService.removeById(id));
+                }
+            }
+        } finally {
+            DeleteDataHelper.clear();
+        }
+    }
 }

@@ -159,7 +159,8 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
                                           @RequestParam(defaultValue = "20") int pageSize,
                                           @RequestParam(required = false) String articleId,
                                           @RequestParam(required = false) String startDate,
-                                          @RequestParam(required = false) String endDate) {
+                                          @RequestParam(required = false) String endDate,
+                                          @RequestParam(defaultValue = "false") boolean autoFlush) {
         if (currentPage < 1) {
             return Result.fail("currentPage must be >= 1");
         }
@@ -179,6 +180,9 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
         }
         if (parsedStartDate != null && parsedEndDate != null && parsedStartDate.isAfter(parsedEndDate)) {
             return Result.fail("startDate cannot be after endDate");
+        }
+        if (autoFlush) {
+            articleReadRecordService.flushAllCachedReadRecordsToDb();
         }
         return Result.success(articleReadRecordService.getManageRecords(
                 currentPage,
