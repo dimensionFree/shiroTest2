@@ -1,3 +1,6 @@
 /target/
 setEnv.bat
 /docs
+/.ai/
+src/test/java/test.java
+temp.txt
