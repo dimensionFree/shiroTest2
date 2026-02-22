@@ -11,6 +11,7 @@ import com.shiroTest.utils.RedisUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -98,6 +99,8 @@ class AssistantInteractionRecordServiceImplTest {
     void recordInteraction_should_bypass_aggregation_for_chat_type() {
         doReturn(new GeoContext("Japan", "Tokyo", "Minato", null, null))
                 .when(assistantRemoteClient).fetchGeoContext("8.8.4.4");
+        ArgumentCaptor<AssistantInteractionRecord> recordCaptor = ArgumentCaptor.forClass(AssistantInteractionRecord.class);
+        LocalDateTime before = LocalDateTime.now();
 
         assistantInteractionRecordService.recordInteraction(
                 "CHAT",
@@ -107,8 +110,12 @@ class AssistantInteractionRecordServiceImplTest {
                 "user-id-2",
                 "UA-3"
         );
+        LocalDateTime after = LocalDateTime.now();
 
-        verify(assistantInteractionRecordMapper).insert(any(AssistantInteractionRecord.class));
+        verify(assistantInteractionRecordMapper).insert(recordCaptor.capture());
+        LocalDateTime triggerTime = recordCaptor.getValue().getTriggerTime();
+        assertThat(triggerTime).isAfterOrEqualTo(before.minusSeconds(2));
+        assertThat(triggerTime).isBeforeOrEqualTo(after.plusSeconds(2));
         verify(redisUtil, never()).hPut(anyString(), anyString(), anyString());
     }
 

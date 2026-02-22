@@ -29,6 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -186,11 +187,13 @@ class ArticleReadRecordServiceImplTest {
         when(redisUtil.keys("ARTICLE_READ_AGG_*")).thenReturn(Set.of(key));
         when(redisUtil.hGetAll(key)).thenReturn(Map.of("f1", JsonUtil.toJson(cacheValue)));
         when(articleReadRecordMapper.insert(any(ArticleReadRecord.class))).thenReturn(1);
+        ArgumentCaptor<ArticleReadRecord> recordCaptor = ArgumentCaptor.forClass(ArticleReadRecord.class);
 
         int count = articleReadRecordService.flushAllCachedReadRecordsToDb();
 
         assertThat(count).isEqualTo(1);
-        verify(articleReadRecordMapper).insert(any(ArticleReadRecord.class));
+        verify(articleReadRecordMapper).insert(recordCaptor.capture());
+        assertThat(recordCaptor.getValue().getReadTime()).isEqualTo(LocalDateTime.parse("2026-02-23T04:00:00"));
         verify(redisUtil).delete(key);
     }
 }

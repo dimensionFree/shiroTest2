@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
     private static final String READ_CACHE_KEY_PREFIX = "ARTICLE_READ_AGG_";
     private static final DateTimeFormatter READ_BUCKET_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     private static final long READ_CACHE_KEY_TTL_SECONDS = 180L;
+    private static final int DB_TIMEZONE_OFFSET_HOURS = 9;
 
     @Autowired(required = false)
     private AssistantRemoteClient assistantRemoteClient;
@@ -70,7 +72,7 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
         record.setReaderIpCity(ipGeoSnapshot.city);
         record.setReaderUserId(StringUtils.trimToNull(readerUserId));
         record.setReaderUserAgent(StringUtils.trimToNull(readerUserAgent));
-        record.setReadTime(LocalDateTime.now());
+        record.setReadTime(nowUtc());
         cacheReadRecord(record);
     }
 
@@ -183,7 +185,9 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
             record.setReaderUserId(trimToNull(cacheItem.get("readerUserId")));
             record.setReaderUserAgent(trimToNull(cacheItem.get("readerUserAgent")));
             String readTime = trimToNull(cacheItem.get("readTime"));
-            record.setReadTime(StringUtils.isBlank(readTime) ? LocalDateTime.now() : LocalDateTime.parse(readTime));
+            LocalDateTime sourceReadTime = StringUtils.isBlank(readTime) ? nowUtc() : LocalDateTime.parse(readTime);
+            // 入库前统一按 UTC+9 修正，避免服务器时区差异导致展示时间偏移。
+            record.setReadTime(adjustToDbTimezone(sourceReadTime));
             records.add(record);
         }
         int insertedCount = 0;
@@ -226,7 +230,7 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
     }
 
     private String currentMinuteBucket() {
-        return LocalDateTime.now().format(READ_BUCKET_FORMAT);
+        return nowUtc().format(READ_BUCKET_FORMAT);
     }
 
     private String bucketFromCacheKey(String key) {
@@ -238,6 +242,17 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
 
     private String trimToNull(Object value) {
         return value == null ? null : StringUtils.trimToNull(value.toString());
+    }
+
+    private LocalDateTime adjustToDbTimezone(LocalDateTime sourceTime) {
+        if (sourceTime == null) {
+            return null;
+        }
+        return sourceTime.plusHours(DB_TIMEZONE_OFFSET_HOURS);
+    }
+
+    private LocalDateTime nowUtc() {
+        return LocalDateTime.now(ZoneOffset.UTC);
     }
 
     private IpGeoSnapshot resolveReaderIpLocation(String readerIp) {

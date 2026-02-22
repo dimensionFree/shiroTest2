@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
     private static final DateTimeFormatter INTERACTION_BUCKET_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     private static final long INTERACTION_CACHE_KEY_TTL_SECONDS = 180L;
     private static final String INTERACTION_TYPE_CHAT = "CHAT";
+    private static final int DB_TIMEZONE_OFFSET_HOURS = 9;
 
     @Autowired(required = false)
     private AssistantRemoteClient assistantRemoteClient;
@@ -82,9 +84,10 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
         record.setClientIpCity(ipGeoSnapshot.city);
         record.setUserId(StringUtils.trimToNull(userId));
         record.setUserAgent(StringUtils.trimToNull(userAgent));
-        record.setTriggerTime(LocalDateTime.now());
+        record.setTriggerTime(nowUtc());
 
         if (shouldBypassAggregation(record.getInteractionType())) {
+            record.setTriggerTime(adjustToDbTimezone(record.getTriggerTime()));
             save(record);
             return;
         }
@@ -188,7 +191,9 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
             record.setUserId(trimToNull(cacheItem.get("userId")));
             record.setUserAgent(trimToNull(cacheItem.get("userAgent")));
             String triggerTime = trimToNull(cacheItem.get("triggerTime"));
-            record.setTriggerTime(StringUtils.isBlank(triggerTime) ? LocalDateTime.now() : LocalDateTime.parse(triggerTime));
+            LocalDateTime sourceTriggerTime = StringUtils.isBlank(triggerTime) ? nowUtc() : LocalDateTime.parse(triggerTime);
+            // 入库前统一按 UTC+9 修正，避免服务器时区差异导致展示时间偏移。
+            record.setTriggerTime(adjustToDbTimezone(sourceTriggerTime));
             records.add(record);
         }
         if (!records.isEmpty()) {
@@ -232,7 +237,7 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
     }
 
     private String currentMinuteBucket() {
-        return LocalDateTime.now().format(INTERACTION_BUCKET_FORMAT);
+        return nowUtc().format(INTERACTION_BUCKET_FORMAT);
     }
 
     private String bucketFromCacheKey(String key) {
@@ -244,6 +249,17 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
 
     private String trimToNull(Object value) {
         return value == null ? null : StringUtils.trimToNull(value.toString());
+    }
+
+    private LocalDateTime adjustToDbTimezone(LocalDateTime sourceTime) {
+        if (sourceTime == null) {
+            return null;
+        }
+        return sourceTime.plusHours(DB_TIMEZONE_OFFSET_HOURS);
+    }
+
+    private LocalDateTime nowUtc() {
+        return LocalDateTime.now(ZoneOffset.UTC);
     }
 
     private String toPayloadJson(Map<String, Object> interactionPayload) {
