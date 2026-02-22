@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -100,7 +101,7 @@ class AssistantInteractionRecordServiceImplTest {
         doReturn(new GeoContext("Japan", "Tokyo", "Minato", null, null))
                 .when(assistantRemoteClient).fetchGeoContext("8.8.4.4");
         ArgumentCaptor<AssistantInteractionRecord> recordCaptor = ArgumentCaptor.forClass(AssistantInteractionRecord.class);
-        LocalDateTime before = LocalDateTime.now();
+        LocalDateTime beforeUtc = LocalDateTime.now(ZoneOffset.UTC);
 
         assistantInteractionRecordService.recordInteraction(
                 "CHAT",
@@ -110,12 +111,12 @@ class AssistantInteractionRecordServiceImplTest {
                 "user-id-2",
                 "UA-3"
         );
-        LocalDateTime after = LocalDateTime.now();
+        LocalDateTime afterUtc = LocalDateTime.now(ZoneOffset.UTC);
 
         verify(assistantInteractionRecordMapper).insert(recordCaptor.capture());
         LocalDateTime triggerTime = recordCaptor.getValue().getTriggerTime();
-        assertThat(triggerTime).isAfterOrEqualTo(before.minusSeconds(2));
-        assertThat(triggerTime).isBeforeOrEqualTo(after.plusSeconds(2));
+        assertThat(triggerTime).isAfterOrEqualTo(beforeUtc.plusHours(9).minusSeconds(2));
+        assertThat(triggerTime).isBeforeOrEqualTo(afterUtc.plusHours(9).plusSeconds(2));
         verify(redisUtil, never()).hPut(anyString(), anyString(), anyString());
     }
 
