@@ -27,6 +27,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -151,6 +152,52 @@ public class ArticleController extends BaseController<Article, ArticleServiceImp
         }
         ArticleReadDetailResponse detail = articleReadRecordService.getReadDetail(id, recordLimit, dayLimit);
         return Result.success(detail);
+    }
+
+    @GetMapping("/read/manage/records")
+    public Result getReadRecordsForManage(@RequestParam(defaultValue = "1") int currentPage,
+                                          @RequestParam(defaultValue = "20") int pageSize,
+                                          @RequestParam(required = false) String articleId,
+                                          @RequestParam(required = false) String startDate,
+                                          @RequestParam(required = false) String endDate) {
+        if (currentPage < 1) {
+            return Result.fail("currentPage must be >= 1");
+        }
+        if (pageSize < 1 || pageSize > 200) {
+            return Result.fail("pageSize must be between 1 and 200");
+        }
+        if (StringUtils.isNotBlank(articleId) && !articleId.matches(ID_PATTERN)) {
+            return Result.fail("article id format invalid");
+        }
+        LocalDate parsedStartDate = parseDate(startDate);
+        if (parsedStartDate == null && StringUtils.isNotBlank(startDate)) {
+            return Result.fail("startDate format invalid, expected yyyy-MM-dd");
+        }
+        LocalDate parsedEndDate = parseDate(endDate);
+        if (parsedEndDate == null && StringUtils.isNotBlank(endDate)) {
+            return Result.fail("endDate format invalid, expected yyyy-MM-dd");
+        }
+        if (parsedStartDate != null && parsedEndDate != null && parsedStartDate.isAfter(parsedEndDate)) {
+            return Result.fail("startDate cannot be after endDate");
+        }
+        return Result.success(articleReadRecordService.getManageRecords(
+                currentPage,
+                pageSize,
+                articleId,
+                parsedStartDate,
+                parsedEndDate
+        ));
+    }
+
+    private LocalDate parseDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private HttpServletRequest getCurrentRequest() {

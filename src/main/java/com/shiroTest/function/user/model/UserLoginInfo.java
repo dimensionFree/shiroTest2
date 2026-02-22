@@ -22,4 +22,10 @@ public class UserLoginInfo extends BaseEntity {
     User4Display user4Display=null;
 
     String token="";
+
+    String refreshToken="";
+
+    Long tokenExpireAt=0L;
+
+    Long refreshTokenExpireAt=0L;
 }

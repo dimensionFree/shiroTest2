@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -245,6 +246,83 @@ public class ArticleControllerTest extends BaseControllerTest {
         } finally {
             DeleteDataHelper.clear();
         }
+    }
+
+    @Test
+    void readManageRecords_should_return_paginated_records_for_admin() {
+        try {
+            String articleId = createArticle(true);
+
+            given().header("Content-Type", "application/json")
+                    .header("X-Forwarded-For", "10.0.0.9")
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/find/" + articleId + "?recordRead=true")
+                    .then()
+                    .statusCode(200);
+
+            ResultData resultData = given()
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .queryParam("currentPage", 1)
+                    .queryParam("pageSize", 20)
+                    .queryParam("articleId", articleId)
+                    .queryParam("startDate", LocalDate.now().minusDays(7).toString())
+                    .queryParam("endDate", LocalDate.now().toString())
+                    .when()
+                    .get(getHost() + getApiPrefix() + "/read/manage/records")
+                    .then()
+                    .statusCode(200)
+                    .contentType("application/json")
+                    .extract()
+                    .response()
+                    .as(ResultData.class);
+
+            assertThat(resultData.getDataContent()).isInstanceOf(Map.class);
+            Map<String, Object> page = (Map<String, Object>) resultData.getDataContent();
+            assertThat(page.get("list")).isInstanceOf(List.class);
+            assertThat((List<?>) page.get("list")).isNotEmpty();
+        } finally {
+            DeleteDataHelper.clear();
+        }
+    }
+
+    @Test
+    void readManageRecords_should_return_400_when_pageSize_invalid() {
+        ResultData resultData = given()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("currentPage", 1)
+                .queryParam("pageSize", 0)
+                .when()
+                .get(getHost() + getApiPrefix() + "/read/manage/records")
+                .then()
+                .statusCode(400)
+                .contentType("application/json")
+                .extract()
+                .response()
+                .as(ResultData.class);
+
+        assertThat(resultData.getMessage()).contains("pageSize");
+    }
+
+    @Test
+    void readManageRecords_should_return_400_when_date_invalid() {
+        ResultData resultData = given()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("currentPage", 1)
+                .queryParam("pageSize", 20)
+                .queryParam("startDate", "2026-13-01")
+                .when()
+                .get(getHost() + getApiPrefix() + "/read/manage/records")
+                .then()
+                .statusCode(400)
+                .contentType("application/json")
+                .extract()
+                .response()
+                .as(ResultData.class);
+
+        assertThat(resultData.getMessage()).contains("startDate format invalid");
     }
 
     @Test

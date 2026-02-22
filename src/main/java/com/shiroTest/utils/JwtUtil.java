@@ -89,6 +89,18 @@ public class JwtUtil {
         return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
     }
 
+    public long getExpireAtMillis(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            if (jwt.getExpiresAt() == null) {
+                return 0L;
+            }
+            return jwt.getExpiresAt().getTime();
+        } catch (Exception ex) {
+            return 0L;
+        }
+    }
+
     public String getTokenFromRequest(HttpServletRequest request) {
         HttpServletRequest httpServletRequest = request;
         String authorization = httpServletRequest.getHeader("Authorization");

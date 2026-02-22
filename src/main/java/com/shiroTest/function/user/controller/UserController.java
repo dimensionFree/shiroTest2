@@ -10,6 +10,7 @@ import com.shiroTest.function.user.model.User4Display;
 import com.shiroTest.function.user.model.UserPwdDto;
 import com.shiroTest.function.user.service.impl.UserServiceImpl;
 import com.shiroTest.utils.BcryptUtil;
+import com.shiroTest.utils.JwtUtil;
 import com.shiroTest.utils.TurnstileVerificationHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,8 @@ public class UserController extends BaseController<User, UserServiceImpl> {
 
     @Autowired
     TurnstileVerificationHelper turnstileVerificationHelper;
+    @Autowired
+    JwtUtil jwtUtil;
 
     public UserController() {
         super(User.class);
@@ -60,11 +63,8 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         User user = new User(username, BcryptUtil.encode(password),email, RoleServiceImpl.ROLE_ID_MEMBER);
 
 
-        boolean save = getService().save(user);
-        String jwtToken = getService().createTokenAndCache(user);
-        return Result.success(
-                getService().getUserTokenResult(user,jwtToken)
-        );
+        getService().save(user);
+        return Result.success(getService().createLoginSession(user));
     }
 
     @PostMapping("/login")
@@ -84,6 +84,20 @@ public class UserController extends BaseController<User, UserServiceImpl> {
         return Result.success(
                 getService().loginUser(username,password)
         );
+    }
+
+    @PostMapping("/refresh")
+    public Result refresh(@RequestBody Map<String, String> requestBody) throws MyException {
+        if (requestBody == null || requestBody.get("refreshToken") == null) {
+            return Result.fail("refreshToken cannot be blank");
+        }
+        return Result.success(getService().refreshLoginSession(requestBody.get("refreshToken")));
+    }
+
+    @GetMapping("/session/ping")
+    public Result sessionPing(javax.servlet.http.HttpServletRequest request) throws MyException {
+        String token = jwtUtil.getTokenFromRequest(request);
+        return getService().pingSession(token);
     }
 
     @Override

@@ -47,6 +47,7 @@ public class ShiroConfig {
 //        map.put("/login.jsp","anon");
         //user
         map.put("/api/user/login","anon");
+        map.put("/api/user/refresh","anon");
         map.put("/api/user/register","anon");
         map.put("/api/user/send-verification-code","anon");
         map.put("/api/user/create","jwt[USER_CREATE]");
@@ -60,10 +61,13 @@ public class ShiroConfig {
         //article
         map.put("/api/article/read/latest","anon");
         map.put("/api/article/read/detail/**","jwt[ARTICLE_READ]");
+        map.put("/api/article/read/manage/**","jwt[ARTICLE_READ]");
         map.put("/api/article/manage/public/**","jwt[ARTICLE_EDIT,"+ PERMS_OR +",ARTICLE_EDIT_SELF]");
         map.put("/api/article/manage/**","jwt[ARTICLE_READ]");
         map.put("/api/article/find/**","anon");
         map.put("/api/article/findAll/**","anon");
+        map.put("/api/assistant/interaction/manage/**","jwt[ARTICLE_READ]");
+        map.put("/api/record/manage/ignore-ip/**","jwt[ALL]");
         map.put("/api/assistant/context","anon");
         map.put("/api/assistant/interaction","anon");
         map.put("/api/article/create","jwt[ARTICLE_CREATE]");

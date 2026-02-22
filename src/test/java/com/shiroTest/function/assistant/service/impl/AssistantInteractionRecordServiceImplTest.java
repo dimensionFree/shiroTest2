@@ -4,6 +4,8 @@ import com.shiroTest.function.assistant.dao.AssistantInteractionRecordMapper;
 import com.shiroTest.function.assistant.model.AssistantInteractionRecord;
 import com.shiroTest.function.assistant.model.GeoContext;
 import com.shiroTest.function.assistant.service.AssistantRemoteClient;
+import com.shiroTest.function.assistant.service.IRecordIgnoreIpService;
+import com.github.pagehelper.PageInfo;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +44,8 @@ class AssistantInteractionRecordServiceImplTest {
 
     @Mock
     private RedisUtil redisUtil;
+    @Mock
+    private IRecordIgnoreIpService recordIgnoreIpService;
 
     private AssistantInteractionRecordServiceImpl assistantInteractionRecordService;
 
@@ -49,6 +55,8 @@ class AssistantInteractionRecordServiceImplTest {
         ReflectionTestUtils.setField(assistantInteractionRecordService, "baseMapper", assistantInteractionRecordMapper);
         ReflectionTestUtils.setField(assistantInteractionRecordService, "assistantRemoteClient", assistantRemoteClient);
         ReflectionTestUtils.setField(assistantInteractionRecordService, "redisUtil", redisUtil);
+        ReflectionTestUtils.setField(assistantInteractionRecordService, "recordIgnoreIpService", recordIgnoreIpService);
+        lenient().when(recordIgnoreIpService.shouldIgnore(anyString())).thenReturn(false);
     }
 
     @Test
@@ -109,7 +117,7 @@ class AssistantInteractionRecordServiceImplTest {
         String key = "ASSISTANT_INTERACTION_AGG_200001010000";
         Map<String, Object> cacheValue = new HashMap<>();
         cacheValue.put("interactionType", "AVATAR");
-        cacheValue.put("interactionAction", "tap");
+        cacheValue.put("interactionAction", " ");
         cacheValue.put("interactionPayload", JsonUtil.toJson(Map.of("distance", 1)));
         cacheValue.put("clientIp", "10.0.0.1");
         cacheValue.put("clientIpLocation", "PRIVATE_NETWORK");
@@ -139,5 +147,40 @@ class AssistantInteractionRecordServiceImplTest {
                 null
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("interactionAction");
+    }
+
+    @Test
+    void getManageRecords_should_return_page_info() {
+        when(assistantInteractionRecordMapper.selectList(any()))
+                .thenReturn(java.util.List.of(new AssistantInteractionRecord()));
+
+        PageInfo<AssistantInteractionRecord> pageInfo = assistantInteractionRecordService.getManageRecords(
+                1,
+                20,
+                "AVATAR",
+                "tap",
+                LocalDate.now().minusDays(7),
+                LocalDate.now()
+        );
+
+        assertThat(pageInfo).isNotNull();
+        assertThat(pageInfo.getList()).hasSize(1);
+    }
+
+    @Test
+    void recordInteraction_should_skip_when_ip_ignored() {
+        when(recordIgnoreIpService.shouldIgnore("8.8.8.8")).thenReturn(true);
+
+        assistantInteractionRecordService.recordInteraction(
+                "AVATAR",
+                "tap",
+                null,
+                "8.8.8.8",
+                null,
+                null
+        );
+
+        verify(redisUtil, never()).hPut(anyString(), anyString(), anyString());
+        verify(assistantInteractionRecordMapper, never()).insert(any(AssistantInteractionRecord.class));
     }
 }

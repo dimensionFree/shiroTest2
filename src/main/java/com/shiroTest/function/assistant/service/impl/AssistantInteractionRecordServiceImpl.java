@@ -1,11 +1,14 @@
 package com.shiroTest.function.assistant.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.shiroTest.function.assistant.dao.AssistantInteractionRecordMapper;
 import com.shiroTest.function.assistant.model.AssistantInteractionRecord;
 import com.shiroTest.function.assistant.model.GeoContext;
 import com.shiroTest.function.assistant.service.AssistantRemoteClient;
 import com.shiroTest.function.assistant.service.IAssistantInteractionRecordService;
+import com.shiroTest.function.assistant.service.IRecordIgnoreIpService;
 import com.shiroTest.utils.JsonUtil;
 import com.shiroTest.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +17,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +45,8 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
 
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private IRecordIgnoreIpService recordIgnoreIpService;
 
     private final ConcurrentHashMap<String, CacheItem<IpGeoSnapshot>> ipLocationCache = new ConcurrentHashMap<>();
 
@@ -58,6 +65,9 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
         }
         if (StringUtils.isBlank(clientIp)) {
             throw new IllegalArgumentException("clientIp cannot be blank");
+        }
+        if (recordIgnoreIpService.shouldIgnore(clientIp)) {
+            return;
         }
 
         IpGeoSnapshot ipGeoSnapshot = resolveClientIpLocation(clientIp);
@@ -97,6 +107,39 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
                 continue;
             }
             flushOneCacheKey(key);
+        }
+    }
+
+    @Override
+    public PageInfo<AssistantInteractionRecord> getManageRecords(int currentPage,
+                                                                 int pageSize,
+                                                                 String interactionType,
+                                                                 String interactionAction,
+                                                                 LocalDate startDate,
+                                                                 LocalDate endDate) {
+        int safeCurrentPage = Math.max(1, currentPage);
+        int safePageSize = Math.max(1, Math.min(pageSize, 200));
+        try {
+            PageHelper.startPage(safeCurrentPage, safePageSize, "trigger_time DESC,id DESC");
+            com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<AssistantInteractionRecord> queryWrapper =
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+            if (StringUtils.isNotBlank(interactionType)) {
+                queryWrapper.eq("interaction_type", interactionType.trim());
+            }
+            if (StringUtils.isNotBlank(interactionAction)) {
+                queryWrapper.eq("interaction_action", interactionAction.trim());
+            }
+            if (startDate != null) {
+                queryWrapper.ge("trigger_time", startDate.atStartOfDay());
+            }
+            if (endDate != null) {
+                queryWrapper.lt("trigger_time", endDate.plusDays(1).atStartOfDay());
+            }
+            queryWrapper.orderByDesc("trigger_time").orderByDesc("id");
+            List<AssistantInteractionRecord> records = list(queryWrapper);
+            return new PageInfo<>(records);
+        } finally {
+            PageHelper.clearPage();
         }
     }
 
@@ -144,7 +187,7 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
     }
 
     private boolean shouldBypassAggregation(String interactionType) {
-        // 为什么保留这个分支：未来 AI 聊天消息要完整追踪，不走“每分钟每 IP 每动作合并”策略。
+        // 未来 AI 聊天消息需要完整追踪，不走“每分钟按 IP+类型+动作合并”策略。
         return INTERACTION_TYPE_CHAT.equalsIgnoreCase(StringUtils.trimToEmpty(interactionType));
     }
 
@@ -324,3 +367,4 @@ public class AssistantInteractionRecordServiceImpl extends ServiceImpl<Assistant
     }
 
 }
+

@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +43,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+    private static final long ACCESS_TOKEN_EXPIRE_SECONDS = 60L * 5L;
+    private static final long REFRESH_TOKEN_EXPIRE_SECONDS = 60L * 60L * 24L * 30L;
+    private static final String REFRESH_TOKEN_KEY_PREFIX = "refresh_token_";
+
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
@@ -65,10 +70,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     public UserLoginInfo getUserTokenResult(User existingUser, String jwtToken) {
+        return getUserTokenResult(existingUser, jwtToken, "");
+    }
+
+    public UserLoginInfo getUserTokenResult(User existingUser, String jwtToken, String refreshToken) {
         User4Display user4Display = buildUser4Display(existingUser);
         UserLoginInfo build = UserLoginInfo.builder()
                 .user4Display(user4Display)
                 .token(jwtToken)
+                .refreshToken(refreshToken)
+                .tokenExpireAt(jwtUtil.getExpireAtMillis(jwtToken))
+                .refreshTokenExpireAt(jwtUtil.getExpireAtMillis(refreshToken))
                 .build();
         return build;
     }
@@ -100,14 +112,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     public String createTokenAndCache(User existingUser) {
-        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), 60 * 5);
+        String jwtToken = jwtUtil.createJwtToken(existingUser.getId(), ACCESS_TOKEN_EXPIRE_SECONDS);
         try {
             String key = redisUtil.buildUserTokenKey(jwtToken);
-            redisUtil.set(key, buildUser4Display(existingUser));
+            redisUtil.set(key, buildUser4Display(existingUser), ACCESS_TOKEN_EXPIRE_SECONDS, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.warn("redis error!", e);
         }
         return jwtToken;
+    }
+
+    public UserLoginInfo createLoginSession(User user) {
+        String accessToken = createTokenAndCache(user);
+        String refreshToken = createRefreshTokenAndCache(user.getId());
+        return getUserTokenResult(user, accessToken, refreshToken);
+    }
+
+    private String createRefreshTokenAndCache(String userId) {
+        HashMap<String, String> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("tokenType", "refresh");
+        String refreshToken = jwtUtil.createJwtToken(claims, REFRESH_TOKEN_EXPIRE_SECONDS);
+        redisUtil.set(buildRefreshTokenKey(refreshToken), userId, REFRESH_TOKEN_EXPIRE_SECONDS, TimeUnit.SECONDS);
+        return refreshToken;
+    }
+
+    private String buildRefreshTokenKey(String refreshToken) {
+        return REFRESH_TOKEN_KEY_PREFIX + refreshToken;
     }
 
     public User getUserByToken(String token) throws MyException {
@@ -149,8 +180,59 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             ResultCodeEnum error = ResultCodeEnum.USER_ERROR;
             throw new MyException(error, error.getMessage());
         }
-        String jwtToken = createTokenAndCache(existingUser);
-        return getUserTokenResult(existingUser, jwtToken);
+        return createLoginSession(existingUser);
+    }
+
+    public UserLoginInfo refreshLoginSession(String refreshToken) throws MyException {
+        if (Objects.isNull(refreshToken) || refreshToken.trim().isEmpty()) {
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, "refreshToken cannot be blank");
+        }
+        String normalizedRefreshToken = refreshToken.trim();
+        String refreshKey = buildRefreshTokenKey(normalizedRefreshToken);
+
+        if (!jwtUtil.verifyToken(normalizedRefreshToken) || jwtUtil.isExpire(normalizedRefreshToken)) {
+            redisUtil.delete(refreshKey);
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, "refreshToken expired");
+        }
+        Object userIdObj = redisUtil.get(refreshKey);
+        if (Objects.isNull(userIdObj)) {
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, "refreshToken invalid");
+        }
+        User user = getById(userIdObj.toString());
+        if (Objects.isNull(user) || State.LOCKED.equals(user.getState())) {
+            ResultCodeEnum error = ResultCodeEnum.USER_NOT_EXISTS;
+            throw new MyException(error, "user not found");
+        }
+        redisUtil.delete(refreshKey);
+        return createLoginSession(user);
+    }
+
+    public Result pingSession(String accessToken) throws MyException {
+        if (Objects.isNull(accessToken) || accessToken.trim().isEmpty()) {
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, "token cannot be blank");
+        }
+        String token = accessToken.trim();
+        if (!jwtUtil.verifyToken(token) || jwtUtil.isExpire(token)) {
+            redisUtil.delete(redisUtil.buildUserTokenKey(token));
+            ResultCodeEnum error = ResultCodeEnum.TOKEN_ERROR;
+            throw new MyException(error, "token expired");
+        }
+        String tokenKey = redisUtil.buildUserTokenKey(token);
+        Long ttl = redisUtil.getExpire(tokenKey, TimeUnit.SECONDS);
+        if (ttl == null || ttl < 0) {
+            long remainMillis = jwtUtil.getExpireAtMillis(token) - System.currentTimeMillis();
+            long remainSeconds = Math.max(1L, remainMillis / 1000L);
+            redisUtil.expire(tokenKey, remainSeconds, TimeUnit.SECONDS);
+            ttl = remainSeconds;
+        }
+        return Result.success(java.util.Map.of(
+                "authenticated", true,
+                "tokenTtlSeconds", ttl
+        ));
     }
 
     public User getByEmail(String email) {

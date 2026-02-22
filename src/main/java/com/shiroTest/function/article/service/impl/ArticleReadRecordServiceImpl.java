@@ -1,10 +1,13 @@
 package com.shiroTest.function.article.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.shiroTest.function.article.model.ArticleReadDetailResponse;
 import com.shiroTest.function.article.dao.ArticleReadRecordMapper;
 import com.shiroTest.function.article.model.ArticleReadRecord;
 import com.shiroTest.function.article.service.IArticleReadRecordService;
+import com.shiroTest.function.assistant.service.IRecordIgnoreIpService;
 import com.shiroTest.function.assistant.model.GeoContext;
 import com.shiroTest.function.assistant.service.AssistantRemoteClient;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +29,8 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
 
     @Autowired(required = false)
     private AssistantRemoteClient assistantRemoteClient;
+    @Autowired
+    private IRecordIgnoreIpService recordIgnoreIpService;
 
     private final ConcurrentHashMap<String, CacheItem<IpGeoSnapshot>> ipLocationCache = new ConcurrentHashMap<>();
 
@@ -34,6 +41,9 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
         }
         if (StringUtils.isBlank(readerIp)) {
             throw new IllegalArgumentException("readerIp cannot be blank");
+        }
+        if (recordIgnoreIpService.shouldIgnore(readerIp)) {
+            return;
         }
 
         ArticleReadRecord record = new ArticleReadRecord();
@@ -66,6 +76,35 @@ public class ArticleReadRecordServiceImpl extends ServiceImpl<ArticleReadRecordM
         response.setDailyStats(getBaseMapper().selectDailyStats(articleId, safeDayLimit));
         response.setLatestRecords(getBaseMapper().selectLatestRecords(articleId, safeRecordLimit));
         return response;
+    }
+
+    @Override
+    public PageInfo<ArticleReadRecord> getManageRecords(int currentPage,
+                                                        int pageSize,
+                                                        String articleId,
+                                                        LocalDate startDate,
+                                                        LocalDate endDate) {
+        int safeCurrentPage = Math.max(1, currentPage);
+        int safePageSize = Math.max(1, Math.min(pageSize, 200));
+        try {
+            PageHelper.startPage(safeCurrentPage, safePageSize, "read_time DESC,id DESC");
+            com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<ArticleReadRecord> queryWrapper =
+                    new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+            if (StringUtils.isNotBlank(articleId)) {
+                queryWrapper.eq("article_id", articleId.trim());
+            }
+            if (startDate != null) {
+                queryWrapper.ge("read_time", startDate.atStartOfDay());
+            }
+            if (endDate != null) {
+                queryWrapper.lt("read_time", endDate.plusDays(1).atStartOfDay());
+            }
+            queryWrapper.orderByDesc("read_time").orderByDesc("id");
+            List<ArticleReadRecord> records = list(queryWrapper);
+            return new PageInfo<>(records);
+        } finally {
+            PageHelper.clearPage();
+        }
     }
 
     private IpGeoSnapshot resolveReaderIpLocation(String readerIp) {
