@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -73,5 +74,38 @@ class AssistantServiceImplTest {
 
         // Then
         verify(assistantRemoteClient, times(1)).fetchWeatherContext(35.6581, 139.7432);
+    }
+
+    @Test
+    void getContextByIp_should_use_configured_public_ip_for_local_loopback_when_enabled() {
+        // Given
+        ReflectionTestUtils.setField(assistantService, "useDevPublicIpForLocal", true);
+        ReflectionTestUtils.setField(assistantService, "devPublicIp", "8.8.8.8");
+        when(assistantRemoteClient.fetchGeoContext("8.8.8.8"))
+                .thenReturn(new GeoContext("Tokyo", 35.68, 139.76));
+        when(assistantRemoteClient.fetchWeatherContext(35.68, 139.76))
+                .thenReturn(new WeatherContext(0, 26.0));
+
+        // When
+        AssistantContextResponse response = assistantService.getContextByIp("0:0:0:0:0:0:0:1");
+
+        // Then
+        verify(assistantRemoteClient).fetchGeoContext("8.8.8.8");
+        assertThat(response.getCity()).isEqualTo("Tokyo");
+    }
+
+    @Test
+    void getContextByIp_should_keep_original_ip_when_configured_public_ip_invalid() {
+        // Given
+        ReflectionTestUtils.setField(assistantService, "useDevPublicIpForLocal", true);
+        ReflectionTestUtils.setField(assistantService, "devPublicIp", "127.0.0.1");
+        when(assistantRemoteClient.fetchGeoContext("0:0:0:0:0:0:0:1"))
+                .thenReturn(new GeoContext("", null, null));
+
+        // When
+        assistantService.getContextByIp("0:0:0:0:0:0:0:1");
+
+        // Then
+        verify(assistantRemoteClient).fetchGeoContext("0:0:0:0:0:0:0:1");
     }
 }

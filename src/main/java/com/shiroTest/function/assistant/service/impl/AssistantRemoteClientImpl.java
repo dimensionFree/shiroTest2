@@ -62,7 +62,7 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
             Map<String, Object> data = JsonUtil.toMap(body);
             String country = toText(data.get("country_name"));
             String province = toText(data.get("region"));
-            String city = firstNonBlank(toText(data.get("district")), toText(data.get("city")));
+            String city = firstNonBlank(toText(data.get("city")), toText(data.get("district")));
             Double latitude = toDouble(data.get("latitude"));
             Double longitude = toDouble(data.get("longitude"));
             return new GeoContext(country, province, city, latitude, longitude);
@@ -82,7 +82,7 @@ public class AssistantRemoteClientImpl implements AssistantRemoteClient {
             }
             String country = toText(data.get("country"));
             String province = toText(data.get("region"));
-            String city = firstNonBlank(toText(data.get("district")), toText(data.get("city")));
+            String city = firstNonBlank(toText(data.get("city")), toText(data.get("district")));
             Double latitude = toDouble(data.get("latitude"));
             Double longitude = toDouble(data.get("longitude"));
             return new GeoContext(country, province, city, latitude, longitude);
